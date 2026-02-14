@@ -90,6 +90,20 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
             />
           </div>
 
+          <div>
+            <Label>Investor Type</Label>
+            <Select value={form.investor_type || ""} onValueChange={(v) => handleChange("investor_type", v)}>
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                {["Angel", "Family Office", "Venture Capital", "Private Equity", "Strategic/Corporate", "Other"].map((t) => (
+                  <SelectItem key={t} value={t}>{t}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Stage Focus</Label>

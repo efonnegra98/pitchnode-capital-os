@@ -32,6 +32,7 @@ export default function Settings() {
     email_signature: "",
     logo_url: "",
     raise_mode: false,
+    capital_type: "",
     target_raise_amount: "",
     capital_committed: "",
     soft_commitments: "",
@@ -49,6 +50,7 @@ export default function Settings() {
         accent_color: company.accent_color || "#7C3AED",
         logo_url: company.logo_url || "",
         raise_mode: company.raise_mode || false,
+        capital_type: company.capital_type || "",
         target_raise_amount: company.target_raise_amount || "",
         capital_committed: company.capital_committed || "",
         soft_commitments: company.soft_commitments || "",
@@ -242,6 +244,19 @@ export default function Settings() {
           {form.raise_mode && (
             <div className="space-y-4 pt-4 border-t border-slate-200">
               <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Primary Capital Type</Label>
+                  <Select value={form.capital_type || ""} onValueChange={(v) => handleChange("capital_type", v)}>
+                    <SelectTrigger className="mt-1.5">
+                      <SelectValue placeholder="Select capital type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {["Angel", "Family Office", "Venture Capital", "Private Equity", "Strategic/Corporate", "Mixed"].map((c) => (
+                        <SelectItem key={c} value={c}>{c}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div>
                   <Label>Round Type</Label>
                   <Select value={form.round_type || ""} onValueChange={(v) => handleChange("round_type", v)}>

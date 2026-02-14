@@ -22,6 +22,7 @@ export default function Onboarding() {
     company_name: "",
     founder_name: "",
     founder_title: "",
+    capital_type: "",
     raise_mode: false,
     target_raise_amount: "",
     round_type: "",
@@ -84,6 +85,7 @@ export default function Onboarding() {
       name: companyForm.company_name,
       founder_name: companyForm.founder_name,
       founder_title: companyForm.founder_title,
+      capital_type: companyForm.capital_type,
     });
     
     // Create UserProfile linked to company
@@ -210,7 +212,7 @@ export default function Onboarding() {
 
           {step === 2 && (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-2">Raise Configuration</h2>
+              <h2 className="text-xl font-bold text-slate-900 mb-2">Capital Configuration</h2>
               <p className="text-slate-600 text-sm mb-6">Are you actively raising capital?</p>
               <div className="space-y-4">
                 <div>
@@ -230,6 +232,22 @@ export default function Onboarding() {
                 </div>
                 {companyForm.raise_mode && (
                   <>
+                    <div>
+                      <Label>Primary Capital Type</Label>
+                      <Select
+                        value={companyForm.capital_type}
+                        onValueChange={(v) => setCompanyForm({ ...companyForm, capital_type: v })}
+                      >
+                        <SelectTrigger className="mt-1.5 bg-white">
+                          <SelectValue placeholder="Select capital type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {["Angel", "Family Office", "Venture Capital", "Private Equity", "Strategic/Corporate", "Mixed"].map((c) => (
+                            <SelectItem key={c} value={c}>{c}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div>
                       <Label>Round Type</Label>
                       <Select
