@@ -67,6 +67,7 @@ export default function Settings() {
         accent_color: formData.accent_color,
         logo_url: formData.logo_url,
         raise_mode: formData.raise_mode,
+        capital_type: formData.capital_type,
         target_raise_amount: formData.target_raise_amount,
         capital_committed: formData.capital_committed,
         soft_commitments: formData.soft_commitments,
