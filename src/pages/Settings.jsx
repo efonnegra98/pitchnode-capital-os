@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCompany } from "../components/useCompany";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -18,13 +19,9 @@ const ACCENT_OPTIONS = [
 
 export default function Settings() {
   const queryClient = useQueryClient();
+  const { company, companyId, isLoading: companyLoading } = useCompany();
 
-  const { data: settingsList = [], isLoading } = useQuery({
-    queryKey: ["company-settings"],
-    queryFn: () => base44.entities.CompanySettings.list(),
-  });
-
-  const existingSettings = settingsList[0] || null;
+  const isLoading = companyLoading;
 
   const [form, setForm] = useState({
     company_name: "",
@@ -42,23 +39,43 @@ export default function Settings() {
   });
 
   useEffect(() => {
-    if (existingSettings) {
+    if (company) {
       setForm(prev => ({
         ...prev,
-        ...existingSettings,
+        company_name: company.name || "",
+        founder_name: company.founder_name || "",
+        founder_title: company.founder_title || "",
+        accent_color: company.accent_color || "#7C3AED",
+        logo_url: company.logo_url || "",
+        raise_mode: company.raise_mode || false,
+        target_raise_amount: company.target_raise_amount || "",
+        capital_committed: company.capital_committed || "",
+        soft_commitments: company.soft_commitments || "",
+        round_type: company.round_type || "",
+        target_close_date: company.target_close_date || "",
       }));
     }
-  }, [existingSettings]);
+  }, [company]);
 
   const saveMutation = useMutation({
     mutationFn: async (formData) => {
-      if (existingSettings?.id) {
-        return base44.entities.CompanySettings.update(existingSettings.id, formData);
-      }
-      return base44.entities.CompanySettings.create(formData);
+      const payload = {
+        name: formData.company_name,
+        founder_name: formData.founder_name,
+        founder_title: formData.founder_title,
+        accent_color: formData.accent_color,
+        logo_url: formData.logo_url,
+        raise_mode: formData.raise_mode,
+        target_raise_amount: formData.target_raise_amount,
+        capital_committed: formData.capital_committed,
+        soft_commitments: formData.soft_commitments,
+        round_type: formData.round_type,
+        target_close_date: formData.target_close_date,
+      };
+      return base44.entities.Company.update(companyId, payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["company-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["company", companyId] });
     },
   });
 
