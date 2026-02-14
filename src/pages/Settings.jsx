@@ -82,8 +82,8 @@ export default function Settings() {
     return (
       <div className="p-6 lg:p-10">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 w-48 bg-white/5 rounded-lg" />
-          <div className="h-64 bg-white/5 rounded-xl" />
+          <div className="h-8 w-48 bg-slate-200 rounded-lg" />
+          <div className="h-64 bg-slate-200 rounded-xl" />
         </div>
       </div>
     );
@@ -92,40 +92,40 @@ export default function Settings() {
   return (
     <div className="p-6 lg:p-10 max-w-3xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white tracking-tight">Settings</h1>
-        <p className="text-white/30 text-sm mt-1">Configure your company profile and preferences</p>
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">Settings</h1>
+        <p className="text-muted-foreground text-sm mt-1">Configure your company profile and preferences</p>
       </div>
 
       <div className="space-y-8">
         {/* Company Profile */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-5">Company Profile</h2>
+          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5">Company Profile</h2>
           <div className="space-y-4">
             <div>
-              <Label className="text-white/40 text-xs">Company Name</Label>
+              <Label>Company Name</Label>
               <Input
                 value={form.company_name}
                 onChange={(e) => handleChange("company_name", e.target.value)}
-                className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20"
+                className="mt-1.5"
                 placeholder="Your company name"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-white/40 text-xs">Founder Name</Label>
+                <Label>Founder Name</Label>
                 <Input
                   value={form.founder_name}
                   onChange={(e) => handleChange("founder_name", e.target.value)}
-                  className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20"
+                  className="mt-1.5"
                   placeholder="Your name"
                 />
               </div>
               <div>
-                <Label className="text-white/40 text-xs">Title</Label>
+                <Label>Title</Label>
                 <Input
                   value={form.founder_title}
                   onChange={(e) => handleChange("founder_title", e.target.value)}
-                  className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20"
+                  className="mt-1.5"
                   placeholder="CEO & Founder"
                 />
               </div>
@@ -135,30 +135,30 @@ export default function Settings() {
 
         {/* Logo Upload */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-5">Logo</h2>
+          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5">Logo</h2>
           <div className="flex items-center gap-6">
             {form.logo_url ? (
-              <div className="w-16 h-16 rounded-xl overflow-hidden bg-white/[0.06] flex items-center justify-center">
+              <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center">
                 <img src={form.logo_url} alt="Logo" className="w-full h-full object-contain" />
               </div>
             ) : (
-              <div className="w-16 h-16 rounded-xl bg-white/[0.04] border border-dashed border-white/[0.1] flex items-center justify-center">
-                <Upload className="w-5 h-5 text-white/20" />
+              <div className="w-16 h-16 rounded-xl bg-slate-50 border border-dashed border-slate-300 flex items-center justify-center">
+                <Upload className="w-5 h-5 text-slate-400" />
               </div>
             )}
             <div>
-              <label className="px-4 py-2 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-white text-sm font-medium cursor-pointer transition-all inline-block">
+              <label className="px-4 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-foreground text-sm font-medium cursor-pointer transition-all inline-block">
                 Upload Logo
                 <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
               </label>
-              <p className="text-white/20 text-xs mt-2">PNG or SVG recommended</p>
+              <p className="text-muted-foreground text-xs mt-2">PNG or SVG recommended</p>
             </div>
           </div>
         </div>
 
         {/* Brand Accent */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-5">Brand Accent</h2>
+          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5">Brand Accent</h2>
           <div className="flex flex-wrap gap-3">
             {ACCENT_OPTIONS.map((opt) => (
               <button
@@ -166,12 +166,12 @@ export default function Settings() {
                 onClick={() => handleChange("accent_color", opt.value)}
                 className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg border transition-all ${
                   form.accent_color === opt.value
-                    ? "border-violet-500/40 bg-violet-500/10"
-                    : "border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]"
+                    ? "border-violet-300 bg-violet-50"
+                    : "border-slate-200 bg-white hover:bg-slate-50"
                 }`}
               >
                 <div className="w-4 h-4 rounded-full" style={{ backgroundColor: opt.value }} />
-                <span className="text-xs text-white/60">{opt.label}</span>
+                <span className="text-xs text-foreground">{opt.label}</span>
               </button>
             ))}
           </div>
@@ -179,11 +179,11 @@ export default function Settings() {
 
         {/* Email Signature */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-5">Email Signature</h2>
+          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5">Email Signature</h2>
           <Textarea
             value={form.email_signature}
             onChange={(e) => handleChange("email_signature", e.target.value)}
-            className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 min-h-[100px]"
+            className="min-h-[100px]"
             placeholder="Your email signature for investor updates..."
           />
         </div>
@@ -192,13 +192,13 @@ export default function Settings() {
         <div className="glass rounded-xl p-6">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider">Raise Mode</h2>
-              <p className="text-white/25 text-xs mt-1">Enable fundraising command layer on dashboard</p>
+              <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">Raise Mode</h2>
+              <p className="text-muted-foreground text-xs mt-1">Enable fundraising command layer on dashboard</p>
             </div>
             <button
               onClick={() => handleChange("raise_mode", !form.raise_mode)}
               className={`relative w-12 h-6 rounded-full transition-all ${
-                form.raise_mode ? "bg-violet-600" : "bg-white/[0.08]"
+                form.raise_mode ? "bg-violet-600" : "bg-slate-200"
               }`}
             >
               <div
@@ -210,12 +210,12 @@ export default function Settings() {
           </div>
 
           {form.raise_mode && (
-            <div className="space-y-4 pt-4 border-t border-white/[0.06]">
+            <div className="space-y-4 pt-4 border-t border-slate-200">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-white/40 text-xs">Round Type</Label>
+                  <Label>Round Type</Label>
                   <Select value={form.round_type || ""} onValueChange={(v) => handleChange("round_type", v)}>
-                    <SelectTrigger className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white">
+                    <SelectTrigger className="mt-1.5">
                       <SelectValue placeholder="Select round" />
                     </SelectTrigger>
                     <SelectContent>
@@ -226,44 +226,44 @@ export default function Settings() {
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-white/40 text-xs">Target Close Date</Label>
+                  <Label>Target Close Date</Label>
                   <Input
                     type="date"
                     value={form.target_close_date}
                     onChange={(e) => handleChange("target_close_date", e.target.value)}
-                    className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white"
+                    className="mt-1.5"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <Label className="text-white/40 text-xs">Target Raise ($)</Label>
+                  <Label>Target Raise ($)</Label>
                   <Input
                     type="number"
                     value={form.target_raise_amount}
                     onChange={(e) => handleNumber("target_raise_amount", e.target.value)}
-                    className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white"
+                    className="mt-1.5"
                     placeholder="0"
                   />
                 </div>
                 <div>
-                  <Label className="text-white/40 text-xs">Capital Committed ($)</Label>
+                  <Label>Capital Committed ($)</Label>
                   <Input
                     type="number"
                     value={form.capital_committed}
                     onChange={(e) => handleNumber("capital_committed", e.target.value)}
-                    className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white"
+                    className="mt-1.5"
                     placeholder="0"
                   />
                 </div>
                 <div>
-                  <Label className="text-white/40 text-xs">Soft Commitments ($)</Label>
+                  <Label>Soft Commitments ($)</Label>
                   <Input
                     type="number"
                     value={form.soft_commitments}
                     onChange={(e) => handleNumber("soft_commitments", e.target.value)}
-                    className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white"
+                    className="mt-1.5"
                     placeholder="0"
                   />
                 </div>
@@ -274,12 +274,12 @@ export default function Settings() {
 
         {/* Subscription Placeholder */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-5">Subscription</h2>
-          <div className="flex items-center gap-4 p-4 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-            <CreditCard className="w-5 h-5 text-violet-400/50" />
+          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5">Subscription</h2>
+          <div className="flex items-center gap-4 p-4 rounded-lg bg-slate-50 border border-slate-200">
+            <CreditCard className="w-5 h-5 text-violet-600" />
             <div>
-              <p className="text-white/60 text-sm font-medium">Pro Plan — Coming Soon</p>
-              <p className="text-white/25 text-xs mt-0.5">Stripe billing integration will be available in a future release.</p>
+              <p className="text-foreground text-sm font-medium">Pro Plan — Coming Soon</p>
+              <p className="text-muted-foreground text-xs mt-0.5">Stripe billing integration will be available in a future release.</p>
             </div>
           </div>
         </div>

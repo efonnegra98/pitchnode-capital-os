@@ -33,14 +33,14 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div
-        className="bg-[#12101f] border border-white/[0.08] rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-5 border-b border-white/[0.06]">
-          <h2 className="text-lg font-semibold text-white">{investor?.id ? "Edit Investor" : "Add Investor"}</h2>
-          <button onClick={onClose} className="text-white/30 hover:text-white transition-colors">
+        <div className="flex items-center justify-between p-5 border-b border-slate-200">
+          <h2 className="text-lg font-semibold text-foreground">{investor?.id ? "Edit Investor" : "Add Investor"}</h2>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -48,40 +48,40 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
         <div className="p-5 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-white/40 text-xs">Name *</Label>
+              <Label>Name *</Label>
               <Input
                 value={form.name}
                 onChange={(e) => handleChange("name", e.target.value)}
-                className="mt-1 bg-white/[0.04] border-white/[0.08] text-white"
+                className="mt-1"
                 placeholder="Full name"
               />
             </div>
             <div>
-              <Label className="text-white/40 text-xs">Firm</Label>
+              <Label>Firm</Label>
               <Input
                 value={form.firm}
                 onChange={(e) => handleChange("firm", e.target.value)}
-                className="mt-1 bg-white/[0.04] border-white/[0.08] text-white"
+                className="mt-1"
                 placeholder="Investment firm"
               />
             </div>
           </div>
 
           <div>
-            <Label className="text-white/40 text-xs">Email</Label>
+            <Label>Email</Label>
             <Input
               value={form.email}
               onChange={(e) => handleChange("email", e.target.value)}
-              className="mt-1 bg-white/[0.04] border-white/[0.08] text-white"
+              className="mt-1"
               placeholder="investor@firm.com"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-white/40 text-xs">Stage Focus</Label>
+              <Label>Stage Focus</Label>
               <Select value={form.stage_focus || ""} onValueChange={(v) => handleChange("stage_focus", v)}>
-                <SelectTrigger className="mt-1 bg-white/[0.04] border-white/[0.08] text-white">
+                <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select stage" />
                 </SelectTrigger>
                 <SelectContent>
@@ -92,11 +92,11 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
               </Select>
             </div>
             <div>
-              <Label className="text-white/40 text-xs">Check Size</Label>
+              <Label>Check Size</Label>
               <Input
                 value={form.check_size}
                 onChange={(e) => handleChange("check_size", e.target.value)}
-                className="mt-1 bg-white/[0.04] border-white/[0.08] text-white"
+                className="mt-1"
                 placeholder="$250k-$500k"
               />
             </div>
@@ -104,9 +104,9 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-white/40 text-xs">Relationship Strength</Label>
+              <Label>Relationship Strength</Label>
               <Select value={form.relationship_strength || ""} onValueChange={(v) => handleChange("relationship_strength", v)}>
-                <SelectTrigger className="mt-1 bg-white/[0.04] border-white/[0.08] text-white">
+                <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
@@ -117,9 +117,9 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
               </Select>
             </div>
             <div>
-              <Label className="text-white/40 text-xs">Status</Label>
+              <Label>Status</Label>
               <Select value={form.status || ""} onValueChange={(v) => handleChange("status", v)}>
-                <SelectTrigger className="mt-1 bg-white/[0.04] border-white/[0.08] text-white">
+                <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
@@ -132,9 +132,9 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
           </div>
 
           <div>
-            <Label className="text-white/40 text-xs">Funnel Stage</Label>
+            <Label>Funnel Stage</Label>
             <Select value={form.funnel_stage || ""} onValueChange={(v) => handleChange("funnel_stage", v)}>
-              <SelectTrigger className="mt-1 bg-white/[0.04] border-white/[0.08] text-white">
+              <SelectTrigger className="mt-1">
                 <SelectValue placeholder="Select stage" />
               </SelectTrigger>
               <SelectContent>
@@ -146,32 +146,32 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
           </div>
 
           <div>
-            <Label className="text-white/40 text-xs">Last Contact Date</Label>
+            <Label>Last Contact Date</Label>
             <Input
               type="date"
               value={form.last_contact_date}
               onChange={(e) => handleChange("last_contact_date", e.target.value)}
-              className="mt-1 bg-white/[0.04] border-white/[0.08] text-white"
+              className="mt-1"
             />
           </div>
 
           {/* Follow-Up Discipline */}
-          <div className="pt-4 border-t border-white/[0.06]">
-            <h3 className="text-xs font-semibold text-violet-300/60 uppercase tracking-wider mb-3">Follow-Up Discipline</h3>
+          <div className="pt-4 border-t border-slate-200">
+            <h3 className="text-xs font-semibold text-violet-600 uppercase tracking-wider mb-3">Follow-Up Discipline</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-white/40 text-xs">Next Action Date</Label>
+                <Label>Next Action Date</Label>
                 <Input
                   type="date"
                   value={form.next_action_date}
                   onChange={(e) => handleChange("next_action_date", e.target.value)}
-                  className="mt-1 bg-white/[0.04] border-white/[0.08] text-white"
+                  className="mt-1"
                 />
               </div>
               <div>
-                <Label className="text-white/40 text-xs">Cadence Status</Label>
+                <Label>Cadence Status</Label>
                 <Select value={form.cadence_status || ""} onValueChange={(v) => handleChange("cadence_status", v)}>
-                  <SelectTrigger className="mt-1 bg-white/[0.04] border-white/[0.08] text-white">
+                  <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
@@ -183,9 +183,9 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
               </div>
             </div>
             <div className="mt-4">
-              <Label className="text-white/40 text-xs">Next Action Type</Label>
+              <Label>Next Action Type</Label>
               <Select value={form.next_action_type || ""} onValueChange={(v) => handleChange("next_action_type", v)}>
-                <SelectTrigger className="mt-1 bg-white/[0.04] border-white/[0.08] text-white">
+                <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select action type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -198,23 +198,23 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
           </div>
 
           <div>
-            <Label className="text-white/40 text-xs">Notes</Label>
+            <Label>Notes</Label>
             <Textarea
               value={form.notes}
               onChange={(e) => handleChange("notes", e.target.value)}
-              className="mt-1 bg-white/[0.04] border-white/[0.08] text-white min-h-[80px]"
+              className="mt-1 min-h-[80px]"
               placeholder="Notes about this investor..."
             />
           </div>
         </div>
 
-        <div className="flex items-center justify-between p-5 border-t border-white/[0.06]">
+        <div className="flex items-center justify-between p-5 border-t border-slate-200">
           {investor?.id ? (
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onDelete(investor.id)}
-              className="text-red-400/60 hover:text-red-400 hover:bg-red-500/10"
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
             >
               <Trash2 className="w-4 h-4 mr-1.5" /> Delete
             </Button>
@@ -223,7 +223,6 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
             <Button
               variant="ghost"
               onClick={onClose}
-              className="text-white/40 hover:text-white hover:bg-white/[0.06]"
             >
               Cancel
             </Button>

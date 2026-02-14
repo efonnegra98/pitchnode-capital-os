@@ -2,30 +2,30 @@ import React from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 const statusColors = {
-  Warm: "bg-amber-500/15 text-amber-300 border-amber-500/20",
-  Engaged: "bg-blue-500/15 text-blue-300 border-blue-500/20",
-  Passed: "bg-white/[0.06] text-white/30 border-white/[0.08]",
-  Committed: "bg-emerald-500/15 text-emerald-300 border-emerald-500/20",
+  Warm: "bg-amber-50 text-amber-700 border-amber-200",
+  Engaged: "bg-blue-50 text-blue-700 border-blue-200",
+  Passed: "bg-slate-100 text-slate-500 border-slate-200",
+  Committed: "bg-emerald-50 text-emerald-700 border-emerald-200",
 };
 
 const strengthColors = {
-  New: "text-white/30",
-  Building: "text-amber-400/70",
-  Strong: "text-blue-400/70",
-  Champion: "text-emerald-400/70",
+  New: "text-slate-400",
+  Building: "text-amber-600",
+  Strong: "text-blue-600",
+  Champion: "text-emerald-600",
 };
 
 const cadenceColors = {
-  "On Track": "text-emerald-400/70",
-  "Overdue": "text-red-400/70",
-  "Waiting": "text-amber-400/70",
-  "Closed": "text-white/30",
+  "On Track": "text-emerald-600",
+  "Overdue": "text-red-600",
+  "Waiting": "text-amber-600",
+  "Closed": "text-slate-400",
 };
 
 export default function InvestorTable({ investors, sortField, sortDir, onSort, onEdit }) {
   const SortHeader = ({ field, children }) => (
     <th
-      className="text-left text-[10px] uppercase tracking-[0.15em] text-white/35 font-medium py-3 px-4 cursor-pointer hover:text-white/50 transition-colors select-none"
+      className="text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium py-3 px-4 cursor-pointer hover:text-foreground transition-colors select-none"
       onClick={() => onSort(field)}
     >
       <span className="flex items-center gap-1">
@@ -40,7 +40,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
   if (investors.length === 0) {
     return (
       <div className="glass rounded-xl p-12 text-center">
-        <p className="text-white/30 text-sm">No investors tracked yet. Add your first investor contact.</p>
+        <p className="text-muted-foreground text-sm">No investors tracked yet. Add your first investor contact.</p>
       </div>
     );
   }
@@ -50,7 +50,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/[0.06]">
+            <tr className="border-b border-slate-200">
               <SortHeader field="name">Name</SortHeader>
               <SortHeader field="firm">Firm</SortHeader>
               <SortHeader field="status">Status</SortHeader>
@@ -60,15 +60,15 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
               <SortHeader field="last_contact_date">Last Contact</SortHeader>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04]">
+          <tbody className="divide-y divide-slate-200">
             {investors.map((inv) => (
               <tr
                 key={inv.id}
                 onClick={() => onEdit(inv)}
-                className="hover:bg-white/[0.03] cursor-pointer transition-colors"
+                className="hover:bg-slate-50 cursor-pointer transition-colors"
               >
-                <td className="py-3 px-4 font-medium text-white">{inv.name}</td>
-                <td className="py-3 px-4 text-white/50">{inv.firm || "—"}</td>
+                <td className="py-3 px-4 font-medium text-foreground">{inv.name}</td>
+                <td className="py-3 px-4 text-muted-foreground">{inv.firm || "—"}</td>
                 <td className="py-3 px-4">
                   {inv.status ? (
                     <span className={`text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full border ${statusColors[inv.status] || ''}`}>
@@ -84,23 +84,23 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                 <td className="py-3 px-4">
                   {inv.next_action_date ? (
                     <div>
-                      <p className="text-white/60 text-xs">
+                      <p className="text-foreground text-xs">
                         {new Date(inv.next_action_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </p>
                       {inv.next_action_type && (
-                        <p className="text-white/25 text-[10px] mt-0.5">{inv.next_action_type}</p>
+                        <p className="text-muted-foreground text-[10px] mt-0.5">{inv.next_action_type}</p>
                       )}
                     </div>
                   ) : "—"}
                 </td>
                 <td className="py-3 px-4">
                   {inv.cadence_status ? (
-                    <span className={`text-xs font-medium ${cadenceColors[inv.cadence_status] || 'text-white/30'}`}>
+                    <span className={`text-xs font-medium ${cadenceColors[inv.cadence_status] || 'text-slate-400'}`}>
                       {inv.cadence_status}
                     </span>
                   ) : "—"}
                 </td>
-                <td className="py-3 px-4 text-white/30 text-xs">
+                <td className="py-3 px-4 text-muted-foreground text-xs">
                   {inv.last_contact_date
                     ? new Date(inv.last_contact_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
                     : "—"

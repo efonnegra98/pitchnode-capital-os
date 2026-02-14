@@ -53,73 +53,73 @@ export default function UpdateForm({ initialData, onSave, onSend, onBack, isSavi
   return (
     <div className="space-y-8">
       {onBack && (
-        <button onClick={onBack} className="flex items-center gap-2 text-white/40 hover:text-white/70 text-sm transition-colors">
+        <button onClick={onBack} className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-sm transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to updates
         </button>
       )}
 
       {/* Month */}
       <div>
-        <Label className="text-white/50 text-xs uppercase tracking-wider">Update Period</Label>
+        <Label className="uppercase tracking-wider">Update Period</Label>
         <Input
           value={form.month}
           onChange={(e) => handleChange("month", e.target.value)}
-          className="mt-2 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/50"
+          className="mt-2"
           placeholder="e.g. January 2026"
         />
       </div>
 
       {/* Financial Metrics */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-4">Financial Metrics</h3>
+        <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-4">Financial Metrics</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
-            <Label className="text-white/40 text-xs">Revenue ($)</Label>
+            <Label>Revenue ($)</Label>
             <Input
               type="number"
               value={form.revenue}
               onChange={(e) => handleNumber("revenue", e.target.value)}
-              className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/50"
+              className="mt-1.5"
               placeholder="0"
             />
           </div>
           <div>
-            <Label className="text-white/40 text-xs">Revenue Growth (%)</Label>
+            <Label>Revenue Growth (%)</Label>
             <Input
               type="number"
               value={form.revenue_growth}
               onChange={(e) => handleNumber("revenue_growth", e.target.value)}
-              className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/50"
+              className="mt-1.5"
               placeholder="0"
             />
           </div>
           <div>
-            <Label className="text-white/40 text-xs">Burn Rate ($)</Label>
+            <Label>Burn Rate ($)</Label>
             <Input
               type="number"
               value={form.burn_rate}
               onChange={(e) => handleNumber("burn_rate", e.target.value)}
-              className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/50"
+              className="mt-1.5"
               placeholder="0"
             />
           </div>
           <div>
-            <Label className="text-white/40 text-xs">Cash Balance ($)</Label>
+            <Label>Cash Balance ($)</Label>
             <Input
               type="number"
               value={form.cash_balance}
               onChange={(e) => handleNumber("cash_balance", e.target.value)}
-              className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/50"
+              className="mt-1.5"
               placeholder="0"
             />
           </div>
           <div>
-            <Label className="text-white/40 text-xs">Runway (months) — auto-calculated</Label>
+            <Label>Runway (months) — auto-calculated</Label>
             <Input
               type="number"
               value={form.runway_months}
               onChange={(e) => handleNumber("runway_months", e.target.value)}
-              className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white/60 placeholder:text-white/20"
+              className="mt-1.5"
               placeholder="Auto"
             />
           </div>
@@ -128,7 +128,7 @@ export default function UpdateForm({ initialData, onSave, onSend, onBack, isSavi
 
       {/* Narrative Sections */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-4">Narrative</h3>
+        <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-4">Narrative</h3>
         <div className="space-y-4">
           {[
             { key: "highlights", label: "Highlights", placeholder: "Top-level highlights for the month…" },
@@ -138,11 +138,11 @@ export default function UpdateForm({ initialData, onSave, onSend, onBack, isSavi
             { key: "asks", label: "Asks", placeholder: "Capital needs, key hires, introductions…" },
           ].map(({ key, label, placeholder }) => (
             <div key={key}>
-              <Label className="text-white/40 text-xs">{label}</Label>
+              <Label>{label}</Label>
               <Textarea
                 value={form[key] || ""}
                 onChange={(e) => handleChange(key, e.target.value)}
-                className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 focus:border-violet-500/50 min-h-[80px]"
+                className="mt-1.5 min-h-[80px]"
                 placeholder={placeholder}
               />
             </div>
@@ -151,11 +151,11 @@ export default function UpdateForm({ initialData, onSave, onSend, onBack, isSavi
       </div>
 
       {/* Actions */}
-      <div className="flex flex-wrap gap-3 pt-4 border-t border-white/[0.06]">
+      <div className="flex flex-wrap gap-3 pt-4 border-t border-slate-200">
         <Button
           onClick={() => onSave(form)}
           disabled={isSaving}
-          className="bg-white/[0.06] hover:bg-white/[0.1] text-white border border-white/[0.08]"
+          variant="outline"
         >
           <Save className="w-4 h-4 mr-2" /> Save Draft
         </Button>
