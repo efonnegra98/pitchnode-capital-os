@@ -4,34 +4,34 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Send } from "lucide-react";
 import UpdateForm from "../components/update/UpdateForm";
 import UpdatePreview from "../components/update/UpdatePreview";
+import { useCompany } from "../components/useCompany";
 
 export default function UpdateBuilder() {
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const queryClient = useQueryClient();
 
-  const { data: updates = [], isLoading } = useQuery({
-    queryKey: ["monthly-updates"],
-    queryFn: () => base44.entities.MonthlyUpdate.list("-created_date", 50),
+  const { company, companyId, isLoading: companyLoading } = useCompany();
+
+  const { data: updates = [], isLoading: updatesLoading } = useQuery({
+    queryKey: ["monthly-updates", companyId],
+    queryFn: () => base44.entities.MonthlyUpdate.filter({ company_id: companyId }),
+    enabled: !!companyId,
   });
 
-  const { data: settings } = useQuery({
-    queryKey: ["company-settings"],
-    queryFn: () => base44.entities.CompanySettings.list(),
-  });
-
-  const companyName = settings?.[0]?.company_name || "";
+  const isLoading = companyLoading || updatesLoading;
+  const companyName = company?.name || "";
 
   const saveMutation = useMutation({
     mutationFn: async (formData) => {
-      const payload = { ...formData, status: "draft" };
+      const payload = { ...formData, company_id: companyId, status: "draft" };
       if (editingId) {
         return base44.entities.MonthlyUpdate.update(editingId, payload);
       }
       return base44.entities.MonthlyUpdate.create(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["monthly-updates"] });
+      queryClient.invalidateQueries({ queryKey: ["monthly-updates", companyId] });
       setShowForm(false);
       setEditingId(null);
     },
@@ -41,6 +41,7 @@ export default function UpdateBuilder() {
     mutationFn: async (formData) => {
       const payload = {
         ...formData,
+        company_id: companyId,
         status: "sent",
         sent_date: new Date().toISOString().split("T")[0],
       };
@@ -50,7 +51,7 @@ export default function UpdateBuilder() {
       return base44.entities.MonthlyUpdate.create(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["monthly-updates"] });
+      queryClient.invalidateQueries({ queryKey: ["monthly-updates", companyId] });
       setShowForm(false);
       setEditingId(null);
     },
