@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCompany } from "../components/useCompany";
 import { Input } from "@/components/ui/input";
 import { Search, Users } from "lucide-react";
 import InvestorTable from "../components/investors/InvestorTable";
@@ -13,11 +14,15 @@ export default function Investors() {
   const [modalData, setModalData] = useState(null);
 
   const queryClient = useQueryClient();
+  const { companyId, isLoading: companyLoading } = useCompany();
 
-  const { data: investors = [], isLoading } = useQuery({
-    queryKey: ["investors"],
-    queryFn: () => base44.entities.Investor.list(),
+  const { data: investors = [], isLoading: investorsLoading } = useQuery({
+    queryKey: ["investors", companyId],
+    queryFn: () => base44.entities.Investor.filter({ company_id: companyId }),
+    enabled: !!companyId,
   });
+
+  const isLoading = companyLoading || investorsLoading;
 
   const saveMutation = useMutation({
     mutationFn: async (formData) => {
@@ -25,10 +30,10 @@ export default function Investors() {
         const { id, created_date, updated_date, created_by, ...rest } = formData;
         return base44.entities.Investor.update(id, rest);
       }
-      return base44.entities.Investor.create(formData);
+      return base44.entities.Investor.create({ ...formData, company_id: companyId });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["investors"] });
+      queryClient.invalidateQueries({ queryKey: ["investors", companyId] });
       setModalData(null);
     },
   });
@@ -36,7 +41,7 @@ export default function Investors() {
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.Investor.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["investors"] });
+      queryClient.invalidateQueries({ queryKey: ["investors", companyId] });
       setModalData(null);
     },
   });
