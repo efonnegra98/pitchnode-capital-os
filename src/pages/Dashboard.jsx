@@ -20,6 +20,7 @@ import RaiseReadiness from "../components/dashboard/RaiseReadiness";
 import RaiseMomentum from "../components/dashboard/RaiseMomentum";
 import SentimentOverview from "../components/dashboard/SentimentOverview";
 import IntroConversion from "../components/dashboard/IntroConversion";
+import EmptyState from "../components/dashboard/EmptyState";
 
 export default function Dashboard() {
   const { data: updates = [], isLoading: updatesLoading } = useQuery({
@@ -88,6 +89,11 @@ export default function Dashboard() {
     );
   }
 
+  // Check if there's any data
+  const hasUpdates = updates.length > 0;
+  const hasInvestors = investors.length > 0;
+  const hasAnyData = hasUpdates || hasInvestors;
+
   return (
     <div className="p-6 lg:p-10 max-w-7xl mx-auto">
       {/* Header */}
@@ -96,16 +102,48 @@ export default function Dashboard() {
         <p className="text-slate-500 text-sm mt-1">Capital metrics & investor engagement overview</p>
       </div>
 
-      {/* Raise Overview - Only shown when raise_mode is enabled */}
-      {companySettings.raise_mode && (
-        <RaiseOverview settings={companySettings} />
-      )}
+      {/* Empty State - Show when no data exists */}
+      {!hasAnyData ? (
+        <div className="space-y-6">
+          <EmptyState
+            icon={Send}
+            title="Welcome to Your Capital OS"
+            description="Start by creating your first investor update or adding investors to track your fundraising pipeline."
+            actionLabel="Create First Update"
+            actionPage="UpdateBuilder"
+          />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <EmptyState
+              icon={Users}
+              title="Track Investors"
+              description="Build your investor pipeline and manage relationships."
+              actionLabel="Add Investors"
+              actionPage="Investors"
+            />
+            {companySettings.raise_mode && (
+              <EmptyState
+                icon={TrendingUp}
+                title="Raise Readiness"
+                description="Prepare your data room and track fundraising progress."
+                actionLabel="View Checklist"
+                actionPage="Dashboard"
+              />
+            )}
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Raise Overview - Only shown when raise_mode is enabled */}
+          {companySettings.raise_mode && (
+            <RaiseOverview settings={companySettings} />
+          )}
 
-      {/* Action Required */}
-      <ActionRequired investors={investors} />
+          {/* Action Required */}
+          {hasInvestors && <ActionRequired investors={investors} />}
 
-      {/* Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {/* Metric Cards */}
+          {hasUpdates ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <MetricCard
           label="Monthly Revenue"
           value={formatCurrency(latestUpdate?.revenue)}
@@ -156,33 +194,60 @@ export default function Dashboard() {
           icon={Send}
           subtext={lastSent?.month}
         />
-      </div>
-
-      {/* Charts & Snapshot */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <KPIChart data={chartData} />
-        </div>
-        <SnapshotSummary latestUpdate={latestUpdate} investorCount={activeInvestors.length} />
-      </div>
-
-      {/* Capital Funnel - Only shown when raise_mode is enabled */}
-      {companySettings.raise_mode && (
-        <div className="mt-6 space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <RaiseMomentum investors={investors} />
-            </div>
-            <SentimentOverview investors={investors} />
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <CapitalFunnel investors={investors} />
+          ) : (
+            <div className="mb-8">
+              <EmptyState
+                icon={DollarSign}
+                title="No Financial Data Yet"
+                description="Create your first investor update to start tracking revenue, burn rate, and runway."
+                actionLabel="Create Update"
+                actionPage="UpdateBuilder"
+              />
             </div>
-            <IntroConversion investors={investors} />
-          </div>
-          <RaiseReadiness />
-        </div>
+          )}
+
+          {/* Charts & Snapshot */}
+          {hasUpdates && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <KPIChart data={chartData} />
+              </div>
+              <SnapshotSummary latestUpdate={latestUpdate} investorCount={activeInvestors.length} />
+            </div>
+          )}
+
+          {/* Capital Funnel - Only shown when raise_mode is enabled */}
+          {companySettings.raise_mode && hasInvestors && (
+            <div className="mt-6 space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                  <RaiseMomentum investors={investors} />
+                </div>
+                <SentimentOverview investors={investors} />
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                  <CapitalFunnel investors={investors} />
+                </div>
+                <IntroConversion investors={investors} />
+              </div>
+              <RaiseReadiness />
+            </div>
+          )}
+
+          {companySettings.raise_mode && !hasInvestors && (
+            <div className="mt-6">
+              <EmptyState
+                icon={Users}
+                title="No Investors Added"
+                description="Add investors to track your fundraising pipeline and manage relationships."
+                actionLabel="Add Investors"
+                actionPage="Investors"
+              />
+            </div>
+          )}
+        </>
       )}
     </div>
   );

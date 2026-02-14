@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Send } from "lucide-react";
 import UpdateForm from "../components/update/UpdateForm";
 import UpdatePreview from "../components/update/UpdatePreview";
 
@@ -92,8 +93,22 @@ export default function UpdateBuilder() {
         </div>
 
         {updates.length === 0 ? (
-          <div className="glass rounded-xl p-12 text-center">
-            <p className="text-muted-foreground text-sm">No updates yet. Create your first investor update.</p>
+          <div className="glass rounded-xl p-12 text-center border border-slate-200">
+            <div className="flex justify-center mb-4">
+              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+                <Send className="w-6 h-6 text-slate-400" />
+              </div>
+            </div>
+            <h3 className="text-base font-semibold text-slate-800 mb-2">No Updates Yet</h3>
+            <p className="text-sm text-slate-500 mb-6 max-w-md mx-auto">
+              Create your first investor update to share financial metrics and company progress.
+            </p>
+            <button
+              onClick={() => { setEditingId(null); setShowForm(true); }}
+              className="px-4 py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium transition-all"
+            >
+              Create First Update
+            </button>
           </div>
         ) : (
           <div className="space-y-3">

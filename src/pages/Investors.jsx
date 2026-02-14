@@ -1,10 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
-import InvestorTable from "../components/investors/InvestorTable";
-import InvestorModal from "../components/investors/InvestorModal";
+import { useQuery, useMutation, useQueryClient } from "@antml:invoke>
+<parameter name="limit">5000
 
 export default function Investors() {
   const [search, setSearch] = useState("");
@@ -107,13 +104,33 @@ export default function Investors() {
         </div>
       </div>
 
-      <InvestorTable
-        investors={sortedFiltered}
-        sortField={sortField}
-        sortDir={sortDir}
-        onSort={handleSort}
-        onEdit={(inv) => setModalData(inv)}
-      />
+      {investors.length === 0 ? (
+        <div className="glass rounded-xl p-12 text-center border border-slate-200">
+          <div className="flex justify-center mb-4">
+            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+              <Users className="w-6 h-6 text-slate-400" />
+            </div>
+          </div>
+          <h3 className="text-base font-semibold text-slate-800 mb-2">No Investors Yet</h3>
+          <p className="text-sm text-slate-500 mb-6 max-w-md mx-auto">
+            Start building your investor pipeline by adding your first contact.
+          </p>
+          <button
+            onClick={() => setModalData({})}
+            className="px-4 py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium transition-all"
+          >
+            Add First Investor
+          </button>
+        </div>
+      ) : (
+        <InvestorTable
+          investors={sortedFiltered}
+          sortField={sortField}
+          sortDir={sortDir}
+          onSort={handleSort}
+          onEdit={(inv) => setModalData(inv)}
+        />
+      )}
 
       {modalData !== null && (
         <InvestorModal
