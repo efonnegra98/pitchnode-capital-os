@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { CheckCircle2, Circle, Clock, FileText } from "lucide-react";
+import { CheckCircle2, Circle, Clock, FileText, Upload, File, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 const DEFAULT_ITEMS = [
   { item_name: "Pitch Deck Finalized", order: 1 },
@@ -67,6 +68,35 @@ export default function RaiseReadiness() {
     updateMutation.mutate({
       id: item.id,
       data: { notes },
+    });
+  };
+
+  const handleFileUpload = async (item, file) => {
+    if (!file) return;
+
+    // Upload file
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+
+    // Update item with file info and mark as complete
+    updateMutation.mutate({
+      id: item.id,
+      data: {
+        file_url,
+        file_name: file.name,
+        file_uploaded_date: new Date().toISOString(),
+        status: "Complete",
+      },
+    });
+  };
+
+  const handleFileRemove = (item) => {
+    updateMutation.mutate({
+      id: item.id,
+      data: {
+        file_url: null,
+        file_name: null,
+        file_uploaded_date: null,
+      },
     });
   };
 
@@ -139,6 +169,12 @@ export default function RaiseReadiness() {
                     >
                       {item.status || "Not Started"}
                     </span>
+                    {item.file_name && (
+                      <span className="text-[10px] text-violet-600 flex items-center gap-1">
+                        <File className="w-3 h-3" />
+                        {item.file_name}
+                      </span>
+                    )}
                     {item.updated_date && (
                       <span className="text-[10px] text-slate-400">
                         Updated {new Date(item.updated_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
@@ -155,7 +191,62 @@ export default function RaiseReadiness() {
               </div>
 
               {isExpanded && (
-                <div className="px-3 pb-3 space-y-3 border-t border-slate-200 pt-3">
+                <div className="px-3 pb-3 space-y-3 border-t border-slate-100 pt-3 bg-slate-50/50">
+                  {/* File Upload Section */}
+                  <div>
+                    <label className="text-[10px] uppercase tracking-wider text-slate-500 mb-2 block">
+                      Document Upload
+                    </label>
+                    {item.file_url ? (
+                      <div className="flex items-center gap-2 p-2.5 bg-white border border-slate-200 rounded-lg">
+                        <File className="w-4 h-4 text-violet-600 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <a
+                            href={item.file_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-slate-800 hover:text-violet-600 font-medium block truncate"
+                          >
+                            {item.file_name}
+                          </a>
+                          {item.file_uploaded_date && (
+                            <p className="text-[10px] text-slate-400">
+                              Uploaded {new Date(item.file_uploaded_date).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })}
+                            </p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => handleFileRemove(item)}
+                          className="text-slate-400 hover:text-red-600 transition-colors flex-shrink-0"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="flex items-center justify-center gap-2 p-3 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:border-violet-400 hover:bg-violet-50/50 transition-all">
+                        <Upload className="w-4 h-4 text-slate-400" />
+                        <span className="text-sm text-slate-600">Upload file</span>
+                        <input
+                          type="file"
+                          className="hidden"
+                          accept=".pdf,.xlsx,.xls,.csv,.doc,.docx,.zip"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleFileUpload(item, file);
+                            e.target.value = "";
+                          }}
+                        />
+                      </label>
+                    )}
+                    <p className="text-[9px] text-slate-400 mt-1.5">
+                      Accepted: PDF, Excel, CSV, Word, ZIP
+                    </p>
+                  </div>
+
                   <div>
                     <label className="text-[10px] uppercase tracking-wider text-slate-500 mb-1.5 block">
                       Status
@@ -164,7 +255,7 @@ export default function RaiseReadiness() {
                       value={item.status || "Not Started"}
                       onValueChange={(v) => handleStatusChange(item, v)}
                     >
-                      <SelectTrigger className="bg-slate-50 border-slate-200 text-slate-800 text-sm">
+                      <SelectTrigger className="bg-white border-slate-200 text-slate-800 text-sm">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -184,7 +275,7 @@ export default function RaiseReadiness() {
                       value={item.notes || ""}
                       onChange={(e) => handleNotesChange(item, e.target.value)}
                       onBlur={(e) => handleNotesChange(item, e.target.value)}
-                      className="bg-slate-50 border-slate-200 text-slate-800 text-sm min-h-[60px]"
+                      className="bg-white border-slate-200 text-slate-800 text-sm min-h-[60px]"
                       placeholder="Add notes..."
                     />
                   </div>
