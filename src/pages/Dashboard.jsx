@@ -19,6 +19,7 @@ import CapitalFunnel from "../components/dashboard/CapitalFunnel";
 import RaiseReadiness from "../components/dashboard/RaiseReadiness";
 import RaiseMomentum from "../components/dashboard/RaiseMomentum";
 import SentimentOverview from "../components/dashboard/SentimentOverview";
+import IntroConversion from "../components/dashboard/IntroConversion";
 
 export default function Dashboard() {
   const { data: updates = [], isLoading: updatesLoading } = useQuery({
@@ -174,10 +175,13 @@ export default function Dashboard() {
             </div>
             <SentimentOverview investors={investors} />
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <CapitalFunnel investors={investors} />
-            <RaiseReadiness />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <CapitalFunnel investors={investors} />
+            </div>
+            <IntroConversion investors={investors} />
           </div>
+          <RaiseReadiness />
         </div>
       )}
     </div>

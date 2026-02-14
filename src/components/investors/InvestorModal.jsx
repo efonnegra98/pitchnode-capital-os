@@ -18,6 +18,9 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
     funnel_stage: "",
     sentiment: "",
     objections: [],
+    intro_source: "",
+    intro_strength: "",
+    intro_by: "",
     last_contact_date: "",
     next_action_date: "",
     next_action_type: "",
@@ -197,6 +200,44 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
               onChange={(e) => handleChange("last_contact_date", e.target.value)}
               className="mt-1"
             />
+          </div>
+
+          {/* Introduction Tracking */}
+          <div className="pt-4 border-t border-slate-200">
+            <h3 className="text-xs font-semibold text-violet-600 uppercase tracking-wider mb-3">Introduction Tracking</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Intro Strength</Label>
+                <Select value={form.intro_strength || ""} onValueChange={(v) => handleChange("intro_strength", v)}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["Cold", "Warm", "Direct"].map((s) => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Intro Source</Label>
+                <Input
+                  value={form.intro_source}
+                  onChange={(e) => handleChange("intro_source", e.target.value)}
+                  className="mt-1"
+                  placeholder="e.g., LP, advisor"
+                />
+              </div>
+            </div>
+            <div className="mt-4">
+              <Label>Intro Made By</Label>
+              <Input
+                value={form.intro_by}
+                onChange={(e) => handleChange("intro_by", e.target.value)}
+                className="mt-1"
+                placeholder="Name of person who made intro"
+              />
+            </div>
           </div>
 
           {/* Follow-Up Discipline */}
