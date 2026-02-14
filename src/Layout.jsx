@@ -29,7 +29,7 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     const checkAccess = async () => {
       // Skip check for public pages
-      if (currentPageName === "AccessPending" || currentPageName === "Gateway" || currentPageName === "AccessRequest") {
+      if (currentPageName === "AccessPending" || currentPageName === "Gateway" || currentPageName === "AccessRequest" || currentPageName === "Onboarding") {
         setCheckingAccess(false);
         return;
       }
@@ -46,6 +46,12 @@ export default function Layout({ children, currentPageName }) {
         
         if (profiles.length === 0 || !profiles[0].approved) {
           navigate(createPageUrl("AccessPending"));
+          return;
+        }
+
+        // Check if onboarding is completed
+        if (!profiles[0].onboarding_completed) {
+          navigate(createPageUrl("Onboarding"));
           return;
         }
 
