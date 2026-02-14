@@ -6,7 +6,7 @@ export default function UpdatePreview({ data, companyName }) {
   const previewRef = useRef(null);
 
   const formatCurrency = (val) => {
-    if (!val && val !== 0) return "N/A";
+    if (!val && val !== 0) return "—";
     return `$${Number(val).toLocaleString()}`;
   };
 
@@ -16,10 +16,10 @@ ${"=".repeat(50)}
 
 FINANCIAL METRICS
 • Revenue: ${formatCurrency(data.revenue)}
-• Revenue Growth: ${data.revenue_growth ? data.revenue_growth + "%" : "N/A"}
+• Revenue Growth: ${data.revenue_growth ? data.revenue_growth + "%" : "—"}
 • Burn Rate: ${formatCurrency(data.burn_rate)}
 • Cash Balance: ${formatCurrency(data.cash_balance)}
-• Runway: ${data.runway_months ? data.runway_months + " months" : "N/A"}
+• Runway: ${data.runway_months ? data.runway_months + " months" : "—"}
 
 HIGHLIGHTS
 ${data.highlights || "—"}
@@ -86,10 +86,10 @@ ${data.asks || "—"}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {[
               { label: "Revenue", value: formatCurrency(data.revenue) },
-              { label: "Growth", value: data.revenue_growth ? `${data.revenue_growth}%` : "N/A" },
+              { label: "Growth", value: data.revenue_growth ? `${data.revenue_growth}%` : "—" },
               { label: "Burn Rate", value: formatCurrency(data.burn_rate) },
               { label: "Cash", value: formatCurrency(data.cash_balance) },
-              { label: "Runway", value: data.runway_months ? `${data.runway_months} mo` : "N/A" },
+              { label: "Runway", value: data.runway_months ? `${data.runway_months} mo` : "—" },
             ].map(({ label, value }) => (
               <div key={label} className="bg-slate-50 rounded-lg p-3">
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</p>

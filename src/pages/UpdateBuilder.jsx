@@ -5,10 +5,12 @@ import { Send } from "lucide-react";
 import UpdateForm from "../components/update/UpdateForm";
 import UpdatePreview from "../components/update/UpdatePreview";
 import { useCompany } from "../components/useCompany";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function UpdateBuilder() {
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({});
   const queryClient = useQueryClient();
 
   const { company, companyId, isLoading: companyLoading } = useCompany();
@@ -22,49 +24,73 @@ export default function UpdateBuilder() {
   const isLoading = companyLoading || updatesLoading;
   const companyName = company?.name || "";
 
+  const createNewUpdateMutation = useMutation({
+    mutationFn: async () => {
+      const currentMonth = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
+      const newUpdate = await base44.entities.MonthlyUpdate.create({
+        company_id: companyId,
+        month: currentMonth,
+        status: "draft",
+      });
+      return newUpdate;
+    },
+    onSuccess: (newUpdate) => {
+      queryClient.invalidateQueries({ queryKey: ["monthly-updates", companyId] });
+      setEditingId(newUpdate.id);
+      setShowForm(true);
+    },
+  });
+
   const saveMutation = useMutation({
-    mutationFn: async (formData) => {
-      const payload = { ...formData, company_id: companyId, status: "draft" };
-      if (editingId) {
-        return base44.entities.MonthlyUpdate.update(editingId, payload);
+    mutationFn: async (data) => {
+      if (!editingId) {
+        throw new Error("No update ID");
       }
-      return base44.entities.MonthlyUpdate.create(payload);
+      return base44.entities.MonthlyUpdate.update(editingId, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["monthly-updates", companyId] });
-      setShowForm(false);
-      setEditingId(null);
+      toast.success("Draft saved successfully!");
+    },
+    onError: (error) => {
+      toast.error("Failed to save draft: " + error.message);
     },
   });
 
   const sendMutation = useMutation({
-    mutationFn: async (formData) => {
+    mutationFn: async (data) => {
+      if (!editingId) {
+        throw new Error("No update ID");
+      }
       const payload = {
-        ...formData,
-        company_id: companyId,
+        ...data,
         status: "sent",
         sent_date: new Date().toISOString().split("T")[0],
       };
-      if (editingId) {
-        return base44.entities.MonthlyUpdate.update(editingId, payload);
-      }
-      return base44.entities.MonthlyUpdate.create(payload);
+      return base44.entities.MonthlyUpdate.update(editingId, payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["monthly-updates", companyId] });
+      toast.success("Update marked as sent!");
       setShowForm(false);
       setEditingId(null);
     },
+    onError: (error) => {
+      toast.error("Failed to send update: " + error.message);
+    },
   });
+
+  const handleNewUpdate = () => {
+    createNewUpdateMutation.mutate();
+  };
 
   const handleEdit = (update) => {
     setEditingId(update.id);
+    setFormData(update);
     setShowForm(true);
   };
 
   const editingUpdate = editingId ? updates.find((u) => u.id === editingId) : null;
-
-  const [previewData, setPreviewData] = useState({});
 
   if (isLoading) {
     return (
@@ -80,14 +106,17 @@ export default function UpdateBuilder() {
   if (!showForm) {
     return (
       <div className="p-6 lg:p-10 max-w-5xl mx-auto">
+        <Toaster position="top-right" />
+        
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold text-foreground tracking-tight">Update Builder</h1>
             <p className="text-muted-foreground text-sm mt-1">Compose and send structured investor updates</p>
           </div>
           <button
-            onClick={() => { setEditingId(null); setShowForm(true); }}
-            className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-medium transition-all"
+            onClick={handleNewUpdate}
+            disabled={createNewUpdateMutation.isPending}
+            className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-medium transition-all disabled:opacity-50"
           >
             + New Update
           </button>
@@ -105,8 +134,9 @@ export default function UpdateBuilder() {
               Create your first investor update to share financial metrics and company progress.
             </p>
             <button
-              onClick={() => { setEditingId(null); setShowForm(true); }}
-              className="px-4 py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium transition-all"
+              onClick={handleNewUpdate}
+              disabled={createNewUpdateMutation.isPending}
+              className="px-4 py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium transition-all disabled:opacity-50"
             >
               Create First Update
             </button>
@@ -149,6 +179,8 @@ export default function UpdateBuilder() {
 
   return (
     <div className="p-6 lg:p-10 max-w-7xl mx-auto">
+      <Toaster position="top-right" />
+      
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-foreground tracking-tight">
           {editingId ? "Edit Update" : "New Update"}
@@ -163,10 +195,11 @@ export default function UpdateBuilder() {
           onSend={(d) => sendMutation.mutate(d)}
           onBack={() => { setShowForm(false); setEditingId(null); }}
           isSaving={saveMutation.isPending || sendMutation.isPending}
+          onFormChange={setFormData}
         />
         <div className="hidden xl:block">
           <UpdatePreview
-            data={editingUpdate || {}}
+            data={formData}
             companyName={companyName}
           />
         </div>

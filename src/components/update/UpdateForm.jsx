@@ -13,7 +13,7 @@ const MONTHS = [
 const currentYear = new Date().getFullYear();
 const currentMonth = MONTHS[new Date().getMonth()];
 
-export default function UpdateForm({ initialData, onSave, onSend, onBack, isSaving }) {
+export default function UpdateForm({ initialData, onSave, onSend, onBack, isSaving, onFormChange }) {
   const [form, setForm] = useState({
     month: `${currentMonth} ${currentYear}`,
     revenue: "",
@@ -32,6 +32,12 @@ export default function UpdateForm({ initialData, onSave, onSend, onBack, isSavi
   useEffect(() => {
     if (initialData) setForm(prev => ({ ...prev, ...initialData }));
   }, [initialData]);
+
+  useEffect(() => {
+    if (onFormChange) {
+      onFormChange(form);
+    }
+  }, [form, onFormChange]);
 
   const handleChange = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
