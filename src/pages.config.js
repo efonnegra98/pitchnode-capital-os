@@ -54,6 +54,7 @@ import UpdateArchive from './pages/UpdateArchive';
 import UpdateBuilder from './pages/UpdateBuilder';
 import Gateway from './pages/Gateway';
 import AccessRequest from './pages/AccessRequest';
+import AccessPending from './pages/AccessPending';
 import __Layout from './Layout.jsx';
 
 
@@ -65,6 +66,7 @@ export const PAGES = {
     "UpdateBuilder": UpdateBuilder,
     "Gateway": Gateway,
     "AccessRequest": AccessRequest,
+    "AccessPending": AccessPending,
 }
 
 export const pagesConfig = {

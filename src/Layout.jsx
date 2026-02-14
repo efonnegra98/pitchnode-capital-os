@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./utils";
+import { base44 } from "@/api/base44Client";
 import {
   LayoutDashboard,
   Send,
@@ -22,6 +23,49 @@ const navItems = [
 
 export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [checkingAccess, setCheckingAccess] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      // Skip check for public pages
+      if (currentPageName === "AccessPending" || currentPageName === "Gateway" || currentPageName === "AccessRequest") {
+        setCheckingAccess(false);
+        return;
+      }
+
+      try {
+        const user = await base44.auth.me();
+        if (!user) {
+          setCheckingAccess(false);
+          return;
+        }
+
+        // Check if user has an approved profile
+        const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+        
+        if (profiles.length === 0 || !profiles[0].approved) {
+          navigate(createPageUrl("AccessPending"));
+          return;
+        }
+
+        setCheckingAccess(false);
+      } catch (error) {
+        console.error("Access check error:", error);
+        setCheckingAccess(false);
+      }
+    };
+
+    checkAccess();
+  }, [currentPageName, navigate]);
+
+  if (checkingAccess) {
+    return (
+      <div className="min-h-screen bg-[#F4F6FB] flex items-center justify-center">
+        <div className="text-slate-400">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F4F6FB] text-slate-800 flex">
