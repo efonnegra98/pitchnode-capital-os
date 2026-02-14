@@ -14,6 +14,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 export default function Onboarding() {
   const [step, setStep] = useState(1);
   const [investors, setInvestors] = useState([]);
+  const [companyId, setCompanyId] = useState(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -45,19 +46,15 @@ export default function Onboarding() {
     queryFn: () => base44.auth.me(),
   });
 
-  const { data: settings } = useQuery({
-    queryKey: ["companySettings"],
-    queryFn: () => base44.entities.CompanySettings.list().then(s => s[0] || {}),
+  const createCompanyMutation = useMutation({
+    mutationFn: (data) => base44.entities.Company.create(data),
+    onSuccess: (company) => {
+      setCompanyId(company.id);
+    },
   });
 
-  const saveSettingsMutation = useMutation({
-    mutationFn: (data) => {
-      if (settings?.id) {
-        return base44.entities.CompanySettings.update(settings.id, data);
-      }
-      return base44.entities.CompanySettings.create(data);
-    },
-    onSuccess: () => queryClient.invalidateQueries(["companySettings"]),
+  const updateCompanyMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Company.update(id, data),
   });
 
   const createInvestorMutation = useMutation({
@@ -83,26 +80,43 @@ export default function Onboarding() {
   const progress = (step / 4) * 100;
 
   const handleStep1Next = async () => {
-    await saveSettingsMutation.mutateAsync({
-      company_name: companyForm.company_name,
+    const company = await createCompanyMutation.mutateAsync({
+      name: companyForm.company_name,
       founder_name: companyForm.founder_name,
       founder_title: companyForm.founder_title,
     });
+    
+    // Create UserProfile linked to company
+    const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+    if (profiles[0]) {
+      await base44.entities.UserProfile.update(profiles[0].id, { company_id: company.id });
+    } else {
+      await base44.entities.UserProfile.create({
+        user_email: user.email,
+        company_id: company.id,
+        approved: true,
+        onboarding_completed: false,
+      });
+    }
+    
     setStep(2);
   };
 
   const handleStep2Next = async () => {
-    await saveSettingsMutation.mutateAsync({
-      raise_mode: companyForm.raise_mode,
-      target_raise_amount: Number(companyForm.target_raise_amount) || null,
-      round_type: companyForm.round_type || null,
+    await updateCompanyMutation.mutateAsync({
+      id: companyId,
+      data: {
+        raise_mode: companyForm.raise_mode,
+        target_raise_amount: Number(companyForm.target_raise_amount) || null,
+        round_type: companyForm.round_type || null,
+      }
     });
     setStep(3);
   };
 
   const handleAddInvestor = async () => {
-    if (!investorForm.name) return;
-    await createInvestorMutation.mutateAsync(investorForm);
+    if (!investorForm.name || !companyId) return;
+    await createInvestorMutation.mutateAsync({ ...investorForm, company_id: companyId });
     setInvestors([...investors, investorForm]);
     setInvestorForm({ name: "", firm: "", email: "", status: "Warm" });
   };
@@ -112,9 +126,10 @@ export default function Onboarding() {
   };
 
   const handleStep4Next = async () => {
-    if (updateForm.month) {
+    if (updateForm.month && companyId) {
       await createUpdateMutation.mutateAsync({
         ...updateForm,
+        company_id: companyId,
         revenue: Number(updateForm.revenue) || null,
         burn_rate: Number(updateForm.burn_rate) || null,
         status: "draft",
