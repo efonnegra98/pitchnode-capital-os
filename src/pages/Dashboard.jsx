@@ -143,58 +143,60 @@ export default function Dashboard() {
 
           {/* Metric Cards */}
           {hasUpdates ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <MetricCard
-          label="Monthly Revenue"
-          value={formatCurrency(latestUpdate?.revenue)}
-          icon={DollarSign}
-          trend={revTrend?.value}
-          trendDirection={revTrend?.direction}
-          subtext="vs last month"
-        />
-        <MetricCard
-          label="Revenue Growth"
-          value={latestUpdate?.revenue_growth ? `${latestUpdate.revenue_growth}%` : "—"}
-          icon={TrendingUp}
-          trendDirection={latestUpdate?.revenue_growth > 0 ? 'up' : latestUpdate?.revenue_growth < 0 ? 'down' : null}
-        />
-        <MetricCard
-          label="Burn Rate"
-          value={formatCurrency(latestUpdate?.burn_rate)}
-          icon={Flame}
-          trend={burnTrend?.value}
-          trendDirection={burnTrend?.direction === 'up' ? 'down' : burnTrend?.direction === 'down' ? 'up' : null}
-          subtext="vs last month"
-        />
-        <MetricCard
-          label="Runway"
-          value={latestUpdate?.runway_months ? `${latestUpdate.runway_months} mo` : "—"}
-          icon={Clock}
-        />
-      </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <MetricCard
+                  label="Monthly Revenue"
+                  value={formatCurrency(latestUpdate?.revenue)}
+                  icon={DollarSign}
+                  trend={revTrend?.value}
+                  trendDirection={revTrend?.direction}
+                  subtext="vs last month"
+                />
+                <MetricCard
+                  label="Revenue Growth"
+                  value={latestUpdate?.revenue_growth ? `${latestUpdate.revenue_growth}%` : "—"}
+                  icon={TrendingUp}
+                  trendDirection={latestUpdate?.revenue_growth > 0 ? 'up' : latestUpdate?.revenue_growth < 0 ? 'down' : null}
+                />
+                <MetricCard
+                  label="Burn Rate"
+                  value={formatCurrency(latestUpdate?.burn_rate)}
+                  icon={Flame}
+                  trend={burnTrend?.value}
+                  trendDirection={burnTrend?.direction === 'up' ? 'down' : burnTrend?.direction === 'down' ? 'up' : null}
+                  subtext="vs last month"
+                />
+                <MetricCard
+                  label="Runway"
+                  value={latestUpdate?.runway_months ? `${latestUpdate.runway_months} mo` : "—"}
+                  icon={Clock}
+                />
+              </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <MetricCard
-          label="Cash Balance"
-          value={formatCurrency(latestUpdate?.cash_balance)}
-          icon={Wallet}
-        />
-        <MetricCard
-          label="Active Investors"
-          value={activeInvestors.length}
-          icon={Users}
-          subtext={`of ${investors.length} total`}
-        />
-        <MetricCard
-          label="Last Update Sent"
-          value={lastSent?.sent_date
-            ? new Date(lastSent.sent_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-            : "—"
-          }
-          icon={Send}
-          subtext={lastSent?.month}
-        />
-          </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <MetricCard
+                  label="Cash Balance"
+                  value={formatCurrency(latestUpdate?.cash_balance)}
+                  icon={Wallet}
+                />
+                <MetricCard
+                  label="Active Investors"
+                  value={activeInvestors.length}
+                  icon={Users}
+                  subtext={`of ${investors.length} total`}
+                />
+                <MetricCard
+                  label="Last Update Sent"
+                  value={lastSent?.sent_date
+                    ? new Date(lastSent.sent_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                    : "—"
+                  }
+                  icon={Send}
+                  subtext={lastSent?.month}
+                />
+              </div>
+            </>
           ) : (
             <div className="mb-8">
               <EmptyState
