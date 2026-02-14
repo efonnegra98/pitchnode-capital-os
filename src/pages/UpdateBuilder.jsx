@@ -1,0 +1,160 @@
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import UpdateForm from "../components/update/UpdateForm";
+import UpdatePreview from "../components/update/UpdatePreview";
+
+export default function UpdateBuilder() {
+  const [editingId, setEditingId] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const queryClient = useQueryClient();
+
+  const { data: updates = [], isLoading } = useQuery({
+    queryKey: ["monthly-updates"],
+    queryFn: () => base44.entities.MonthlyUpdate.list("-created_date", 50),
+  });
+
+  const { data: settings } = useQuery({
+    queryKey: ["company-settings"],
+    queryFn: () => base44.entities.CompanySettings.list(),
+  });
+
+  const companyName = settings?.[0]?.company_name || "";
+
+  const saveMutation = useMutation({
+    mutationFn: async (formData) => {
+      const payload = { ...formData, status: "draft" };
+      if (editingId) {
+        return base44.entities.MonthlyUpdate.update(editingId, payload);
+      }
+      return base44.entities.MonthlyUpdate.create(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["monthly-updates"] });
+      setShowForm(false);
+      setEditingId(null);
+    },
+  });
+
+  const sendMutation = useMutation({
+    mutationFn: async (formData) => {
+      const payload = {
+        ...formData,
+        status: "sent",
+        sent_date: new Date().toISOString().split("T")[0],
+      };
+      if (editingId) {
+        return base44.entities.MonthlyUpdate.update(editingId, payload);
+      }
+      return base44.entities.MonthlyUpdate.create(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["monthly-updates"] });
+      setShowForm(false);
+      setEditingId(null);
+    },
+  });
+
+  const handleEdit = (update) => {
+    setEditingId(update.id);
+    setShowForm(true);
+  };
+
+  const editingUpdate = editingId ? updates.find((u) => u.id === editingId) : null;
+
+  const [previewData, setPreviewData] = useState({});
+
+  if (isLoading) {
+    return (
+      <div className="p-6 lg:p-10">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 w-48 bg-white/5 rounded-lg" />
+          <div className="h-64 bg-white/5 rounded-xl" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!showForm) {
+    return (
+      <div className="p-6 lg:p-10 max-w-5xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-white tracking-tight">Update Builder</h1>
+            <p className="text-white/30 text-sm mt-1">Compose and send structured investor updates</p>
+          </div>
+          <button
+            onClick={() => { setEditingId(null); setShowForm(true); }}
+            className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-medium transition-all"
+          >
+            + New Update
+          </button>
+        </div>
+
+        {updates.length === 0 ? (
+          <div className="glass rounded-xl p-12 text-center">
+            <p className="text-white/30 text-sm">No updates yet. Create your first investor update.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {updates.map((update) => (
+              <button
+                key={update.id}
+                onClick={() => handleEdit(update)}
+                className="w-full glass rounded-xl p-5 flex items-center justify-between hover:bg-white/[0.05] transition-all text-left group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-2 h-2 rounded-full ${update.status === 'sent' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                  <div>
+                    <p className="text-white font-medium text-sm">{update.month}</p>
+                    <p className="text-white/25 text-xs mt-0.5">
+                      {update.status === 'sent'
+                        ? `Sent ${update.sent_date ? new Date(update.sent_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}`
+                        : 'Draft'
+                      }
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-6">
+                  {update.revenue && (
+                    <span className="text-white/40 text-xs">
+                      Rev: ${(update.revenue / 1000).toFixed(1)}k
+                    </span>
+                  )}
+                  <span className="text-white/20 group-hover:text-white/40 text-xs transition-colors">Edit →</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 lg:p-10 max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-white tracking-tight">
+          {editingId ? "Edit Update" : "New Update"}
+        </h1>
+        <p className="text-white/30 text-sm mt-1">Compose your monthly investor update</p>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <UpdateForm
+          initialData={editingUpdate}
+          onSave={(d) => saveMutation.mutate(d)}
+          onSend={(d) => sendMutation.mutate(d)}
+          onBack={() => { setShowForm(false); setEditingId(null); }}
+          isSaving={saveMutation.isPending || sendMutation.isPending}
+        />
+        <div className="hidden xl:block">
+          <UpdatePreview
+            data={editingUpdate || {}}
+            companyName={companyName}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
