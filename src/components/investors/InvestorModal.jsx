@@ -15,6 +15,7 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
     check_size: "",
     relationship_strength: "",
     status: "",
+    funnel_stage: "",
     last_contact_date: "",
     next_action_date: "",
     next_action_type: "",
@@ -128,6 +129,20 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div>
+            <Label className="text-white/40 text-xs">Funnel Stage</Label>
+            <Select value={form.funnel_stage || ""} onValueChange={(v) => handleChange("funnel_stage", v)}>
+              <SelectTrigger className="mt-1 bg-white/[0.04] border-white/[0.08] text-white">
+                <SelectValue placeholder="Select stage" />
+              </SelectTrigger>
+              <SelectContent>
+                {["Identified", "Contacted", "Intro Call", "Partner Meeting", "Due Diligence", "Term Sheet"].map((s) => (
+                  <SelectItem key={s} value={s}>{s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>

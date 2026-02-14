@@ -15,6 +15,7 @@ import KPIChart from "../components/dashboard/KPIChart";
 import SnapshotSummary from "../components/dashboard/SnapshotSummary";
 import RaiseOverview from "../components/dashboard/RaiseOverview";
 import ActionRequired from "../components/dashboard/ActionRequired";
+import CapitalFunnel from "../components/dashboard/CapitalFunnel";
 
 export default function Dashboard() {
   const { data: updates = [], isLoading: updatesLoading } = useQuery({
@@ -160,6 +161,13 @@ export default function Dashboard() {
         </div>
         <SnapshotSummary latestUpdate={latestUpdate} investorCount={activeInvestors.length} />
       </div>
+
+      {/* Capital Funnel - Only shown when raise_mode is enabled */}
+      {companySettings.raise_mode && (
+        <div className="mt-6">
+          <CapitalFunnel investors={investors} />
+        </div>
+      )}
     </div>
   );
 }
