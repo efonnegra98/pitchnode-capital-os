@@ -15,7 +15,7 @@ export default function RaiseOverview({ settings }) {
   const totalPercent = target > 0 ? Math.min(100, (totalWithSoft / target) * 100) : 0;
 
   const formatCurrency = (val) => {
-    if (!val && val !== 0) return "$0";
+    if (!val && val !== 0) return "—";
     if (val >= 1000000) return `$${(val / 1000000).toFixed(1)}M`;
     if (val >= 1000) return `$${(val / 1000).toFixed(0)}k`;
     return `$${val.toLocaleString()}`;
