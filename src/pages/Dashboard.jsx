@@ -1,6 +1,7 @@
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
+import { useCompany } from "../hooks/useCompany";
 import {
   DollarSign,
   TrendingUp,
@@ -23,24 +24,21 @@ import IntroConversion from "../components/dashboard/IntroConversion";
 import EmptyState from "../components/dashboard/EmptyState";
 
 export default function Dashboard() {
+  const { company, companyId, isLoading: companyLoading } = useCompany();
+
   const { data: updates = [], isLoading: updatesLoading } = useQuery({
-    queryKey: ["monthly-updates"],
-    queryFn: () => base44.entities.MonthlyUpdate.list("-created_date", 50),
+    queryKey: ["monthly-updates", companyId],
+    queryFn: () => base44.entities.MonthlyUpdate.filter({ company_id: companyId }),
+    enabled: !!companyId,
   });
 
   const { data: investors = [], isLoading: investorsLoading } = useQuery({
-    queryKey: ["investors"],
-    queryFn: () => base44.entities.Investor.list(),
+    queryKey: ["investors", companyId],
+    queryFn: () => base44.entities.Investor.filter({ company_id: companyId }),
+    enabled: !!companyId,
   });
 
-  const { data: settings } = useQuery({
-    queryKey: ["company-settings"],
-    queryFn: () => base44.entities.CompanySettings.list(),
-  });
-
-  const companySettings = settings?.[0] || {};
-
-  const isLoading = updatesLoading || investorsLoading;
+  const isLoading = companyLoading || updatesLoading || investorsLoading;
 
   const sortedUpdates = [...updates].sort((a, b) => {
     return new Date(a.created_date) - new Date(b.created_date);
@@ -120,7 +118,7 @@ export default function Dashboard() {
               actionLabel="Add Investors"
               actionPage="Investors"
             />
-            {companySettings.raise_mode && (
+            {company?.raise_mode && (
               <EmptyState
                 icon={TrendingUp}
                 title="Raise Readiness"
@@ -134,8 +132,8 @@ export default function Dashboard() {
       ) : (
         <>
           {/* Raise Overview - Only shown when raise_mode is enabled */}
-          {companySettings.raise_mode && (
-            <RaiseOverview settings={companySettings} />
+          {company?.raise_mode && (
+            <RaiseOverview settings={company} />
           )}
 
           {/* Action Required */}
@@ -220,7 +218,7 @@ export default function Dashboard() {
           )}
 
           {/* Capital Funnel - Only shown when raise_mode is enabled */}
-          {companySettings.raise_mode && hasInvestors && (
+          {company?.raise_mode && hasInvestors && (
             <div className="mt-6 space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
@@ -238,7 +236,7 @@ export default function Dashboard() {
             </div>
           )}
 
-          {companySettings.raise_mode && !hasInvestors && (
+          {company?.raise_mode && !hasInvestors && (
             <div className="mt-6">
               <EmptyState
                 icon={Users}
