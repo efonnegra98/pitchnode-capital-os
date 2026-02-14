@@ -52,6 +52,8 @@ import Investors from './pages/Investors';
 import Settings from './pages/Settings';
 import UpdateArchive from './pages/UpdateArchive';
 import UpdateBuilder from './pages/UpdateBuilder';
+import Gateway from './pages/Gateway';
+import AccessRequest from './pages/AccessRequest';
 import __Layout from './Layout.jsx';
 
 
@@ -61,6 +63,8 @@ export const PAGES = {
     "Settings": Settings,
     "UpdateArchive": UpdateArchive,
     "UpdateBuilder": UpdateBuilder,
+    "Gateway": Gateway,
+    "AccessRequest": AccessRequest,
 }
 
 export const pagesConfig = {
