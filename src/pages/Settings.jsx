@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Save, Upload, CreditCard, TrendingUp } from "lucide-react";
+import { Save, Upload, CreditCard, TrendingUp, Database } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import toast, { Toaster } from "react-hot-toast";
 
 const ACCENT_OPTIONS = [
   { label: "Violet", value: "#7C3AED" },
@@ -72,10 +73,19 @@ export default function Settings() {
         round_type: formData.round_type,
         target_close_date: formData.target_close_date,
       };
+      
+      if (!companyId) {
+        throw new Error("No company ID found");
+      }
+      
       return base44.entities.Company.update(companyId, payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["company", companyId] });
+      toast.success("Settings saved successfully!");
+    },
+    onError: (error) => {
+      toast.error("Failed to save settings: " + error.message);
     },
   });
 
@@ -108,6 +118,8 @@ export default function Settings() {
 
   return (
     <div className="p-6 lg:p-10 max-w-3xl mx-auto">
+      <Toaster position="top-right" />
+      
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-foreground tracking-tight">Settings</h1>
         <p className="text-muted-foreground text-sm mt-1">Configure your company profile and preferences</p>
@@ -297,6 +309,40 @@ export default function Settings() {
             <div>
               <p className="text-foreground text-sm font-medium">Pro Plan — Coming Soon</p>
               <p className="text-muted-foreground text-xs mt-0.5">Stripe billing integration will be available in a future release.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Debug Data Status */}
+        <div className="glass rounded-xl p-6 bg-slate-50/50">
+          <div className="flex items-center gap-2 mb-4">
+            <Database className="w-4 h-4 text-violet-600" />
+            <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">Data Status (Debug)</h2>
+          </div>
+          <div className="space-y-2 text-xs font-mono">
+            <div className="flex justify-between py-1.5 border-b border-slate-200">
+              <span className="text-slate-500">Company Profile ID:</span>
+              <span className="text-slate-800 font-semibold">{companyId || "—"}</span>
+            </div>
+            <div className="flex justify-between py-1.5 border-b border-slate-200">
+              <span className="text-slate-500">Last Updated:</span>
+              <span className="text-slate-800">{company?.updated_date ? new Date(company.updated_date).toLocaleString() : "—"}</span>
+            </div>
+            <div className="flex justify-between py-1.5 border-b border-slate-200">
+              <span className="text-slate-500">Target Raise:</span>
+              <span className="text-slate-800">${company?.target_raise_amount?.toLocaleString() || "—"}</span>
+            </div>
+            <div className="flex justify-between py-1.5 border-b border-slate-200">
+              <span className="text-slate-500">Capital Committed:</span>
+              <span className="text-slate-800">${company?.capital_committed?.toLocaleString() || "—"}</span>
+            </div>
+            <div className="flex justify-between py-1.5 border-b border-slate-200">
+              <span className="text-slate-500">Soft Commitments:</span>
+              <span className="text-slate-800">${company?.soft_commitments?.toLocaleString() || "—"}</span>
+            </div>
+            <div className="flex justify-between py-1.5">
+              <span className="text-slate-500">Target Close Date:</span>
+              <span className="text-slate-800">{company?.target_close_date || "—"}</span>
             </div>
           </div>
         </div>

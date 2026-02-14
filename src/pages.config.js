@@ -47,26 +47,26 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import AccessRequest from './pages/AccessRequest';
 import Dashboard from './pages/Dashboard';
+import Gateway from './pages/Gateway';
 import Investors from './pages/Investors';
+import Onboarding from './pages/Onboarding';
 import Settings from './pages/Settings';
 import UpdateArchive from './pages/UpdateArchive';
 import UpdateBuilder from './pages/UpdateBuilder';
-import Gateway from './pages/Gateway';
-import AccessRequest from './pages/AccessRequest';
-import Onboarding from './pages/Onboarding';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AccessRequest": AccessRequest,
     "Dashboard": Dashboard,
+    "Gateway": Gateway,
     "Investors": Investors,
+    "Onboarding": Onboarding,
     "Settings": Settings,
     "UpdateArchive": UpdateArchive,
     "UpdateBuilder": UpdateBuilder,
-    "Gateway": Gateway,
-    "AccessRequest": AccessRequest,
-    "Onboarding": Onboarding,
 }
 
 export const pagesConfig = {
