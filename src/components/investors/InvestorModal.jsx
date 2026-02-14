@@ -16,6 +16,9 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
     relationship_strength: "",
     status: "",
     last_contact_date: "",
+    next_action_date: "",
+    next_action_type: "",
+    cadence_status: "",
     notes: "",
     ...investor,
   });
@@ -135,6 +138,48 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
               onChange={(e) => handleChange("last_contact_date", e.target.value)}
               className="mt-1 bg-white/[0.04] border-white/[0.08] text-white"
             />
+          </div>
+
+          {/* Follow-Up Discipline */}
+          <div className="pt-4 border-t border-white/[0.06]">
+            <h3 className="text-xs font-semibold text-violet-300/60 uppercase tracking-wider mb-3">Follow-Up Discipline</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-white/40 text-xs">Next Action Date</Label>
+                <Input
+                  type="date"
+                  value={form.next_action_date}
+                  onChange={(e) => handleChange("next_action_date", e.target.value)}
+                  className="mt-1 bg-white/[0.04] border-white/[0.08] text-white"
+                />
+              </div>
+              <div>
+                <Label className="text-white/40 text-xs">Cadence Status</Label>
+                <Select value={form.cadence_status || ""} onValueChange={(v) => handleChange("cadence_status", v)}>
+                  <SelectTrigger className="mt-1 bg-white/[0.04] border-white/[0.08] text-white">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["On Track", "Overdue", "Waiting", "Closed"].map((s) => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="mt-4">
+              <Label className="text-white/40 text-xs">Next Action Type</Label>
+              <Select value={form.next_action_type || ""} onValueChange={(v) => handleChange("next_action_type", v)}>
+                <SelectTrigger className="mt-1 bg-white/[0.04] border-white/[0.08] text-white">
+                  <SelectValue placeholder="Select action type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {["Follow-up Email", "Send Materials", "Schedule Meeting", "Partner Intro", "Waiting on Response", "Data Room Access", "Term Sheet Review"].map((a) => (
+                    <SelectItem key={a} value={a}>{a}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div>

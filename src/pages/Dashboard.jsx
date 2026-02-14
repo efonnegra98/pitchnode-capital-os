@@ -14,6 +14,7 @@ import MetricCard from "../components/dashboard/MetricCard";
 import KPIChart from "../components/dashboard/KPIChart";
 import SnapshotSummary from "../components/dashboard/SnapshotSummary";
 import RaiseOverview from "../components/dashboard/RaiseOverview";
+import ActionRequired from "../components/dashboard/ActionRequired";
 
 export default function Dashboard() {
   const { data: updates = [], isLoading: updatesLoading } = useQuery({
@@ -94,6 +95,9 @@ export default function Dashboard() {
       {companySettings.raise_mode && (
         <RaiseOverview settings={companySettings} />
       )}
+
+      {/* Action Required */}
+      <ActionRequired investors={investors} />
 
       {/* Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

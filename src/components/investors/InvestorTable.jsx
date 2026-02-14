@@ -15,6 +15,13 @@ const strengthColors = {
   Champion: "text-emerald-400/70",
 };
 
+const cadenceColors = {
+  "On Track": "text-emerald-400/70",
+  "Overdue": "text-red-400/70",
+  "Waiting": "text-amber-400/70",
+  "Closed": "text-white/30",
+};
+
 export default function InvestorTable({ investors, sortField, sortDir, onSort, onEdit }) {
   const SortHeader = ({ field, children }) => (
     <th
@@ -46,10 +53,10 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
             <tr className="border-b border-white/[0.06]">
               <SortHeader field="name">Name</SortHeader>
               <SortHeader field="firm">Firm</SortHeader>
-              <SortHeader field="stage_focus">Stage</SortHeader>
-              <SortHeader field="check_size">Check Size</SortHeader>
-              <SortHeader field="relationship_strength">Strength</SortHeader>
               <SortHeader field="status">Status</SortHeader>
+              <SortHeader field="relationship_strength">Strength</SortHeader>
+              <SortHeader field="next_action_date">Next Action</SortHeader>
+              <SortHeader field="cadence_status">Cadence</SortHeader>
               <SortHeader field="last_contact_date">Last Contact</SortHeader>
             </tr>
           </thead>
@@ -62,17 +69,34 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
               >
                 <td className="py-3 px-4 font-medium text-white">{inv.name}</td>
                 <td className="py-3 px-4 text-white/50">{inv.firm || "—"}</td>
-                <td className="py-3 px-4 text-white/40 text-xs">{inv.stage_focus || "—"}</td>
-                <td className="py-3 px-4 text-white/40 text-xs">{inv.check_size || "—"}</td>
+                <td className="py-3 px-4">
+                  {inv.status ? (
+                    <span className={`text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full border ${statusColors[inv.status] || ''}`}>
+                      {inv.status}
+                    </span>
+                  ) : "—"}
+                </td>
                 <td className="py-3 px-4">
                   <span className={`text-xs font-medium ${strengthColors[inv.relationship_strength] || 'text-white/30'}`}>
                     {inv.relationship_strength || "—"}
                   </span>
                 </td>
                 <td className="py-3 px-4">
-                  {inv.status ? (
-                    <span className={`text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full border ${statusColors[inv.status] || ''}`}>
-                      {inv.status}
+                  {inv.next_action_date ? (
+                    <div>
+                      <p className="text-white/60 text-xs">
+                        {new Date(inv.next_action_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </p>
+                      {inv.next_action_type && (
+                        <p className="text-white/25 text-[10px] mt-0.5">{inv.next_action_type}</p>
+                      )}
+                    </div>
+                  ) : "—"}
+                </td>
+                <td className="py-3 px-4">
+                  {inv.cadence_status ? (
+                    <span className={`text-xs font-medium ${cadenceColors[inv.cadence_status] || 'text-white/30'}`}>
+                      {inv.cadence_status}
                     </span>
                   ) : "—"}
                 </td>
