@@ -29,7 +29,7 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     const checkAccess = async () => {
       // Skip check for public pages
-      if (currentPageName === "AccessPending" || currentPageName === "Gateway" || currentPageName === "AccessRequest" || currentPageName === "Onboarding") {
+      if (currentPageName === "Gateway" || currentPageName === "AccessRequest" || currentPageName === "Onboarding") {
         setCheckingAccess(false);
         return;
       }
@@ -41,11 +41,17 @@ export default function Layout({ children, currentPageName }) {
           return;
         }
 
-        // Check if user has an approved profile
+        // Check if user has a profile and if onboarding is completed
         const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
         
-        if (profiles.length === 0 || !profiles[0].approved) {
-          navigate(createPageUrl("AccessPending"));
+        // If no profile exists, create one and redirect to onboarding
+        if (profiles.length === 0) {
+          await base44.entities.UserProfile.create({
+            user_email: user.email,
+            approved: true,
+            onboarding_completed: false,
+          });
+          navigate(createPageUrl("Onboarding"));
           return;
         }
 
