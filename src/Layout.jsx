@@ -44,19 +44,20 @@ export default function Layout({ children, currentPageName }) {
         // Check if user has a profile and if onboarding is completed
         const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
         
-        // If no profile exists, create one and redirect to onboarding
+        // If no profile exists, redirect to onboarding
         if (profiles.length === 0) {
-          await base44.entities.UserProfile.create({
-            user_email: user.email,
-            approved: true,
-            onboarding_completed: false,
-          });
           navigate(createPageUrl("Onboarding"));
           return;
         }
 
         // Check if onboarding is completed
         if (!profiles[0].onboarding_completed) {
+          navigate(createPageUrl("Onboarding"));
+          return;
+        }
+
+        // Verify user has a company_id
+        if (!profiles[0].company_id) {
           navigate(createPageUrl("Onboarding"));
           return;
         }
