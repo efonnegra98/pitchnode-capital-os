@@ -5,6 +5,7 @@ import { CheckCircle2, Circle, Clock, FileText, Upload, File, X } from "lucide-r
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { useCompany } from "../useCompany";
 
 const DEFAULT_ITEMS = [
   { item_name: "Pitch Deck Finalized", order: 1 },
@@ -32,24 +33,27 @@ const statusColors = {
 export default function RaiseReadiness() {
   const queryClient = useQueryClient();
   const [expandedId, setExpandedId] = useState(null);
+  const { companyId } = useCompany();
 
   const { data: items = [], isLoading } = useQuery({
-    queryKey: ["raise-readiness"],
+    queryKey: ["raise-readiness", companyId],
     queryFn: async () => {
-      const existing = await base44.entities.RaiseReadinessItem.list();
+      const existing = await base44.entities.RaiseReadinessItem.filter({ company_id: companyId });
       if (existing.length === 0) {
         // Initialize with default items
-        await base44.entities.RaiseReadinessItem.bulkCreate(DEFAULT_ITEMS);
-        return await base44.entities.RaiseReadinessItem.list();
+        const itemsWithCompanyId = DEFAULT_ITEMS.map(item => ({ ...item, company_id: companyId }));
+        await base44.entities.RaiseReadinessItem.bulkCreate(itemsWithCompanyId);
+        return await base44.entities.RaiseReadinessItem.filter({ company_id: companyId });
       }
       return existing;
     },
+    enabled: !!companyId,
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.RaiseReadinessItem.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["raise-readiness"] });
+      queryClient.invalidateQueries({ queryKey: ["raise-readiness", companyId] });
     },
   });
 
