@@ -18,6 +18,7 @@ import ActionRequired from "../components/dashboard/ActionRequired";
 import CapitalFunnel from "../components/dashboard/CapitalFunnel";
 import RaiseReadiness from "../components/dashboard/RaiseReadiness";
 import RaiseMomentum from "../components/dashboard/RaiseMomentum";
+import SentimentOverview from "../components/dashboard/SentimentOverview";
 
 export default function Dashboard() {
   const { data: updates = [], isLoading: updatesLoading } = useQuery({
@@ -167,7 +168,12 @@ export default function Dashboard() {
       {/* Capital Funnel - Only shown when raise_mode is enabled */}
       {companySettings.raise_mode && (
         <div className="mt-6 space-y-6">
-          <RaiseMomentum investors={investors} />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <RaiseMomentum investors={investors} />
+            </div>
+            <SentimentOverview investors={investors} />
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <CapitalFunnel investors={investors} />
             <RaiseReadiness />

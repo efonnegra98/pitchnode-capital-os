@@ -16,6 +16,8 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
     relationship_strength: "",
     status: "",
     funnel_stage: "",
+    sentiment: "",
+    objections: [],
     last_contact_date: "",
     next_action_date: "",
     next_action_type: "",
@@ -30,6 +32,14 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
 
   const handleChange = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const toggleObjection = (objection) => {
+    const current = form.objections || [];
+    const updated = current.includes(objection)
+      ? current.filter(o => o !== objection)
+      : [...current, objection];
+    setForm(prev => ({ ...prev, objections: updated }));
   };
 
   return (
@@ -143,6 +153,40 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <Label>Investor Sentiment</Label>
+            <Select value={form.sentiment || ""} onValueChange={(v) => handleChange("sentiment", v)}>
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="Select sentiment" />
+              </SelectTrigger>
+              <SelectContent>
+                {["Skeptical", "Curious", "Positive", "Champion", "Neutral"].map((s) => (
+                  <SelectItem key={s} value={s}>{s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label>Objections / Concerns</Label>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {["Valuation", "Market Risk", "Traction", "Team", "Timing"].map((objection) => (
+                <button
+                  key={objection}
+                  type="button"
+                  onClick={() => toggleObjection(objection)}
+                  className={`px-3 py-1.5 text-xs rounded-lg border transition-all ${
+                    (form.objections || []).includes(objection)
+                      ? "bg-violet-50 border-violet-300 text-violet-700"
+                      : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  {objection}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div>
