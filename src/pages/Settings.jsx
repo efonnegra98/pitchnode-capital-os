@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Save, Upload, CreditCard } from "lucide-react";
+import { Save, Upload, CreditCard, TrendingUp } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const ACCENT_OPTIONS = [
   { label: "Violet", value: "#7C3AED" },
@@ -32,6 +33,12 @@ export default function Settings() {
     accent_color: "#7C3AED",
     email_signature: "",
     logo_url: "",
+    raise_mode: false,
+    target_raise_amount: "",
+    capital_committed: "",
+    soft_commitments: "",
+    round_type: "",
+    target_close_date: "",
   });
 
   useEffect(() => {
@@ -64,6 +71,11 @@ export default function Settings() {
     if (!file) return;
     const { file_url } = await base44.integrations.Core.UploadFile({ file });
     handleChange("logo_url", file_url);
+  };
+
+  const handleNumber = (field, value) => {
+    const num = value === "" ? "" : parseFloat(value);
+    handleChange(field, num);
   };
 
   if (isLoading) {
@@ -174,6 +186,90 @@ export default function Settings() {
             className="bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 min-h-[100px]"
             placeholder="Your email signature for investor updates..."
           />
+        </div>
+
+        {/* Raise Mode */}
+        <div className="glass rounded-xl p-6">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider">Raise Mode</h2>
+              <p className="text-white/25 text-xs mt-1">Enable fundraising command layer on dashboard</p>
+            </div>
+            <button
+              onClick={() => handleChange("raise_mode", !form.raise_mode)}
+              className={`relative w-12 h-6 rounded-full transition-all ${
+                form.raise_mode ? "bg-violet-600" : "bg-white/[0.08]"
+              }`}
+            >
+              <div
+                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                  form.raise_mode ? "translate-x-6" : ""
+                }`}
+              />
+            </button>
+          </div>
+
+          {form.raise_mode && (
+            <div className="space-y-4 pt-4 border-t border-white/[0.06]">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-white/40 text-xs">Round Type</Label>
+                  <Select value={form.round_type || ""} onValueChange={(v) => handleChange("round_type", v)}>
+                    <SelectTrigger className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white">
+                      <SelectValue placeholder="Select round" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {["Pre-Seed", "Seed", "Series A", "Series B", "Series C+"].map((r) => (
+                        <SelectItem key={r} value={r}>{r}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-white/40 text-xs">Target Close Date</Label>
+                  <Input
+                    type="date"
+                    value={form.target_close_date}
+                    onChange={(e) => handleChange("target_close_date", e.target.value)}
+                    className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <Label className="text-white/40 text-xs">Target Raise ($)</Label>
+                  <Input
+                    type="number"
+                    value={form.target_raise_amount}
+                    onChange={(e) => handleNumber("target_raise_amount", e.target.value)}
+                    className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white"
+                    placeholder="0"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white/40 text-xs">Capital Committed ($)</Label>
+                  <Input
+                    type="number"
+                    value={form.capital_committed}
+                    onChange={(e) => handleNumber("capital_committed", e.target.value)}
+                    className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white"
+                    placeholder="0"
+                  />
+                </div>
+                <div>
+                  <Label className="text-white/40 text-xs">Soft Commitments ($)</Label>
+                  <Input
+                    type="number"
+                    value={form.soft_commitments}
+                    onChange={(e) => handleNumber("soft_commitments", e.target.value)}
+                    className="mt-1.5 bg-white/[0.04] border-white/[0.08] text-white"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Subscription Placeholder */}

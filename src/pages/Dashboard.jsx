@@ -13,6 +13,7 @@ import {
 import MetricCard from "../components/dashboard/MetricCard";
 import KPIChart from "../components/dashboard/KPIChart";
 import SnapshotSummary from "../components/dashboard/SnapshotSummary";
+import RaiseOverview from "../components/dashboard/RaiseOverview";
 
 export default function Dashboard() {
   const { data: updates = [], isLoading: updatesLoading } = useQuery({
@@ -24,6 +25,13 @@ export default function Dashboard() {
     queryKey: ["investors"],
     queryFn: () => base44.entities.Investor.list(),
   });
+
+  const { data: settings } = useQuery({
+    queryKey: ["company-settings"],
+    queryFn: () => base44.entities.CompanySettings.list(),
+  });
+
+  const companySettings = settings?.[0] || {};
 
   const isLoading = updatesLoading || investorsLoading;
 
@@ -81,6 +89,11 @@ export default function Dashboard() {
         <h1 className="text-2xl font-bold text-white tracking-tight">Command Center</h1>
         <p className="text-white/30 text-sm mt-1">Capital metrics & investor engagement overview</p>
       </div>
+
+      {/* Raise Overview - Only shown when raise_mode is enabled */}
+      {companySettings.raise_mode && (
+        <RaiseOverview settings={companySettings} />
+      )}
 
       {/* Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
