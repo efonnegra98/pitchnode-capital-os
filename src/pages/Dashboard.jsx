@@ -76,9 +76,9 @@ export default function Dashboard() {
     return (
       <div className="p-6 lg:p-10">
         <div className="animate-pulse space-y-6">
-          <div className="h-8 w-48 bg-white/5 rounded-lg" />
+          <div className="h-8 w-48 bg-slate-200 rounded-lg" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[...Array(7)].map((_, i) => <div key={i} className="h-28 bg-white/5 rounded-xl" />)}
+            {[...Array(7)].map((_, i) => <div key={i} className="h-28 bg-slate-200 rounded-xl" />)}
           </div>
         </div>
       </div>
@@ -89,8 +89,8 @@ export default function Dashboard() {
     <div className="p-6 lg:p-10 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white tracking-tight">Command Center</h1>
-        <p className="text-white/30 text-sm mt-1">Capital metrics & investor engagement overview</p>
+        <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Command Center</h1>
+        <p className="text-slate-500 text-sm mt-1">Capital metrics & investor engagement overview</p>
       </div>
 
       {/* Raise Overview - Only shown when raise_mode is enabled */}

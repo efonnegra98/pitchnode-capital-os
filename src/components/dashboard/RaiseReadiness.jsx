@@ -23,9 +23,9 @@ const statusIcons = {
 };
 
 const statusColors = {
-  "Not Started": "text-white/20",
-  "In Progress": "text-amber-400/70",
-  "Complete": "text-emerald-400/70",
+  "Not Started": "text-slate-400",
+  "In Progress": "text-amber-600",
+  "Complete": "text-emerald-600",
 };
 
 export default function RaiseReadiness() {
@@ -73,10 +73,10 @@ export default function RaiseReadiness() {
   if (isLoading) {
     return (
       <div className="glass rounded-xl p-6 animate-pulse">
-        <div className="h-8 w-48 bg-white/5 rounded mb-4" />
+        <div className="h-8 w-48 bg-slate-200 rounded mb-4" />
         <div className="space-y-2">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-12 bg-white/5 rounded" />
+            <div key={i} className="h-12 bg-slate-200 rounded" />
           ))}
         </div>
       </div>
@@ -84,24 +84,24 @@ export default function RaiseReadiness() {
   }
 
   return (
-    <div className="glass rounded-xl p-6 border border-white/[0.06]">
+    <div className="glass rounded-xl p-6 border border-slate-200">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider">
+          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">
             Raise Readiness & Data Room Control
           </h2>
-          <p className="text-white/25 text-xs mt-1">Institutional preparedness checklist</p>
+          <p className="text-slate-400 text-xs mt-1">Institutional preparedness checklist</p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] uppercase tracking-wider text-white/30 mb-1">Readiness Score</p>
+          <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Readiness Score</p>
           <div className="flex items-center gap-2">
-            <div className="w-20 h-2 bg-white/[0.04] rounded-full overflow-hidden">
+            <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-violet-600 to-emerald-500 transition-all duration-500"
                 style={{ width: `${readinessScore}%` }}
               />
             </div>
-            <span className="text-2xl font-bold text-violet-300">{readinessScore}%</span>
+            <span className="text-2xl font-bold text-violet-600">{readinessScore}%</span>
           </div>
         </div>
       </div>
@@ -112,7 +112,7 @@ export default function RaiseReadiness() {
           const isExpanded = expandedId === item.id;
 
           return (
-            <div key={item.id} className="rounded-lg border border-white/[0.04] bg-white/[0.02] overflow-hidden">
+            <div key={item.id} className="rounded-lg border border-slate-200 bg-white overflow-hidden">
               <div className="flex items-center gap-3 p-3">
                 <button
                   onClick={() =>
@@ -130,7 +130,7 @@ export default function RaiseReadiness() {
                   <StatusIcon className={`w-5 h-5 ${statusColors[item.status || "Not Started"]}`} />
                 </button>
                 <div className="flex-1">
-                  <p className="text-sm text-white font-medium">{item.item_name}</p>
+                  <p className="text-sm text-slate-800 font-medium">{item.item_name}</p>
                   <div className="flex items-center gap-3 mt-1">
                     <span
                       className={`text-[10px] uppercase tracking-wider font-medium ${
@@ -140,7 +140,7 @@ export default function RaiseReadiness() {
                       {item.status || "Not Started"}
                     </span>
                     {item.updated_date && (
-                      <span className="text-[10px] text-white/20">
+                      <span className="text-[10px] text-slate-400">
                         Updated {new Date(item.updated_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                       </span>
                     )}
@@ -148,23 +148,23 @@ export default function RaiseReadiness() {
                 </div>
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : item.id)}
-                  className="flex-shrink-0 text-white/30 hover:text-white/60 transition-colors"
+                  className="flex-shrink-0 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   <FileText className="w-4 h-4" />
                 </button>
               </div>
 
               {isExpanded && (
-                <div className="px-3 pb-3 space-y-3 border-t border-white/[0.04] pt-3">
+                <div className="px-3 pb-3 space-y-3 border-t border-slate-200 pt-3">
                   <div>
-                    <label className="text-[10px] uppercase tracking-wider text-white/30 mb-1.5 block">
+                    <label className="text-[10px] uppercase tracking-wider text-slate-500 mb-1.5 block">
                       Status
                     </label>
                     <Select
                       value={item.status || "Not Started"}
                       onValueChange={(v) => handleStatusChange(item, v)}
                     >
-                      <SelectTrigger className="bg-white/[0.04] border-white/[0.08] text-white text-sm">
+                      <SelectTrigger className="bg-slate-50 border-slate-200 text-slate-800 text-sm">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -177,14 +177,14 @@ export default function RaiseReadiness() {
                     </Select>
                   </div>
                   <div>
-                    <label className="text-[10px] uppercase tracking-wider text-white/30 mb-1.5 block">
+                    <label className="text-[10px] uppercase tracking-wider text-slate-500 mb-1.5 block">
                       Notes
                     </label>
                     <Textarea
                       value={item.notes || ""}
                       onChange={(e) => handleNotesChange(item, e.target.value)}
                       onBlur={(e) => handleNotesChange(item, e.target.value)}
-                      className="bg-white/[0.04] border-white/[0.08] text-white text-sm min-h-[60px]"
+                      className="bg-slate-50 border-slate-200 text-slate-800 text-sm min-h-[60px]"
                       placeholder="Add notes..."
                     />
                   </div>

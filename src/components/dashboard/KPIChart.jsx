@@ -5,9 +5,9 @@ const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <div className="glass rounded-lg px-4 py-3 text-sm">
-        <p className="text-white/50 text-xs mb-1">{label}</p>
+        <p className="text-slate-500 text-xs mb-1">{label}</p>
         {payload.map((p, i) => (
-          <p key={i} className="text-white font-semibold">
+          <p key={i} className="text-slate-800 font-semibold">
             {p.name}: ${(p.value / 1000).toFixed(1)}k
           </p>
         ))}
@@ -21,8 +21,8 @@ export default function KPIChart({ data }) {
   if (!data || data.length === 0) {
     return (
       <div className="glass rounded-xl p-6">
-        <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-6">Revenue Trend</h3>
-        <div className="h-64 flex items-center justify-center text-white/20 text-sm">
+        <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-6">Revenue Trend</h3>
+        <div className="h-64 flex items-center justify-center text-slate-300 text-sm">
           No data yet. Create monthly updates to see trends.
         </div>
       </div>
@@ -31,7 +31,7 @@ export default function KPIChart({ data }) {
 
   return (
     <div className="glass rounded-xl p-6">
-      <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-6">Revenue Trend</h3>
+      <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-6">Revenue Trend</h3>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
@@ -41,17 +41,17 @@ export default function KPIChart({ data }) {
                 <stop offset="100%" stopColor="#7c3aed" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.15)" />
             <XAxis
               dataKey="month"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }}
+              tick={{ fill: '#94a3b8', fontSize: 11 }}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }}
+              tick={{ fill: '#94a3b8', fontSize: 11 }}
               tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
             />
             <Tooltip content={<CustomTooltip />} />

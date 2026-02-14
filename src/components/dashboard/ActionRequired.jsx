@@ -4,13 +4,13 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "../../utils";
 
 const cadenceColors = {
-  "Overdue": "border-red-500/20 bg-red-500/5",
-  "Upcoming": "border-amber-500/20 bg-amber-500/5",
+  "Overdue": "border-red-200 bg-red-50",
+  "Upcoming": "border-amber-200 bg-amber-50",
 };
 
 const cadenceDotColors = {
-  "Overdue": "bg-red-400",
-  "Upcoming": "bg-amber-400",
+  "Overdue": "bg-red-500",
+  "Upcoming": "bg-amber-500",
 };
 
 export default function ActionRequired({ investors }) {
@@ -52,18 +52,18 @@ export default function ActionRequired({ investors }) {
   };
 
   return (
-    <div className="glass rounded-xl p-6 border-l-4 border-amber-500/30 mb-8">
+    <div className="glass rounded-xl p-6 border-l-4 border-amber-500 mb-8">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 text-amber-400/70" />
+          <AlertCircle className="w-5 h-5 text-amber-600" />
           <div>
-            <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Action Required</h2>
-            <p className="text-white/30 text-xs mt-0.5">{actionsNeeded.length} investor{actionsNeeded.length === 1 ? '' : 's'} need follow-up</p>
+            <h2 className="text-sm font-semibold text-slate-800 uppercase tracking-wider">Action Required</h2>
+            <p className="text-slate-500 text-xs mt-0.5">{actionsNeeded.length} investor{actionsNeeded.length === 1 ? '' : 's'} need follow-up</p>
           </div>
         </div>
         <Link
           to={createPageUrl("Investors")}
-          className="text-xs text-violet-400/70 hover:text-violet-400 transition-colors"
+          className="text-xs text-violet-600 hover:text-violet-700 transition-colors"
         >
           View All →
         </Link>
@@ -74,26 +74,26 @@ export default function ActionRequired({ investors }) {
           <Link
             key={inv.id}
             to={createPageUrl("Investors")}
-            className={`block rounded-lg p-4 border transition-all hover:border-violet-500/20 ${cadenceColors[inv.urgency]}`}
+            className={`block rounded-lg p-4 border transition-all hover:border-violet-300 ${cadenceColors[inv.urgency]}`}
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-3 flex-1">
                 <div className={`w-2 h-2 rounded-full mt-1.5 ${cadenceDotColors[inv.urgency]}`} />
                 <div className="flex-1">
                   <div className="flex items-baseline gap-2">
-                    <p className="text-white font-medium text-sm">{inv.name}</p>
+                    <p className="text-slate-800 font-medium text-sm">{inv.name}</p>
                     {inv.firm && (
-                      <span className="text-white/30 text-xs">• {inv.firm}</span>
+                      <span className="text-slate-500 text-xs">• {inv.firm}</span>
                     )}
                   </div>
-                  <p className="text-white/40 text-xs mt-1">{inv.next_action_type || "Follow-up needed"}</p>
+                  <p className="text-slate-600 text-xs mt-1">{inv.next_action_type || "Follow-up needed"}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className={`text-xs font-medium ${inv.urgency === 'Overdue' ? 'text-red-400/80' : 'text-amber-400/80'}`}>
+                <p className={`text-xs font-medium ${inv.urgency === 'Overdue' ? 'text-red-600' : 'text-amber-600'}`}>
                   {formatDate(inv.actionDate)}
                 </p>
-                <p className="text-white/20 text-[10px] mt-0.5">
+                <p className="text-slate-400 text-[10px] mt-0.5">
                   {inv.actionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </p>
               </div>

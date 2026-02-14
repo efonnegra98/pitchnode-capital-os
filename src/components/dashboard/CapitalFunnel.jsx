@@ -29,20 +29,20 @@ export default function CapitalFunnel({ investors }) {
   const maxCount = Math.max(...counts.slice(0, 6).map(c => c.count), 1);
 
   return (
-    <div className="glass rounded-xl p-6 border border-white/[0.06]">
+    <div className="glass rounded-xl p-6 border border-slate-200">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider">Capital Funnel Analytics</h2>
-          <p className="text-white/25 text-xs mt-1">Raise pipeline conversion metrics</p>
+          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">Capital Funnel Analytics</h2>
+          <p className="text-slate-400 text-xs mt-1">Raise pipeline conversion metrics</p>
         </div>
         <div className="flex items-center gap-6">
           <div className="text-right">
-            <p className="text-[10px] uppercase tracking-wider text-white/30">Conversion to Commit</p>
-            <p className="text-lg font-bold text-violet-300">{conversionToCommitment}%</p>
+            <p className="text-[10px] uppercase tracking-wider text-slate-500">Conversion to Commit</p>
+            <p className="text-lg font-bold text-violet-600">{conversionToCommitment}%</p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] uppercase tracking-wider text-white/30">Meeting → Partner</p>
-            <p className="text-lg font-bold text-violet-300">{meetingToPartnerConversion}%</p>
+            <p className="text-[10px] uppercase tracking-wider text-slate-500">Meeting → Partner</p>
+            <p className="text-lg font-bold text-violet-600">{meetingToPartnerConversion}%</p>
           </div>
         </div>
       </div>
@@ -86,14 +86,14 @@ export default function CapitalFunnel({ investors }) {
         })}
 
         {/* Passed - shown separately */}
-        <div className="pt-3 border-t border-white/[0.04]">
+        <div className="pt-3 border-t border-slate-200">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs text-white/30 font-medium">{counts[6].label}</span>
-            <span className="text-sm font-bold text-white/30 w-8 text-right">{counts[6].count}</span>
+            <span className="text-xs text-slate-400 font-medium">{counts[6].label}</span>
+            <span className="text-sm font-bold text-slate-400 w-8 text-right">{counts[6].count}</span>
           </div>
-          <div className="h-6 bg-white/[0.02] rounded-lg overflow-hidden relative border border-white/[0.04]">
+          <div className="h-6 bg-slate-100 rounded-lg overflow-hidden relative border border-slate-200">
             <div
-              className="h-full bg-white/[0.04] transition-all duration-500"
+              className="h-full bg-slate-200 transition-all duration-500"
               style={{ width: `${(counts[6].count / maxCount) * 100}%` }}
             />
           </div>
