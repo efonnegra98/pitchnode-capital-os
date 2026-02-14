@@ -1,13 +1,16 @@
 import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery, useMutation, useQueryClient } from "@antml:invoke>
-<parameter name="limit">5000
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Input } from "@/components/ui/input";
+import { Search, Users } from "lucide-react";
+import InvestorTable from "../components/investors/InvestorTable";
+import InvestorModal from "../components/investors/InvestorModal";
 
 export default function Investors() {
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState("name");
   const [sortDir, setSortDir] = useState("asc");
-  const [modalData, setModalData] = useState(null); // null = closed, {} = new, {id, ...} = edit
+  const [modalData, setModalData] = useState(null);
 
   const queryClient = useQueryClient();
 

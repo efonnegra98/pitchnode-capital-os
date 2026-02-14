@@ -5,6 +5,10 @@ export default function RaiseOverview({ settings }) {
   const target = settings.target_raise_amount || 0;
   const committed = settings.capital_committed || 0;
   const soft = settings.soft_commitments || 0;
+  
+  // Don't show if no target is set
+  if (!target) return null;
+  
   const remaining = Math.max(0, target - committed);
   const progressPercent = target > 0 ? Math.min(100, (committed / target) * 100) : 0;
   const totalWithSoft = committed + soft;
