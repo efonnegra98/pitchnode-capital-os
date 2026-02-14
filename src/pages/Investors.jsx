@@ -74,8 +74,8 @@ export default function Investors() {
     return (
       <div className="p-6 lg:p-10">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 w-48 bg-white/5 rounded-lg" />
-          <div className="h-64 bg-white/5 rounded-xl" />
+          <div className="h-8 w-48 bg-slate-200 rounded-lg" />
+          <div className="h-64 bg-slate-200 rounded-xl" />
         </div>
       </div>
     );
@@ -85,17 +85,17 @@ export default function Investors() {
     <div className="p-6 lg:p-10 max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Investor Tracking</h1>
-          <p className="text-white/30 text-sm mt-1">{investors.length} contacts</p>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">Investor Tracking</h1>
+          <p className="text-muted-foreground text-sm mt-1">{investors.length} contacts</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search investors..."
-              className="pl-9 w-56 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20"
+              className="pl-9 w-56"
             />
           </div>
           <button
