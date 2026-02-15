@@ -201,6 +201,7 @@ export default function UpdateBuilder() {
           <UpdatePreview
             data={formData}
             companyName={companyName}
+            companyLogo={company?.logo_url}
           />
         </div>
       </div>

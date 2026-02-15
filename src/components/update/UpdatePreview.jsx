@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy, FileDown } from "lucide-react";
 
-export default function UpdatePreview({ data, companyName }) {
+export default function UpdatePreview({ data, companyName, companyLogo }) {
   const previewRef = useRef(null);
 
   const formatCurrency = (val) => {
@@ -76,9 +76,15 @@ ${data.asks || "—"}
       <div ref={previewRef} className="glass rounded-xl overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-violet-100 to-indigo-100 px-6 py-5 border-b border-slate-200">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-violet-600 mb-1">Investor Update</p>
+          <div className="flex items-center gap-3 mb-3">
+            {companyLogo ? (
+              <img src={companyLogo} alt={companyName} className="h-10 w-auto object-contain" />
+            ) : (
+              <span className="text-lg font-bold text-foreground">{companyName || "Your Company"}</span>
+            )}
+            <p className="text-[10px] uppercase tracking-[0.2em] text-violet-600">Investor Update</p>
+          </div>
           <h2 className="text-lg font-bold text-foreground">{data.month || "Draft"}</h2>
-          <p className="text-xs text-muted-foreground mt-1">{companyName || "Your Company"}</p>
         </div>
 
         <div className="p-6 space-y-6">
