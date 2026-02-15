@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { base44 } from "@/api/base44Client";
-import { ThemeProvider, useTheme } from "./components/ThemeProvider";
 import {
   LayoutDashboard,
   Send,
@@ -11,9 +10,7 @@ import {
   Settings,
   Menu,
   X,
-  ChevronRight,
-  Sun,
-  Moon
+  ChevronRight
 } from "lucide-react";
 
 const navItems = [
@@ -28,7 +25,6 @@ function LayoutContent({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [checkingAccess, setCheckingAccess] = useState(true);
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -75,18 +71,6 @@ function LayoutContent({ children, currentPageName }) {
 
     checkAccess();
   }, [currentPageName, navigate]);
-
-  const toggleTheme = () => {
-    const currentEffectiveTheme = theme === "system" 
-      ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-      : theme;
-    const nextTheme = currentEffectiveTheme === "light" ? "dark" : "light";
-    setTheme(nextTheme);
-  };
-
-  const effectiveTheme = theme === "system"
-    ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-    : theme;
 
   if (checkingAccess) {
     return (
@@ -136,7 +120,7 @@ function LayoutContent({ children, currentPageName }) {
               </svg>
               <div>
                 <h1 className="text-base font-semibold tracking-tight text-foreground leading-tight">PitchNode</h1>
-                <p className="text-[10px] text-violet-600/60 dark:text-violet-400/70 uppercase tracking-[0.2em] font-medium leading-none mt-0.5">Capital OS</p>
+                <p className="text-[10px] text-violet-600/60 uppercase tracking-[0.2em] font-medium leading-none mt-0.5">Capital OS</p>
               </div>
             </div>
             <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-muted-foreground hover:text-foreground">
@@ -160,14 +144,14 @@ function LayoutContent({ children, currentPageName }) {
                     flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
                     transition-all duration-200
                     ${isActive
-                      ? "bg-violet-50 text-violet-700 nav-glow dark:bg-violet-950/50 dark:text-violet-400"
+                      ? "bg-violet-50 text-violet-700 nav-glow"
                       : "text-muted-foreground hover:text-foreground hover:bg-accent"
                     }
                   `}
                 >
                   <Icon className="w-[18px] h-[18px]" />
                   <span>{item.name}</span>
-                  {isActive && <ChevronRight className="w-3.5 h-3.5 ml-auto text-violet-600/40 dark:text-violet-400/40" />}
+                  {isActive && <ChevronRight className="w-3.5 h-3.5 ml-auto text-violet-600/40" />}
                 </Link>
               );
             })}
@@ -175,17 +159,7 @@ function LayoutContent({ children, currentPageName }) {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-border space-y-3">
-          <button
-            onClick={toggleTheme}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all"
-          >
-            {effectiveTheme === "dark" ? (
-              <><Moon className="w-4 h-4" /> Dark Mode</>
-            ) : (
-              <><Sun className="w-4 h-4" /> Light Mode</>
-            )}
-          </button>
+        <div className="p-4 border-t border-border">
           <p className="text-[10px] text-muted-foreground text-center uppercase tracking-widest">v1.0 · Capital Grade</p>
         </div>
       </aside>
@@ -217,9 +191,5 @@ function LayoutContent({ children, currentPageName }) {
 }
 
 export default function Layout({ children, currentPageName }) {
-  return (
-    <ThemeProvider>
-      <LayoutContent children={children} currentPageName={currentPageName} />
-    </ThemeProvider>
-  );
+  return <LayoutContent children={children} currentPageName={currentPageName} />;
 }

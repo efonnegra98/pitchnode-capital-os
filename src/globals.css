@@ -32,32 +32,7 @@ css
     --chart-5: 270 65% 55%;
   }
 
-  .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 20% 98%;
-    --card: 222 47% 15%;
-    --card-foreground: 210 20% 98%;
-    --popover: 222 47% 15%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 263 70% 50%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 217 33% 20%;
-    --secondary-foreground: 214 20% 88%;
-    --muted: 217 33% 20%;
-    --muted-foreground: 214 20% 70%;
-    --accent: 217 33% 20%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 217 33% 22%;
-    --input: 217 33% 22%;
-    --ring: 263 70% 50%;
-    --chart-1: 263 70% 50%;
-    --chart-2: 250 60% 45%;
-    --chart-3: 240 50% 40%;
-    --chart-4: 230 55% 50%;
-    --chart-5: 270 65% 55%;
-  }
+
 }
 
 @layer base {
@@ -67,18 +42,6 @@ css
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  }
-  
-  .dark .text-slate-50 {
-    color: hsl(210 20% 98%);
-  }
-  
-  .dark .text-slate-200 {
-    color: hsl(214 20% 88%);
-  }
-  
-  .dark .text-slate-400 {
-    color: hsl(214 20% 70%);
   }
 }
 
