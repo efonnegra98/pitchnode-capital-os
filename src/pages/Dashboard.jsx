@@ -96,8 +96,8 @@ export default function Dashboard() {
     <div className="p-6 lg:p-10 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Command Center</h1>
-        <p className="text-slate-500 text-sm mt-1">Capital metrics & investor engagement overview</p>
+        <h1 className="text-2xl font-bold text-foreground dark:text-slate-50 tracking-tight">Command Center</h1>
+        <p className="text-secondary-foreground text-sm mt-1">Capital metrics & investor engagement overview</p>
       </div>
 
       {/* Empty State - Show when no data exists */}

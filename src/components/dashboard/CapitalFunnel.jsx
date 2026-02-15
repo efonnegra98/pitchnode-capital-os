@@ -29,20 +29,20 @@ export default function CapitalFunnel({ investors }) {
   const maxCount = Math.max(...counts.slice(0, 6).map(c => c.count), 1);
 
   return (
-    <div className="glass rounded-xl p-6 border border-slate-200">
+    <div className="glass rounded-xl p-6 border border-border">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">Capital Funnel Analytics</h2>
-          <p className="text-slate-400 text-xs mt-1">Raise pipeline conversion metrics</p>
+          <h2 className="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Capital Funnel Analytics</h2>
+          <p className="text-muted-foreground dark:text-muted-foreground/90 text-xs mt-1">Raise pipeline conversion metrics</p>
         </div>
         <div className="flex items-center gap-6">
           <div className="text-right">
-            <p className="text-[10px] uppercase tracking-wider text-slate-500">Conversion to Commit</p>
-            <p className="text-lg font-bold text-violet-600">{conversionToCommitment}%</p>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground dark:text-muted-foreground/90">Conversion to Commit</p>
+            <p className="text-lg font-bold text-violet-600 dark:text-violet-400">{conversionToCommitment}%</p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] uppercase tracking-wider text-slate-500">Meeting → Partner</p>
-            <p className="text-lg font-bold text-violet-600">{meetingToPartnerConversion}%</p>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground dark:text-muted-foreground/90">Meeting → Partner</p>
+            <p className="text-lg font-bold text-violet-600 dark:text-violet-400">{meetingToPartnerConversion}%</p>
           </div>
         </div>
       </div>
@@ -58,24 +58,24 @@ export default function CapitalFunnel({ investors }) {
           return (
             <div key={stage.key}>
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-xs text-white/50 font-medium">{stage.label}</span>
+                <span className="text-xs text-foreground dark:text-slate-200 font-medium">{stage.label}</span>
                 <div className="flex items-center gap-3">
                   {dropoffPercent && dropoffPercent > 0 && (
-                    <span className="text-[10px] text-red-400/40 flex items-center gap-1">
+                    <span className="text-[10px] text-red-500/70 dark:text-red-400/70 flex items-center gap-1">
                       <TrendingDown className="w-3 h-3" />
                       {dropoffPercent}%
                     </span>
                   )}
-                  <span className="text-sm font-bold text-white w-8 text-right">{stage.count}</span>
+                  <span className="text-sm font-bold text-foreground dark:text-slate-50 w-8 text-right">{stage.count}</span>
                 </div>
               </div>
-              <div className="h-8 bg-white/[0.02] rounded-lg overflow-hidden relative border border-white/[0.04]">
+              <div className="h-8 bg-slate-100 dark:bg-slate-800/50 rounded-lg overflow-hidden relative border border-slate-200 dark:border-slate-700">
                 <div
-                  className="h-full bg-gradient-to-r from-violet-600/40 to-indigo-600/40 transition-all duration-500 flex items-center justify-end pr-3"
+                  className="h-full bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-500 dark:to-indigo-500 transition-all duration-500 flex items-center justify-end pr-3"
                   style={{ width: `${widthPercent}%` }}
                 >
                   {stage.count > 0 && (
-                    <span className="text-[10px] font-semibold text-white/60">
+                    <span className="text-[10px] font-semibold text-white/90">
                       {((stage.count / totalIdentified) * 100).toFixed(0)}%
                     </span>
                   )}
@@ -86,14 +86,14 @@ export default function CapitalFunnel({ investors }) {
         })}
 
         {/* Passed - shown separately */}
-        <div className="pt-3 border-t border-slate-200">
+        <div className="pt-3 border-t border-border">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs text-slate-400 font-medium">{counts[6].label}</span>
-            <span className="text-sm font-bold text-slate-400 w-8 text-right">{counts[6].count}</span>
+            <span className="text-xs text-muted-foreground font-medium">{counts[6].label}</span>
+            <span className="text-sm font-bold text-muted-foreground w-8 text-right">{counts[6].count}</span>
           </div>
-          <div className="h-6 bg-slate-100 rounded-lg overflow-hidden relative border border-slate-200">
+          <div className="h-6 bg-slate-100 dark:bg-slate-800/30 rounded-lg overflow-hidden relative border border-slate-200 dark:border-slate-700">
             <div
-              className="h-full bg-slate-200 transition-all duration-500"
+              className="h-full bg-slate-200 dark:bg-slate-600 transition-all duration-500"
               style={{ width: `${(counts[6].count / maxCount) * 100}%` }}
             />
           </div>

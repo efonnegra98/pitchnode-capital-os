@@ -21,8 +21,8 @@ export default function KPIChart({ data }) {
   if (!data || data.length === 0) {
     return (
       <div className="glass rounded-xl p-6">
-        <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-6">Revenue Trend</h3>
-        <div className="h-64 flex items-center justify-center text-slate-300 text-sm">
+        <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-6">Revenue Trend</h3>
+        <div className="h-64 flex items-center justify-center text-secondary-foreground text-sm">
           No data yet. Create monthly updates to see trends.
         </div>
       </div>
@@ -31,7 +31,7 @@ export default function KPIChart({ data }) {
 
   return (
     <div className="glass rounded-xl p-6">
-      <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-6">Revenue Trend</h3>
+      <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-6">Revenue Trend</h3>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
