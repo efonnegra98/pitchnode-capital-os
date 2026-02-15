@@ -109,12 +109,12 @@ function LayoutContent({ children, currentPageName }) {
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
         {/* Branding */}
-        <div className="px-5 py-6">
+        <div className="px-4 py-6">
           <div className="flex items-center justify-between">
             <img 
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698fe466c243851910a585ea/ae8a53466_pn_black_full3.png" 
               alt="PitchNode" 
-              className="h-[36px] w-auto"
+              className="h-[42px] w-auto"
             />
             <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-slate-400 hover:text-slate-600">
               <X className="w-5 h-5" />
@@ -123,7 +123,7 @@ function LayoutContent({ children, currentPageName }) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 mt-4">
+        <nav className="flex-1 px-4 mt-8">
           <div className="space-y-1.5">
             {navItems.map((item) => {
               const isActive = currentPageName === item.page;
