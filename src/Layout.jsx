@@ -83,7 +83,6 @@ function LayoutContent({ children, currentPageName }) {
   return (
     <div className="min-h-screen bg-background text-foreground flex">
       <style>{`
-        .nav-glow { box-shadow: 0 2px 8px rgba(124, 58, 237, 0.08); }
         .metric-glow { box-shadow: 0 4px 16px rgba(124, 58, 237, 0.06); }
         .glass { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04); }
         .glass-hover:hover { background: hsl(var(--accent)); }
@@ -109,29 +108,22 @@ function LayoutContent({ children, currentPageName }) {
         lg:translate-x-0 lg:static
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
-        {/* Logo */}
-        <div className="px-6 pt-6 pb-4">
+        {/* Branding */}
+        <div className="px-5 pt-6 pb-5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <svg width="28" height="28" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
-                <path d="M20 10 L20 100 L45 100 L45 65 Q45 25 80 25 Q115 25 115 65 L115 100" 
-                      className="fill-foreground" strokeWidth="0"/>
-                <circle cx="95" cy="80" r="12" className="fill-violet-600" />
-              </svg>
-              <div>
-                <h1 className="text-base font-semibold tracking-tight text-foreground leading-tight">PitchNode</h1>
-                <p className="text-[10px] text-violet-600/60 uppercase tracking-[0.2em] font-medium leading-none mt-0.5">Capital OS</p>
-              </div>
+            <div>
+              <h1 className="text-lg font-bold tracking-tight text-slate-800 leading-none">PitchNode</h1>
+              <p className="text-[9px] text-violet-600/70 uppercase tracking-[0.15em] font-semibold leading-none mt-1.5">Capital OS</p>
             </div>
-            <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-muted-foreground hover:text-foreground">
+            <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-slate-400 hover:text-slate-600">
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 mt-2">
-          <div className="space-y-1">
+        <nav className="flex-1 px-4 mt-4">
+          <div className="space-y-1.5">
             {navItems.map((item) => {
               const isActive = currentPageName === item.page;
               const Icon = item.icon;
@@ -141,17 +133,17 @@ function LayoutContent({ children, currentPageName }) {
                   to={createPageUrl(item.page)}
                   onClick={() => setSidebarOpen(false)}
                   className={`
-                    flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
-                    transition-all duration-200
+                    group relative flex items-center gap-2.5 px-3 py-2.5 rounded-md text-[13px] font-medium
+                    transition-colors duration-150
                     ${isActive
-                      ? "bg-violet-50 text-violet-700 nav-glow"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                      ? "bg-violet-50/80 text-violet-700"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                     }
                   `}
                 >
-                  <Icon className="w-[18px] h-[18px]" />
+                  {isActive && <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-violet-600 rounded-r" />}
+                  <Icon className="w-[16px] h-[16px] flex-shrink-0" />
                   <span>{item.name}</span>
-                  {isActive && <ChevronRight className="w-3.5 h-3.5 ml-auto text-violet-600/40" />}
                 </Link>
               );
             })}
@@ -159,8 +151,8 @@ function LayoutContent({ children, currentPageName }) {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-border">
-          <p className="text-[10px] text-muted-foreground text-center uppercase tracking-widest">v1.0 · Capital Grade</p>
+        <div className="px-4 py-3">
+          <p className="text-[9px] text-slate-400 tracking-wider">v1.0</p>
         </div>
       </aside>
 
@@ -168,16 +160,11 @@ function LayoutContent({ children, currentPageName }) {
       <main className="flex-1 min-h-screen flex flex-col">
         {/* Top bar mobile */}
         <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card">
-          <button onClick={() => setSidebarOpen(true)} className="text-muted-foreground hover:text-foreground">
+          <button onClick={() => setSidebarOpen(true)} className="text-slate-400 hover:text-slate-700">
             <Menu className="w-5 h-5" />
           </button>
-          <div className="flex items-center gap-2">
-            <svg width="22" height="22" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
-              <path d="M20 10 L20 100 L45 100 L45 65 Q45 25 80 25 Q115 25 115 65 L115 100" 
-                    className="fill-foreground" strokeWidth="0"/>
-              <circle cx="95" cy="80" r="12" className="fill-violet-600" />
-            </svg>
-            <span className="text-sm font-semibold text-foreground">PitchNode</span>
+          <div>
+            <span className="text-sm font-bold text-slate-800">PitchNode</span>
           </div>
           <div className="w-5" />
         </div>
