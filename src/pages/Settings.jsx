@@ -6,17 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Save, Upload, CreditCard, TrendingUp, Database } from "lucide-react";
+import { Save, Upload } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import toast, { Toaster } from "react-hot-toast";
-
-const ACCENT_OPTIONS = [
-  { label: "Violet", value: "#7C3AED" },
-  { label: "Indigo", value: "#6366F1" },
-  { label: "Purple", value: "#9333EA" },
-  { label: "Plum", value: "#A855F7" },
-  { label: "Deep Violet", value: "#5B21B6" },
-];
 
 export default function Settings() {
   const queryClient = useQueryClient();
@@ -28,7 +20,6 @@ export default function Settings() {
     company_name: "",
     founder_name: "",
     founder_title: "",
-    accent_color: "#7C3AED",
     email_signature: "",
     logo_url: "",
     raise_mode: false,
@@ -47,7 +38,6 @@ export default function Settings() {
         company_name: company.name || "",
         founder_name: company.founder_name || "",
         founder_title: company.founder_title || "",
-        accent_color: company.accent_color || "#7C3AED",
         logo_url: company.logo_url || "",
         raise_mode: company.raise_mode || false,
         capital_type: company.capital_type || "",
@@ -66,7 +56,6 @@ export default function Settings() {
         name: formData.company_name,
         founder_name: formData.founder_name,
         founder_title: formData.founder_title,
-        accent_color: formData.accent_color,
         logo_url: formData.logo_url,
         raise_mode: formData.raise_mode,
         capital_type: formData.capital_type,
@@ -123,15 +112,15 @@ export default function Settings() {
     <div className="p-6 lg:p-10 max-w-3xl mx-auto">
       <Toaster position="top-right" />
       
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">Settings</h1>
-        <p className="text-muted-foreground text-sm mt-1">Configure your company profile and preferences</p>
+      <div className="mb-10">
+        <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Settings</h1>
+        <p className="text-slate-500 text-sm mt-1.5">Manage your company profile and fundraising configuration</p>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-10">
         {/* Company Profile */}
-        <div className="glass rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5">Company Profile</h2>
+        <div className="glass rounded-xl p-7">
+          <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-6">Company Profile</h2>
           <div className="space-y-4">
             <div>
               <Label>Company Name</Label>
@@ -165,67 +154,36 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Logo Upload */}
-        <div className="glass rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5">Logo</h2>
-          <div className="flex items-center gap-6">
-            {form.logo_url ? (
-              <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center">
-                <img src={form.logo_url} alt="Logo" className="w-full h-full object-contain" />
+            <div className="pt-6 border-t border-slate-200">
+              <Label className="text-sm text-slate-700 mb-2">Company Logo</Label>
+              <div className="flex items-start gap-5 mt-3">
+                {form.logo_url ? (
+                  <div className="w-20 h-20 rounded-lg overflow-hidden bg-slate-50 border border-slate-200 flex items-center justify-center">
+                    <img src={form.logo_url} alt="Logo" className="w-full h-full object-contain" />
+                  </div>
+                ) : (
+                  <div className="w-20 h-20 rounded-lg bg-slate-50 border border-dashed border-slate-300 flex items-center justify-center">
+                    <Upload className="w-5 h-5 text-slate-400" />
+                  </div>
+                )}
+                <div>
+                  <label className="px-4 py-2 rounded-md bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-sm font-medium cursor-pointer transition-colors inline-block">
+                    {form.logo_url ? "Change Logo" : "Upload Logo"}
+                    <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+                  </label>
+                  <p className="text-slate-500 text-xs mt-2.5 leading-relaxed">Your logo will appear on investor updates and<br />exported data room documents.</p>
+                </div>
               </div>
-            ) : (
-              <div className="w-16 h-16 rounded-xl bg-slate-50 border border-dashed border-slate-300 flex items-center justify-center">
-                <Upload className="w-5 h-5 text-slate-400" />
-              </div>
-            )}
-            <div>
-              <label className="px-4 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-foreground text-sm font-medium cursor-pointer transition-all inline-block">
-                Upload Logo
-                <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
-              </label>
-              <p className="text-muted-foreground text-xs mt-2">PNG or SVG recommended</p>
             </div>
           </div>
         </div>
 
-        {/* Brand Accent */}
-        <div className="glass rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5">Brand Accent</h2>
-          <div className="flex flex-wrap gap-3">
-            {ACCENT_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => handleChange("accent_color", opt.value)}
-                className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg border transition-all ${
-                  form.accent_color === opt.value
-                    ? "border-violet-300 bg-violet-50"
-                    : "border-slate-200 bg-white hover:bg-slate-50"
-                }`}
-              >
-                <div className="w-4 h-4 rounded-full" style={{ backgroundColor: opt.value }} />
-                <span className="text-xs text-foreground">{opt.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Email Signature */}
-        <div className="glass rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5">Email Signature</h2>
-          <Textarea
-            value={form.email_signature}
-            onChange={(e) => handleChange("email_signature", e.target.value)}
-            className="min-h-[100px]"
-            placeholder="Your email signature for investor updates..."
-          />
-        </div>
-
-        {/* Raise Mode */}
-        <div className="glass rounded-xl p-6">
-          <div className="flex items-center justify-between mb-5">
+        {/* Fundraising Configuration */}
+        <div className="glass rounded-xl p-7">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">Raise Mode</h2>
-              <p className="text-muted-foreground text-xs mt-1">Enable fundraising command layer on dashboard</p>
+              <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Fundraising Configuration</h2>
+              <p className="text-slate-500 text-xs mt-1.5">Configure active fundraising round and capital tracking</p>
             </div>
             <button
               onClick={() => handleChange("raise_mode", !form.raise_mode)}
@@ -242,7 +200,7 @@ export default function Settings() {
           </div>
 
           {form.raise_mode && (
-            <div className="space-y-4 pt-4 border-t border-slate-200">
+            <div className="space-y-5 pt-6 border-t border-slate-200">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Primary Capital Type</Label>
@@ -317,61 +275,27 @@ export default function Settings() {
           )}
         </div>
 
-        {/* Subscription Placeholder */}
-        <div className="glass rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5">Subscription</h2>
-          <div className="flex items-center gap-4 p-4 rounded-lg bg-slate-50 border border-slate-200">
-            <CreditCard className="w-5 h-5 text-violet-600" />
-            <div>
-              <p className="text-foreground text-sm font-medium">Pro Plan — Coming Soon</p>
-              <p className="text-muted-foreground text-xs mt-0.5">Stripe billing integration will be available in a future release.</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Debug Data Status */}
-        <div className="glass rounded-xl p-6 bg-slate-50/50">
-          <div className="flex items-center gap-2 mb-4">
-            <Database className="w-4 h-4 text-violet-600" />
-            <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">Data Status (Debug)</h2>
-          </div>
-          <div className="space-y-2 text-xs font-mono">
-            <div className="flex justify-between py-1.5 border-b border-slate-200">
-              <span className="text-slate-500">Company Profile ID:</span>
-              <span className="text-slate-800 font-semibold">{companyId || "—"}</span>
-            </div>
-            <div className="flex justify-between py-1.5 border-b border-slate-200">
-              <span className="text-slate-500">Last Updated:</span>
-              <span className="text-slate-800">{company?.updated_date ? new Date(company.updated_date).toLocaleString() : "—"}</span>
-            </div>
-            <div className="flex justify-between py-1.5 border-b border-slate-200">
-              <span className="text-slate-500">Target Raise:</span>
-              <span className="text-slate-800">${company?.target_raise_amount?.toLocaleString() || "—"}</span>
-            </div>
-            <div className="flex justify-between py-1.5 border-b border-slate-200">
-              <span className="text-slate-500">Capital Committed:</span>
-              <span className="text-slate-800">${company?.capital_committed?.toLocaleString() || "—"}</span>
-            </div>
-            <div className="flex justify-between py-1.5 border-b border-slate-200">
-              <span className="text-slate-500">Soft Commitments:</span>
-              <span className="text-slate-800">${company?.soft_commitments?.toLocaleString() || "—"}</span>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <span className="text-slate-500">Target Close Date:</span>
-              <span className="text-slate-800">{company?.target_close_date || "—"}</span>
-            </div>
-          </div>
+        {/* Investor Update Signature */}
+        <div className="glass rounded-xl p-7">
+          <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Investor Update Signature</h2>
+          <p className="text-slate-500 text-xs mb-5">This signature will be automatically appended to your investor updates.</p>
+          <Textarea
+            value={form.email_signature}
+            onChange={(e) => handleChange("email_signature", e.target.value)}
+            className="min-h-[120px]"
+            placeholder="Best regards,&#10;[Your Name]&#10;[Your Title]"
+          />
         </div>
 
         {/* Save */}
-        <div className="flex justify-end pb-8">
+        <div className="flex justify-end pt-4 pb-10">
           <Button
             onClick={() => saveMutation.mutate(form)}
             disabled={saveMutation.isPending}
-            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white px-6"
+            className="bg-violet-600 hover:bg-violet-700 text-white px-8 h-10"
           >
             <Save className="w-4 h-4 mr-2" />
-            {saveMutation.isPending ? "Saving..." : "Save Settings"}
+            {saveMutation.isPending ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </div>
