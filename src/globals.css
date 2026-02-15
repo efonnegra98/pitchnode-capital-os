@@ -42,9 +42,9 @@ css
     --primary: 263 70% 50%;
     --primary-foreground: 0 0% 100%;
     --secondary: 217 33% 20%;
-    --secondary-foreground: 210 17% 82%;
+    --secondary-foreground: 214 20% 88%;
     --muted: 217 33% 20%;
-    --muted-foreground: 215 16% 58%;
+    --muted-foreground: 214 20% 70%;
     --accent: 217 33% 20%;
     --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
@@ -67,6 +67,18 @@ css
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  
+  .dark .text-slate-50 {
+    color: hsl(210 20% 98%);
+  }
+  
+  .dark .text-slate-200 {
+    color: hsl(214 20% 88%);
+  }
+  
+  .dark .text-slate-400 {
+    color: hsl(214 20% 70%);
   }
 }
 
