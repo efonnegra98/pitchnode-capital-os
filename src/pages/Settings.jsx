@@ -151,9 +151,6 @@ export default function Settings() {
                 />
               </div>
             </div>
-          </div>
-        </div>
-
             <div className="pt-6 border-t border-slate-200">
               <Label className="text-sm text-slate-700 mb-2">Company Logo</Label>
               <div className="flex items-start gap-5 mt-3">
