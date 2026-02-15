@@ -126,17 +126,17 @@ function LayoutContent({ children, currentPageName }) {
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
         {/* Logo */}
-        <div className="p-6 pb-4">
+        <div className="px-6 pt-6 pb-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
-                <path d="M20 15 L20 85 L45 85 L45 60 Q45 30 75 30 Q105 30 105 60 L105 85 Q105 115 75 115 Q45 115 45 85" 
+            <div className="flex items-center gap-2.5">
+              <svg width="28" height="28" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+                <path d="M20 10 L20 100 L45 100 L45 65 Q45 25 80 25 Q115 25 115 65 L115 100" 
                       className="fill-foreground" strokeWidth="0"/>
-                <circle cx="85" cy="72" r="10" className="fill-violet-600" />
+                <circle cx="95" cy="80" r="12" className="fill-violet-600" />
               </svg>
-              <div className="-ml-1">
+              <div>
                 <h1 className="text-base font-semibold tracking-tight text-foreground leading-tight">PitchNode</h1>
-                <p className="text-[10px] text-violet-600/60 dark:text-violet-400/70 uppercase tracking-[0.2em] font-medium leading-none">Capital OS</p>
+                <p className="text-[10px] text-violet-600/60 dark:text-violet-400/70 uppercase tracking-[0.2em] font-medium leading-none mt-0.5">Capital OS</p>
               </div>
             </div>
             <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-muted-foreground hover:text-foreground">
@@ -197,11 +197,11 @@ function LayoutContent({ children, currentPageName }) {
           <button onClick={() => setSidebarOpen(true)} className="text-muted-foreground hover:text-foreground">
             <Menu className="w-5 h-5" />
           </button>
-          <div className="flex items-center gap-1.5">
-            <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
-              <path d="M20 15 L20 85 L45 85 L45 60 Q45 30 75 30 Q105 30 105 60 L105 85 Q105 115 75 115 Q45 115 45 85" 
+          <div className="flex items-center gap-2">
+            <svg width="22" height="22" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+              <path d="M20 10 L20 100 L45 100 L45 65 Q45 25 80 25 Q115 25 115 65 L115 100" 
                     className="fill-foreground" strokeWidth="0"/>
-              <circle cx="85" cy="72" r="10" className="fill-violet-600" />
+              <circle cx="95" cy="80" r="12" className="fill-violet-600" />
             </svg>
             <span className="text-sm font-semibold text-foreground">PitchNode</span>
           </div>
