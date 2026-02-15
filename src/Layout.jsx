@@ -109,12 +109,13 @@ function LayoutContent({ children, currentPageName }) {
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
       `}>
         {/* Branding */}
-        <div className="px-5 pt-6 pb-5">
+        <div className="px-5 py-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-lg font-bold tracking-tight text-slate-800 leading-none">PitchNode</h1>
-              <p className="text-[9px] text-violet-600/70 uppercase tracking-[0.15em] font-semibold leading-none mt-1.5">Capital OS</p>
-            </div>
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698fe466c243851910a585ea/ae8a53466_pn_black_full3.png" 
+              alt="PitchNode" 
+              className="h-[36px] w-auto"
+            />
             <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-slate-400 hover:text-slate-600">
               <X className="w-5 h-5" />
             </button>
@@ -163,9 +164,11 @@ function LayoutContent({ children, currentPageName }) {
           <button onClick={() => setSidebarOpen(true)} className="text-slate-400 hover:text-slate-700">
             <Menu className="w-5 h-5" />
           </button>
-          <div>
-            <span className="text-sm font-bold text-slate-800">PitchNode</span>
-          </div>
+          <img 
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698fe466c243851910a585ea/ae8a53466_pn_black_full3.png" 
+            alt="PitchNode" 
+            className="h-[28px] w-auto"
+          />
           <div className="w-5" />
         </div>
 
