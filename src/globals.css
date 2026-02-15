@@ -34,23 +34,23 @@ css
 
   .dark {
     --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 14%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 14%;
-    --popover-foreground: 210 40% 98%;
+    --foreground: 210 20% 98%;
+    --card: 222 47% 15%;
+    --card-foreground: 210 20% 98%;
+    --popover: 222 47% 15%;
+    --popover-foreground: 210 20% 98%;
     --primary: 263 70% 50%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217 33% 20%;
+    --secondary-foreground: 210 17% 82%;
+    --muted: 217 33% 20%;
+    --muted-foreground: 215 16% 58%;
+    --accent: 217 33% 20%;
+    --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 217 33% 20%;
-    --input: 217 33% 20%;
+    --border: 217 33% 22%;
+    --input: 217 33% 22%;
     --ring: 263 70% 50%;
     --chart-1: 263 70% 50%;
     --chart-2: 250 60% 45%;
