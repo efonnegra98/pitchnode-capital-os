@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCompany } from "../components/useCompany";
+import { useTheme } from "../components/ThemeProvider";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Save, Upload, CreditCard, TrendingUp, Database } from "lucide-react";
+import { Save, Upload, CreditCard, TrendingUp, Database, Palette } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -21,6 +22,7 @@ const ACCENT_OPTIONS = [
 export default function Settings() {
   const queryClient = useQueryClient();
   const { company, companyId, isLoading: companyLoading } = useCompany();
+  const { theme, setTheme } = useTheme();
 
   const isLoading = companyLoading;
 
@@ -131,7 +133,7 @@ export default function Settings() {
       <div className="space-y-8">
         {/* Company Profile */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5">Company Profile</h2>
+          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5 dark:text-slate-400">Company Profile</h2>
           <div className="space-y-4">
             <div>
               <Label>Company Name</Label>
@@ -167,7 +169,7 @@ export default function Settings() {
 
         {/* Logo Upload */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5">Logo</h2>
+          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5 dark:text-slate-400">Logo</h2>
           <div className="flex items-center gap-6">
             {form.logo_url ? (
               <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center">
@@ -188,9 +190,31 @@ export default function Settings() {
           </div>
         </div>
 
+        {/* Theme */}
+        <div className="glass rounded-xl p-6">
+          <div className="flex items-center gap-2 mb-5">
+            <Palette className="w-4 h-4 text-violet-600" />
+            <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider dark:text-slate-400">Theme</h2>
+          </div>
+          <div className="space-y-3">
+            <Label>Appearance</Label>
+            <Select value={theme} onValueChange={setTheme}>
+              <SelectTrigger className="mt-1.5">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="light">Light</SelectItem>
+                <SelectItem value="dark">Dark</SelectItem>
+                <SelectItem value="system">System Default</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">Select your preferred theme or match your system settings</p>
+          </div>
+        </div>
+
         {/* Brand Accent */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5">Brand Accent</h2>
+          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5 dark:text-slate-400">Brand Accent</h2>
           <div className="flex flex-wrap gap-3">
             {ACCENT_OPTIONS.map((opt) => (
               <button
@@ -211,7 +235,7 @@ export default function Settings() {
 
         {/* Email Signature */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5">Email Signature</h2>
+          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5 dark:text-slate-400">Email Signature</h2>
           <Textarea
             value={form.email_signature}
             onChange={(e) => handleChange("email_signature", e.target.value)}
@@ -224,7 +248,7 @@ export default function Settings() {
         <div className="glass rounded-xl p-6">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">Raise Mode</h2>
+              <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider dark:text-slate-400">Raise Mode</h2>
               <p className="text-muted-foreground text-xs mt-1">Enable fundraising command layer on dashboard</p>
             </div>
             <button
@@ -319,7 +343,7 @@ export default function Settings() {
 
         {/* Subscription Placeholder */}
         <div className="glass rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5">Subscription</h2>
+          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider mb-5 dark:text-slate-400">Subscription</h2>
           <div className="flex items-center gap-4 p-4 rounded-lg bg-slate-50 border border-slate-200">
             <CreditCard className="w-5 h-5 text-violet-600" />
             <div>
@@ -330,10 +354,10 @@ export default function Settings() {
         </div>
 
         {/* Debug Data Status */}
-        <div className="glass rounded-xl p-6 bg-slate-50/50">
+        <div className="glass rounded-xl p-6 bg-slate-50/50 dark:bg-slate-900/30">
           <div className="flex items-center gap-2 mb-4">
             <Database className="w-4 h-4 text-violet-600" />
-            <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">Data Status (Debug)</h2>
+            <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider dark:text-slate-400">Data Status (Debug)</h2>
           </div>
           <div className="space-y-2 text-xs font-mono">
             <div className="flex justify-between py-1.5 border-b border-slate-200">
