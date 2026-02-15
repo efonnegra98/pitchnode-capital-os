@@ -5,13 +5,13 @@ css
 
 @layer base {
   :root {
-    --background: 220 20% 97%;
+    --background: 220 18% 98%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 263 70% 50%;
+    --primary: 249 77% 67%;
     --primary-foreground: 0 0% 98%;
     --secondary: 220 15% 96%;
     --secondary-foreground: 215 20% 35%;
@@ -23,13 +23,13 @@ css
     --destructive-foreground: 0 0% 98%;
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 263 70% 50%;
+    --ring: 249 77% 67%;
     --radius: 0.75rem;
-    --chart-1: 263 70% 50%;
-    --chart-2: 250 60% 45%;
-    --chart-3: 240 50% 40%;
-    --chart-4: 230 55% 50%;
-    --chart-5: 270 65% 55%;
+    --chart-1: 249 77% 67%;
+    --chart-2: 250 60% 60%;
+    --chart-3: 240 50% 55%;
+    --chart-4: 230 55% 60%;
+    --chart-5: 260 65% 65%;
   }
 
 

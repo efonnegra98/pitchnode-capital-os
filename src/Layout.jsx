@@ -83,12 +83,12 @@ function LayoutContent({ children, currentPageName }) {
   return (
     <div className="min-h-screen bg-background text-foreground flex">
       <style>{`
-        .metric-glow { box-shadow: 0 4px 16px rgba(124, 58, 237, 0.06); }
+        .metric-glow { box-shadow: 0 4px 16px rgba(109, 93, 246, 0.06); }
         .glass { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04); }
         .glass-hover:hover { background: hsl(var(--accent)); }
-        .gradient-text { background: linear-gradient(135deg, #a78bfa, #7c3aed, #6d28d9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gradient-border { border-image: linear-gradient(135deg, #7c3aed, #4f46e5) 1; }
-        .accent-line { background: linear-gradient(180deg, #7c3aed, transparent); }
+        .gradient-text { background: linear-gradient(135deg, #8B7FF6, #6D5DF6, #5346E0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-border { border-image: linear-gradient(135deg, #6D5DF6, #5346E0) 1; }
+        .accent-line { background: linear-gradient(180deg, #6D5DF6, transparent); }
       `}</style>
 
       {/* Mobile overlay */}
@@ -137,12 +137,12 @@ function LayoutContent({ children, currentPageName }) {
                     group relative flex items-center gap-2.5 px-3 py-2.5 rounded-md text-[13px] font-medium
                     transition-colors duration-150
                     ${isActive
-                      ? "bg-violet-50/80 text-violet-700"
+                      ? "bg-[#6D5DF6]/10 text-[#6D5DF6]"
                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                     }
                   `}
                 >
-                  {isActive && <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-violet-600 rounded-r" />}
+                  {isActive && <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-[#6D5DF6] rounded-r" />}
                   <Icon className="w-[16px] h-[16px] flex-shrink-0" />
                   <span>{item.name}</span>
                 </Link>
