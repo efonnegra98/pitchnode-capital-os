@@ -55,6 +55,8 @@ import Onboarding from './pages/Onboarding';
 import Settings from './pages/Settings';
 import UpdateArchive from './pages/UpdateArchive';
 import UpdateBuilder from './pages/UpdateBuilder';
+import Upgrade from './pages/Upgrade';
+import TrialExpired from './pages/TrialExpired';
 import __Layout from './Layout.jsx';
 
 
@@ -67,6 +69,8 @@ export const PAGES = {
     "Settings": Settings,
     "UpdateArchive": UpdateArchive,
     "UpdateBuilder": UpdateBuilder,
+    "Upgrade": Upgrade,
+    "TrialExpired": TrialExpired,
 }
 
 export const pagesConfig = {
