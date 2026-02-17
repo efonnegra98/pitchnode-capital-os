@@ -78,7 +78,7 @@ export default function Upgrade() {
             <CardTitle className="text-2xl font-bold text-[#0F172A]">CapitalOS Pro</CardTitle>
             <CardDescription className="text-[#64748B] mt-2">Everything you need to close your round</CardDescription>
             <div className="mt-6">
-              <div className="text-5xl font-bold text-[#0F172A]">$99<span className="text-2xl text-[#64748B] font-normal">/month</span></div>
+              <div className="text-5xl font-bold text-[#0F172A]">$49<span className="text-2xl text-[#64748B] font-normal">/month</span></div>
               <p className="text-sm text-[#64748B] mt-2">Cancel anytime. No long-term commitment.</p>
             </div>
           </CardHeader>

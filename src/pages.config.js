@@ -53,10 +53,10 @@ import Gateway from './pages/Gateway';
 import Investors from './pages/Investors';
 import Onboarding from './pages/Onboarding';
 import Settings from './pages/Settings';
+import TrialExpired from './pages/TrialExpired';
 import UpdateArchive from './pages/UpdateArchive';
 import UpdateBuilder from './pages/UpdateBuilder';
 import Upgrade from './pages/Upgrade';
-import TrialExpired from './pages/TrialExpired';
 import __Layout from './Layout.jsx';
 
 
@@ -67,10 +67,10 @@ export const PAGES = {
     "Investors": Investors,
     "Onboarding": Onboarding,
     "Settings": Settings,
+    "TrialExpired": TrialExpired,
     "UpdateArchive": UpdateArchive,
     "UpdateBuilder": UpdateBuilder,
     "Upgrade": Upgrade,
-    "TrialExpired": TrialExpired,
 }
 
 export const pagesConfig = {
