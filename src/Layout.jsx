@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
+import TrialBanner from "@/components/TrialBanner";
 import {
   LayoutDashboard,
   Send,
@@ -26,10 +28,35 @@ function LayoutContent({ children, currentPageName }) {
   const [checkingAccess, setCheckingAccess] = useState(true);
   const navigate = useNavigate();
 
+  const { data: user } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: () => base44.auth.me(),
+  });
+
+  const { data: profile } = useQuery({
+    queryKey: ["userProfile", user?.email],
+    queryFn: async () => {
+      if (!user?.email) return null;
+      const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+      return profiles[0] || null;
+    },
+    enabled: !!user?.email,
+  });
+
+  const { data: company } = useQuery({
+    queryKey: ["company", profile?.company_id],
+    queryFn: async () => {
+      if (!profile?.company_id) return null;
+      const companies = await base44.entities.Company.filter({ id: profile.company_id });
+      return companies[0] || null;
+    },
+    enabled: !!profile?.company_id,
+  });
+
   useEffect(() => {
     const checkAccess = async () => {
       // Skip check for public pages
-      if (currentPageName === "Gateway" || currentPageName === "AccessRequest" || currentPageName === "Onboarding") {
+      if (currentPageName === "Gateway" || currentPageName === "AccessRequest" || currentPageName === "Onboarding" || currentPageName === "Upgrade" || currentPageName === "TrialExpired") {
         setCheckingAccess(false);
         return;
       }
@@ -60,6 +87,21 @@ function LayoutContent({ children, currentPageName }) {
         if (!profiles[0].company_id) {
           navigate(createPageUrl("Onboarding"));
           return;
+        }
+
+        // Check trial status
+        const companies = await base44.entities.Company.filter({ id: profiles[0].company_id });
+        const company = companies[0];
+        
+        if (company) {
+          const now = new Date();
+          const trialEnd = new Date(company.trial_end_date);
+          const isTrialExpired = company.subscription_status !== "active" && now > trialEnd;
+          
+          if (isTrialExpired) {
+            navigate(createPageUrl("TrialExpired"));
+            return;
+          }
         }
 
         setCheckingAccess(false);
@@ -171,6 +213,11 @@ function LayoutContent({ children, currentPageName }) {
           />
           <div className="w-5" />
         </div>
+
+        {/* Trial Banner */}
+        {currentPageName !== "Gateway" && currentPageName !== "AccessRequest" && currentPageName !== "Onboarding" && currentPageName !== "Upgrade" && currentPageName !== "TrialExpired" && (
+          <TrialBanner company={company} />
+        )}
 
         <div className="flex-1 overflow-y-auto">
           {children}

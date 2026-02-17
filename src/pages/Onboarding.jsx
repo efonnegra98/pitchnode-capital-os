@@ -81,11 +81,18 @@ export default function Onboarding() {
   const progress = (step / 4) * 100;
 
   const handleStep1Next = async () => {
+    const now = new Date();
+    const trialEnd = new Date(now);
+    trialEnd.setDate(trialEnd.getDate() + 7);
+    
     const company = await createCompanyMutation.mutateAsync({
       name: companyForm.company_name,
       founder_name: companyForm.founder_name,
       founder_title: companyForm.founder_title,
       capital_type: companyForm.capital_type,
+      trial_start_date: now.toISOString(),
+      trial_end_date: trialEnd.toISOString(),
+      subscription_status: "trialing",
     });
     
     // Create UserProfile linked to company
