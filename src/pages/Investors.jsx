@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Search, Users } from "lucide-react";
 import InvestorTable from "../components/investors/InvestorTable";
 import InvestorModal from "../components/investors/InvestorModal";
+import FollowUpModal from "../components/investors/FollowUpModal";
 
 export default function Investors() {
   const [search, setSearch] = useState("");
