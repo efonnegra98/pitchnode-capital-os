@@ -22,6 +22,7 @@ import RaiseMomentum from "../components/dashboard/RaiseMomentum";
 import SentimentOverview from "../components/dashboard/SentimentOverview";
 import IntroConversion from "../components/dashboard/IntroConversion";
 import EmptyState from "../components/dashboard/EmptyState";
+import CollapsibleSection from "../components/dashboard/CollapsibleSection";
 
 export default function Dashboard() {
   const { company, companyId, isLoading: companyLoading } = useCompany();
