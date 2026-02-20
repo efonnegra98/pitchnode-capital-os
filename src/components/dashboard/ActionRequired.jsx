@@ -59,14 +59,15 @@ export default function ActionRequired({ investors }) {
   };
 
   return (
-    <div className="glass rounded-xl p-6 border-l-4 border-amber-500 dark:border-amber-600 mb-8">
-      <div className="flex items-center justify-between mb-5">
+    <div className={`glass rounded-xl p-5 border-l-4 ${overdueCount > 0 ? "border-red-500" : "border-amber-500"}`}>
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-          <div>
-            <h2 className="text-sm font-semibold text-foreground dark:text-slate-50 uppercase tracking-wider">Action Required</h2>
-            <p className="text-secondary-foreground text-xs mt-0.5">{actionsNeeded.length} investor{actionsNeeded.length === 1 ? '' : 's'} need follow-up</p>
-          </div>
+          <AlertCircle className={`w-4 h-4 ${overdueCount > 0 ? "text-red-500" : "text-amber-500"}`} />
+          <p className="text-sm text-slate-700 font-medium">
+            {overdueCount > 0
+              ? `${overdueCount} overdue · ${actionsNeeded.length - overdueCount} upcoming`
+              : `${actionsNeeded.length} follow-up${actionsNeeded.length === 1 ? "" : "s"} due soon`}
+          </p>
         </div>
         <Link
           to={createPageUrl("Investors")}
