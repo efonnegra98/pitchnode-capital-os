@@ -13,6 +13,7 @@ export default function Investors() {
   const [sortField, setSortField] = useState("name");
   const [sortDir, setSortDir] = useState("asc");
   const [modalData, setModalData] = useState(null);
+  const [followUpInvestor, setFollowUpInvestor] = useState(null);
 
   const queryClient = useQueryClient();
   const { companyId, isLoading: companyLoading } = useCompany();
