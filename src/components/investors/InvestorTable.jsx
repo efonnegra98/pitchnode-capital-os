@@ -117,7 +117,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                     </span>
                   </td>
 
-                  {/* Next Action */}
+                  {/* Next Action + Last Note */}
                   <td className="py-3 px-4">
                     {inv.next_action_date ? (
                       <div>
@@ -128,7 +128,14 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                           <p className="text-muted-foreground text-[10px] mt-0.5">{inv.next_action_type}</p>
                         )}
                       </div>
-                    ) : "—"}
+                    ) : (
+                      inv.last_note ? null : <span className="text-xs text-muted-foreground">—</span>
+                    )}
+                    {inv.last_note && (
+                      <p className="text-[10px] text-slate-400 italic mt-0.5 truncate max-w-[160px]" title={inv.last_note}>
+                        "{inv.last_note}"
+                      </p>
+                    )}
                   </td>
 
                   {/* Cadence */}
