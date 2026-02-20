@@ -115,6 +115,14 @@ export default function UpdateBuilder() {
             <h1 className="text-2xl font-bold text-foreground tracking-tight">Update Builder</h1>
             <p className="text-muted-foreground text-sm mt-1">Compose and send structured investor updates</p>
           </div>
+          <div className="flex items-center gap-3">
+            <Link
+              to={createPageUrl("UpdateArchive")}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium transition-all"
+            >
+              <Archive className="w-4 h-4" />
+              View Archive
+            </Link>
           <button
             onClick={handleNewUpdate}
             disabled={createNewUpdateMutation.isPending}
