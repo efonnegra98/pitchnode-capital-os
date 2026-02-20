@@ -42,9 +42,18 @@ export default function UpdateArchive() {
 
   return (
     <div className="p-6 lg:p-10 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">Update Archive</h1>
-        <p className="text-muted-foreground text-sm mt-1">Chronological history of all investor updates</p>
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">Archive</h1>
+          <p className="text-muted-foreground text-sm mt-1">Permanent record of investor communications and reporting.</p>
+        </div>
+        <Link
+          to={createPageUrl("UpdateBuilder")}
+          className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-medium transition-all"
+        >
+          <Plus className="w-4 h-4" />
+          Create Update
+        </Link>
       </div>
 
       {updates.length === 0 ? (
