@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCompany } from "../components/useCompany";
 import { Input } from "@/components/ui/input";
 import { Search, Users } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 import InvestorTable from "../components/investors/InvestorTable";
 import InvestorModal from "../components/investors/InvestorModal";
 import FollowUpModal from "../components/investors/FollowUpModal";
