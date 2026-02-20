@@ -130,6 +130,7 @@ export default function UpdateBuilder() {
           >
             + New Update
           </button>
+          </div>
         </div>
 
         {updates.length === 0 ? (
