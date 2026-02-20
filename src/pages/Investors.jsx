@@ -148,6 +148,7 @@ export default function Investors() {
           sortDir={sortDir}
           onSort={handleSort}
           onEdit={(inv) => setModalData(inv)}
+          onFollowUp={(inv) => setFollowUpInvestor(inv)}
         />
       )}
 
