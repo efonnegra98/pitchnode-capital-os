@@ -40,6 +40,15 @@ export default function Investors() {
     },
   });
 
+  const followUpMutation = useMutation({
+    mutationFn: ({ id, date }) =>
+      base44.entities.Investor.update(id, { last_contact_date: date }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["investors", companyId] });
+      setFollowUpInvestor(null);
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.Investor.delete(id),
     onSuccess: () => {
