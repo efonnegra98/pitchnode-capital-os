@@ -123,13 +123,13 @@ export default function UpdateBuilder() {
               <Archive className="w-4 h-4" />
               View Archive
             </Link>
-          <button
-            onClick={handleNewUpdate}
-            disabled={createNewUpdateMutation.isPending}
-            className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-medium transition-all disabled:opacity-50"
-          >
-            + New Update
-          </button>
+            <button
+              onClick={handleNewUpdate}
+              disabled={createNewUpdateMutation.isPending}
+              className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-medium transition-all disabled:opacity-50"
+            >
+              + New Update
+            </button>
           </div>
         </div>
 
