@@ -16,6 +16,7 @@ export default function Investors() {
   const [modalData, setModalData] = useState(null);
   const [followUpInvestor, setFollowUpInvestor] = useState(null);
 
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const { companyId, isLoading: companyLoading } = useCompany();
 
