@@ -89,6 +89,12 @@ function LayoutContent({ children, currentPageName }) {
           return;
         }
 
+        // Admins and owners bypass trial/subscription checks entirely
+        if (user.role === "admin" || user.role === "owner") {
+          setCheckingAccess(false);
+          return;
+        }
+
         // Check trial status
         const companies = await base44.entities.Company.filter({ id: profiles[0].company_id });
         const company = companies[0];
