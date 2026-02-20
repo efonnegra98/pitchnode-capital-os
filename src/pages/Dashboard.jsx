@@ -132,18 +132,30 @@ export default function Dashboard() {
         </div>
       ) : (
         <>
-          {/* Raise Overview - Only shown when raise_mode is enabled */}
-          {company?.raise_mode && (
-            <RaiseOverview settings={company} />
+          {/* 1. Action Required — always first */}
+          {hasInvestors && (
+            <CollapsibleSection title="Action Required" badge={investors.filter(i => {
+              if (!i.next_action_date || i.cadence_status === "Closed") return false;
+              const d = new Date(i.next_action_date); d.setHours(0,0,0,0);
+              const today = new Date(); today.setHours(0,0,0,0);
+              const in3 = new Date(today); in3.setDate(in3.getDate() + 3);
+              return d < today || d <= in3;
+            }).length || null} defaultOpen={true}>
+              <ActionRequired investors={investors} />
+            </CollapsibleSection>
           )}
 
-          {/* Action Required */}
-          {hasInvestors && <ActionRequired investors={investors} />}
+          {/* 2. Raise Overview — prominent when raise mode on */}
+          {company?.raise_mode && (
+            <CollapsibleSection title="Round Overview" defaultOpen={true}>
+              <RaiseOverview settings={company} />
+            </CollapsibleSection>
+          )}
 
-          {/* Metric Cards */}
+          {/* 3. Financial Metrics — collapsible, secondary weight */}
           {hasUpdates ? (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <CollapsibleSection title="Financial Metrics" defaultOpen={true}>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                 <MetricCard
                   label="Monthly Revenue"
                   value={formatCurrency(latestUpdate?.revenue)}
@@ -172,8 +184,7 @@ export default function Dashboard() {
                   icon={Clock}
                 />
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                 <MetricCard
                   label="Cash Balance"
                   value={formatCurrency(latestUpdate?.cash_balance)}
@@ -195,9 +206,15 @@ export default function Dashboard() {
                   subtext={lastSent?.month}
                 />
               </div>
-            </>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                  <KPIChart data={chartData} />
+                </div>
+                <SnapshotSummary latestUpdate={latestUpdate} investorCount={activeInvestors.length} />
+              </div>
+            </CollapsibleSection>
           ) : (
-            <div className="mb-8">
+            <div className="mb-6">
               <EmptyState
                 icon={DollarSign}
                 title="No Financial Data Yet"
@@ -208,37 +225,29 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Charts & Snapshot */}
-          {hasUpdates && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
-                <KPIChart data={chartData} />
-              </div>
-              <SnapshotSummary latestUpdate={latestUpdate} investorCount={activeInvestors.length} />
-            </div>
-          )}
-
-          {/* Capital Funnel - Only shown when raise_mode is enabled */}
+          {/* 4. Capital Funnel — raise mode only */}
           {company?.raise_mode && hasInvestors && (
-            <div className="mt-6 space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
-                  <RaiseMomentum investors={investors} />
+            <CollapsibleSection title="Capital Funnel" defaultOpen={false}>
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2">
+                    <RaiseMomentum investors={investors} />
+                  </div>
+                  <SentimentOverview investors={investors} />
                 </div>
-                <SentimentOverview investors={investors} />
-              </div>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
-                  <CapitalFunnel investors={investors} />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2">
+                    <CapitalFunnel investors={investors} />
+                  </div>
+                  <IntroConversion investors={investors} />
                 </div>
-                <IntroConversion investors={investors} />
+                <RaiseReadiness />
               </div>
-              <RaiseReadiness />
-            </div>
+            </CollapsibleSection>
           )}
 
           {company?.raise_mode && !hasInvestors && (
-            <div className="mt-6">
+            <div className="mb-6">
               <EmptyState
                 icon={Users}
                 title="No Investors Added"
