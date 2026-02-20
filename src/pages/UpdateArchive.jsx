@@ -57,8 +57,21 @@ export default function UpdateArchive() {
       </div>
 
       {updates.length === 0 ? (
-        <div className="glass rounded-xl p-12 text-center">
-          <p className="text-muted-foreground text-sm">No updates archived yet.</p>
+        <div className="glass rounded-xl p-16 text-center border border-slate-200">
+          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+            <Plus className="w-6 h-6 text-slate-400" />
+          </div>
+          <h3 className="text-base font-semibold text-slate-800 mb-2">No updates yet.</h3>
+          <p className="text-sm text-slate-500 mb-6 max-w-sm mx-auto">
+            Create your first investor update to begin building your reporting history.
+          </p>
+          <Link
+            to={createPageUrl("UpdateBuilder")}
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-medium transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            Create Update
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
