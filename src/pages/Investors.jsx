@@ -161,6 +161,15 @@ export default function Investors() {
           isSaving={saveMutation.isPending}
         />
       )}
+
+      {followUpInvestor && (
+        <FollowUpModal
+          investor={followUpInvestor}
+          onSave={(id, date) => followUpMutation.mutate({ id, date })}
+          onClose={() => setFollowUpInvestor(null)}
+          isSaving={followUpMutation.isPending}
+        />
+      )}
     </div>
   );
 }
