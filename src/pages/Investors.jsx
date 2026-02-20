@@ -43,11 +43,15 @@ export default function Investors() {
   });
 
   const followUpMutation = useMutation({
-    mutationFn: ({ id, date }) =>
-      base44.entities.Investor.update(id, { last_contact_date: date }),
+    mutationFn: ({ id, date, note }) =>
+      base44.entities.Investor.update(id, {
+        last_contact_date: date,
+        ...(note?.trim() ? { last_note: note.trim() } : {}),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["investors", companyId] });
       setFollowUpInvestor(null);
+      toast({ description: "Follow-up logged and last contact updated." });
     },
   });
 
