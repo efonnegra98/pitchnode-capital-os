@@ -6,8 +6,7 @@ import { Label } from "@/components/ui/label";
 
 function daysSince(dateStr) {
   if (!dateStr) return null;
-  const diff = Math.floor((new Date() - new Date(dateStr)) / (1000 * 60 * 60 * 24));
-  return diff;
+  return Math.floor((new Date() - new Date(dateStr)) / (1000 * 60 * 60 * 24));
 }
 
 function formatDate(dateStr) {
@@ -16,11 +15,8 @@ function formatDate(dateStr) {
 }
 
 export default function FollowUpModal({ investor, onSave, onClose, isSaving }) {
+  const [notes, setNotes] = useState("");
   const days = daysSince(investor.last_contact_date);
-
-  const defaultTemplate = `Hi ${investor.name},\n\nFollowing up on our last conversation${days ? ` (${days} days ago)` : ""}.\n\n[Your update or ask here]\n\nBest,`;
-
-  const [notes, setNotes] = useState(defaultTemplate);
 
   const handleSave = () => {
     const today = new Date().toISOString().split("T")[0];
@@ -64,12 +60,12 @@ export default function FollowUpModal({ investor, onSave, onClose, isSaving }) {
         {/* Notes */}
         <div className="px-6 py-4 space-y-3">
           <div>
-            <Label className="text-xs font-medium text-slate-600 uppercase tracking-wider">Follow-Up Notes</Label>
+            <Label className="text-xs font-medium text-slate-600 uppercase tracking-wider">Notes</Label>
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="mt-2 text-sm min-h-[140px] resize-none font-mono leading-relaxed"
-              placeholder="Draft your follow-up message or log your interaction..."
+              className="mt-2 text-sm min-h-[120px] resize-none leading-relaxed"
+              placeholder="Log what happened and the next step…"
             />
           </div>
           <p className="text-[10px] text-slate-400">Saving will update Last Contact to today's date.</p>
