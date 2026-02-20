@@ -37,8 +37,15 @@ export default function ActionRequired({ investors }) {
     .filter((inv) => inv.urgency)
     .sort((a, b) => a.actionDate - b.actionDate);
 
+  const overdueCount = actionsNeeded.filter(i => i.urgency === "Overdue").length;
+
   if (actionsNeeded.length === 0) {
-    return null;
+    return (
+      <div className="glass rounded-xl p-4 flex items-center gap-3 border border-green-100 bg-green-50/40">
+        <div className="w-2 h-2 rounded-full bg-green-400" />
+        <p className="text-sm text-slate-600">No follow-ups required right now.</p>
+      </div>
+    );
   }
 
   const formatDate = (date) => {
