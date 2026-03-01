@@ -64,33 +64,51 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
         <div className="p-5 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Name *</Label>
+              <Label>Name <span className="text-slate-400 font-normal text-xs">(or Firm required)</span></Label>
               <Input
                 value={form.name}
-                onChange={(e) => handleChange("name", e.target.value)}
+                onChange={(e) => { handleChange("name", e.target.value); setValidationError(""); }}
                 className="mt-1"
                 placeholder="Full name"
               />
             </div>
             <div>
-              <Label>Firm</Label>
+              <Label>Firm <span className="text-slate-400 font-normal text-xs">(or Name required)</span></Label>
               <Input
                 value={form.firm}
-                onChange={(e) => handleChange("firm", e.target.value)}
+                onChange={(e) => { handleChange("firm", e.target.value); setValidationError(""); }}
                 className="mt-1"
                 placeholder="Investment firm"
               />
             </div>
           </div>
+          {validationError && (
+            <p className="text-xs text-red-600 -mt-2">{validationError}</p>
+          )}
 
-          <div>
-            <Label>Email</Label>
-            <Input
-              value={form.email}
-              onChange={(e) => handleChange("email", e.target.value)}
-              className="mt-1"
-              placeholder="investor@firm.com"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Email</Label>
+              <Input
+                value={form.email}
+                onChange={(e) => handleChange("email", e.target.value)}
+                className="mt-1"
+                placeholder="investor@firm.com"
+              />
+            </div>
+            <div>
+              <Label>Contact Method</Label>
+              <Select value={form.contact_method || ""} onValueChange={(v) => handleChange("contact_method", v)}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select method" />
+                </SelectTrigger>
+                <SelectContent>
+                  {["Email", "LinkedIn", "Phone Call", "In Person", "Event", "Other"].map((m) => (
+                    <SelectItem key={m} value={m}>{m}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div>
@@ -329,8 +347,14 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
               Cancel
             </Button>
             <Button
-              onClick={() => onSave(form)}
-              disabled={isSaving || !form.name}
+              onClick={() => {
+                if (!form.name && !form.firm) {
+                  setValidationError("Please provide at least a Name or Firm.");
+                  return;
+                }
+                onSave(form);
+              }}
+              disabled={isSaving}
               className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white"
             >
               {investor?.id ? "Update" : "Add Investor"}
