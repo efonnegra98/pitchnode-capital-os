@@ -43,10 +43,11 @@ export default function Investors() {
   });
 
   const followUpMutation = useMutation({
-    mutationFn: ({ id, date, note }) =>
+    mutationFn: ({ id, date, note, contactMethod }) =>
       base44.entities.Investor.update(id, {
         last_contact_date: date,
         ...(note?.trim() ? { last_note: note.trim() } : {}),
+        ...(contactMethod ? { contact_method: contactMethod } : {}),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["investors", companyId] });
@@ -171,7 +172,7 @@ export default function Investors() {
       {followUpInvestor && (
         <FollowUpModal
           investor={followUpInvestor}
-          onSave={(id, date, note) => followUpMutation.mutate({ id, date, note })}
+          onSave={(id, date, note, contactMethod) => followUpMutation.mutate({ id, date, note, contactMethod })}
           onClose={() => setFollowUpInvestor(null)}
           isSaving={followUpMutation.isPending}
         />
