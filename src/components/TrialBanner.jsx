@@ -10,6 +10,11 @@ export default function TrialBanner({ company, user }) {
     return null;
   }
 
+  // Admins and owners never see the trial banner
+  if (user?.role === "admin" || user?.role === "owner") {
+    return null;
+  }
+
   const now = new Date();
   const trialEnd = new Date(company.trial_end_date);
   const daysRemaining = Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24));

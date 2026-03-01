@@ -222,7 +222,7 @@ function LayoutContent({ children, currentPageName }) {
 
         {/* Trial Banner */}
         {currentPageName !== "Gateway" && currentPageName !== "AccessRequest" && currentPageName !== "Onboarding" && currentPageName !== "Upgrade" && currentPageName !== "TrialExpired" && (
-          <TrialBanner company={company} />
+          <TrialBanner company={company} user={user} />
         )}
 
         <div className="flex-1 overflow-y-auto">
