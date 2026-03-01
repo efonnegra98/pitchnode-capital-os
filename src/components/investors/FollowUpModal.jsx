@@ -3,6 +3,7 @@ import { X, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 function daysSince(dateStr) {
   if (!dateStr) return null;
@@ -16,11 +17,12 @@ function formatDate(dateStr) {
 
 export default function FollowUpModal({ investor, onSave, onClose, isSaving }) {
   const [notes, setNotes] = useState("");
+  const [contactMethod, setContactMethod] = useState(investor.contact_method || "");
   const days = daysSince(investor.last_contact_date);
 
   const handleSave = () => {
     const today = new Date().toISOString().split("T")[0];
-    onSave(investor.id, today, notes);
+    onSave(investor.id, today, notes, contactMethod);
   };
 
   return (
@@ -60,11 +62,24 @@ export default function FollowUpModal({ investor, onSave, onClose, isSaving }) {
         {/* Notes */}
         <div className="px-6 py-4 space-y-3">
           <div>
+            <Label className="text-xs font-medium text-slate-600 uppercase tracking-wider">Contact Method</Label>
+            <Select value={contactMethod} onValueChange={setContactMethod}>
+              <SelectTrigger className="mt-2">
+                <SelectValue placeholder="How did you connect?" />
+              </SelectTrigger>
+              <SelectContent>
+                {["Email", "LinkedIn", "Phone Call", "In Person", "Event", "Other"].map((m) => (
+                  <SelectItem key={m} value={m}>{m}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
             <Label className="text-xs font-medium text-slate-600 uppercase tracking-wider">Notes</Label>
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="mt-2 text-sm min-h-[120px] resize-none leading-relaxed"
+              className="mt-2 text-sm min-h-[100px] resize-none leading-relaxed"
               placeholder="Log what happened and the next step…"
             />
           </div>
