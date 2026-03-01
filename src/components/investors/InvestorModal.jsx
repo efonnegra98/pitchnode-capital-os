@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -7,10 +7,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { X, Trash2 } from "lucide-react";
 
 export default function InvestorModal({ investor, onSave, onDelete, onClose, isSaving }) {
+  const [validationError, setValidationError] = useState("");
+
   const [form, setForm] = useState({
     name: "",
     firm: "",
     email: "",
+    contact_method: "",
     stage_focus: "",
     check_size: "",
     relationship_strength: "",

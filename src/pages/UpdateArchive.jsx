@@ -5,21 +5,19 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import UpdatePreview from "../components/update/UpdatePreview";
+import { useCompany } from "../components/useCompany";
 
 export default function UpdateArchive() {
   const [selectedId, setSelectedId] = useState(null);
+  const { company, companyId } = useCompany();
 
   const { data: updates = [], isLoading } = useQuery({
-    queryKey: ["monthly-updates"],
-    queryFn: () => base44.entities.MonthlyUpdate.list("-created_date", 100),
+    queryKey: ["monthly-updates", companyId],
+    queryFn: () => base44.entities.MonthlyUpdate.filter({ company_id: companyId }, "-created_date", 100),
+    enabled: !!companyId,
   });
 
-  const { data: settings } = useQuery({
-    queryKey: ["company-settings"],
-    queryFn: () => base44.entities.CompanySettings.list(),
-  });
-
-  const companyName = settings?.[0]?.company_name || "";
+  const companyName = company?.name || "";
   const selectedUpdate = updates.find((u) => u.id === selectedId);
 
   const formatCurrency = (val) => {
