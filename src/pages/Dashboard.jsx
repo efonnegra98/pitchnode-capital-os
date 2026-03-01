@@ -126,6 +126,7 @@ export default function Dashboard() {
                 description="Prepare your data room and track fundraising progress."
                 actionLabel="View Checklist"
                 actionPage="Dashboard"
+                actionScroll="raise-readiness"
               />
             )}
           </div>
@@ -225,7 +226,14 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* 4. Capital Funnel — raise mode only */}
+          {/* 4. Raise Readiness — always visible when raise mode on (not gated by hasInvestors) */}
+          {company?.raise_mode && !hasInvestors && (
+            <CollapsibleSection title="Raise Readiness & Data Room" defaultOpen={true} id="raise-readiness">
+              <RaiseReadiness />
+            </CollapsibleSection>
+          )}
+
+          {/* 5. Capital Funnel — raise mode only */}
           {company?.raise_mode && hasInvestors && (
             <CollapsibleSection title="Capital Funnel" defaultOpen={false}>
               <div className="space-y-6">
@@ -257,6 +265,7 @@ export default function Dashboard() {
               />
             </div>
           )}
+
         </>
       )}
     </div>

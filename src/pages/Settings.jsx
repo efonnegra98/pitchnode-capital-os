@@ -52,18 +52,19 @@ export default function Settings() {
 
   const saveMutation = useMutation({
     mutationFn: async (formData) => {
+      const toNum = (v) => (v === "" || v === null || v === undefined) ? null : parseFloat(v) || 0;
       const payload = {
         name: formData.company_name,
         founder_name: formData.founder_name,
         founder_title: formData.founder_title,
         logo_url: formData.logo_url,
         raise_mode: formData.raise_mode,
-        capital_type: formData.capital_type,
-        target_raise_amount: formData.target_raise_amount,
-        capital_committed: formData.capital_committed,
-        soft_commitments: formData.soft_commitments,
-        round_type: formData.round_type,
-        target_close_date: formData.target_close_date,
+        capital_type: formData.capital_type || undefined,
+        target_raise_amount: toNum(formData.target_raise_amount),
+        capital_committed: toNum(formData.capital_committed),
+        soft_commitments: toNum(formData.soft_commitments),
+        round_type: formData.round_type || undefined,
+        target_close_date: formData.target_close_date || undefined,
       };
       
       if (!companyId) {

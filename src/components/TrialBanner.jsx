@@ -5,7 +5,7 @@ import { Clock, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
-export default function TrialBanner({ company }) {
+export default function TrialBanner({ company, user }) {
   if (!company || company.subscription_status === "active") {
     return null;
   }
