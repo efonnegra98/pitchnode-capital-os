@@ -1,114 +1,189 @@
 import React from "react";
-import { AlertCircle, Clock } from "lucide-react";
+import { AlertCircle, Clock, CalendarClock, HelpCircle, Ghost } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../../utils";
 
-const cadenceColors = {
-  "Overdue": "border-red-200 bg-red-50",
-  "Upcoming": "border-amber-200 bg-amber-50",
-};
+const STALE_DAYS = 14;
+const THIS_WEEK_DAYS = 7;
 
-const cadenceDotColors = {
-  "Overdue": "bg-red-500",
-  "Upcoming": "bg-amber-500",
-};
+function daysBetween(a, b) {
+  return Math.floor((a - b) / (1000 * 60 * 60 * 24));
+}
+
+function formatOverdue(days) {
+  if (days === 0) return "Today";
+  if (days === 1) return "1 day overdue";
+  return `${days} days overdue`;
+}
+
+function formatDue(date, today) {
+  const diff = daysBetween(date, today);
+  if (diff === 0) return "Today";
+  if (diff === 1) return "Tomorrow";
+  return `In ${diff} days`;
+}
+
+function Section({ label, icon: Icon, color, children, count }) {
+  if (!count) return null;
+  return (
+    <div className="mb-4">
+      <div className={`flex items-center gap-2 mb-2`}>
+        <Icon className={`w-3.5 h-3.5 ${color}`} />
+        <span className={`text-[11px] font-semibold uppercase tracking-wider ${color}`}>{label}</span>
+        <span className={`text-[10px] font-bold rounded-full px-1.5 py-0.5 ml-1 bg-slate-100 text-slate-500`}>{count}</span>
+      </div>
+      <div className="space-y-1.5">{children}</div>
+    </div>
+  );
+}
+
+function InvestorRow({ inv, badge, badgeColor, onClick }) {
+  return (
+    <Link
+      to={createPageUrl("Investors")}
+      className="flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 border border-slate-100 hover:border-violet-200 hover:bg-violet-50/30 bg-white transition-all group"
+    >
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline gap-2">
+          <span className="text-sm font-medium text-slate-800 truncate">{inv.name || inv.firm || "Unnamed"}</span>
+          {inv.firm && inv.name && <span className="text-xs text-slate-400 truncate">{inv.firm}</span>}
+        </div>
+        {inv.next_action_type && (
+          <p className="text-[11px] text-slate-400 mt-0.5 truncate">{inv.next_action_type}</p>
+        )}
+      </div>
+      <span className={`text-[10px] font-semibold whitespace-nowrap px-2 py-0.5 rounded-full border ${badgeColor}`}>
+        {badge}
+      </span>
+    </Link>
+  );
+}
 
 export default function ActionRequired({ investors }) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
-  const threeDaysFromNow = new Date(today);
-  threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
 
-  const actionsNeeded = investors
-    .filter((inv) => {
-      if (!inv.next_action_date) return false;
-      if (inv.cadence_status === "Closed") return false;
-      return true;
-    })
-    .map((inv) => {
-      const actionDate = new Date(inv.next_action_date);
-      actionDate.setHours(0, 0, 0, 0);
-      
-      const urgency = actionDate < today ? "Overdue" : actionDate <= threeDaysFromNow ? "Upcoming" : null;
-      
-      return { ...inv, actionDate, urgency };
-    })
-    .filter((inv) => inv.urgency)
-    .sort((a, b) => a.actionDate - b.actionDate);
+  const weekEnd = new Date(today);
+  weekEnd.setDate(weekEnd.getDate() + THIS_WEEK_DAYS);
 
-  const overdueCount = actionsNeeded.filter(i => i.urgency === "Overdue").length;
+  const staleThreshold = new Date(today);
+  staleThreshold.setDate(staleThreshold.getDate() - STALE_DAYS);
 
-  if (actionsNeeded.length === 0) {
+  const active = investors.filter(i => i.cadence_status !== "Closed" && i.status !== "Passed");
+
+  // 1. Overdue
+  const overdue = active.filter(i => {
+    if (!i.next_action_date) return false;
+    const d = new Date(i.next_action_date); d.setHours(0, 0, 0, 0);
+    return d < today;
+  }).sort((a, b) => new Date(a.next_action_date) - new Date(b.next_action_date));
+
+  // 2. Due Today
+  const dueToday = active.filter(i => {
+    if (!i.next_action_date) return false;
+    const d = new Date(i.next_action_date); d.setHours(0, 0, 0, 0);
+    return d.getTime() === today.getTime();
+  });
+
+  // 3. Due This Week (excludes today/overdue)
+  const dueThisWeek = active.filter(i => {
+    if (!i.next_action_date) return false;
+    const d = new Date(i.next_action_date); d.setHours(0, 0, 0, 0);
+    return d > today && d <= weekEnd;
+  }).sort((a, b) => new Date(a.next_action_date) - new Date(b.next_action_date));
+
+  // 4. No Next Action set
+  const noAction = active.filter(i => !i.next_action_date);
+
+  // 5. Stale (last contact > STALE_DAYS ago, not already overdue)
+  const stale = active.filter(i => {
+    if (!i.last_contact_date) return false;
+    const d = new Date(i.last_contact_date); d.setHours(0, 0, 0, 0);
+    // Don't double-list overdue ones
+    const isOverdue = i.next_action_date && new Date(i.next_action_date) < today;
+    return d <= staleThreshold && !isOverdue;
+  });
+
+  const totalItems = overdue.length + dueToday.length + dueThisWeek.length + noAction.length + stale.length;
+
+  if (totalItems === 0) {
     return (
       <div className="glass rounded-xl p-4 flex items-center gap-3 border border-green-100 bg-green-50/40">
         <div className="w-2 h-2 rounded-full bg-green-400" />
-        <p className="text-sm text-slate-600">No follow-ups required right now.</p>
+        <p className="text-sm text-slate-600">No actions required — follow-ups are on track.</p>
       </div>
     );
   }
 
-  const formatDate = (date) => {
-    const diff = Math.ceil((date - today) / (1000 * 60 * 60 * 24));
-    if (diff < 0) {
-      return `${Math.abs(diff)} day${Math.abs(diff) === 1 ? '' : 's'} overdue`;
-    }
-    if (diff === 0) return "Today";
-    if (diff === 1) return "Tomorrow";
-    return `In ${diff} days`;
-  };
-
   return (
-    <div className={`glass rounded-xl p-5 border-l-4 ${overdueCount > 0 ? "border-red-500" : "border-amber-500"}`}>
+    <div className="glass rounded-xl p-5 border border-slate-200">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <AlertCircle className={`w-4 h-4 ${overdueCount > 0 ? "text-red-500" : "text-amber-500"}`} />
-          <p className="text-sm text-slate-700 font-medium">
-            {overdueCount > 0
-              ? `${overdueCount} overdue · ${actionsNeeded.length - overdueCount} upcoming`
-              : `${actionsNeeded.length} follow-up${actionsNeeded.length === 1 ? "" : "s"} due soon`}
-          </p>
+        <div className="flex items-center gap-2">
+          <AlertCircle className={`w-4 h-4 ${overdue.length > 0 ? "text-red-500" : "text-amber-500"}`} />
+          <span className="text-sm font-semibold text-slate-700">
+            {overdue.length > 0 ? `${overdue.length} overdue` : `${totalItems} item${totalItems !== 1 ? "s" : ""} need attention`}
+          </span>
         </div>
-        <Link
-          to={createPageUrl("Investors")}
-          className="text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors"
-        >
-          View All →
+        <Link to={createPageUrl("Investors")} className="text-xs text-violet-600 hover:text-violet-700 transition-colors">
+          Manage All →
         </Link>
       </div>
 
-      <div className="space-y-2">
-        {actionsNeeded.map((inv) => (
-          <Link
-            key={inv.id}
-            to={createPageUrl("Investors")}
-            className={`block rounded-lg p-4 border transition-all hover:border-violet-300 dark:hover:border-violet-700 ${cadenceColors[inv.urgency]}`}
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-start gap-3 flex-1">
-                <div className={`w-2 h-2 rounded-full mt-1.5 ${cadenceDotColors[inv.urgency]}`} />
-                <div className="flex-1">
-                  <div className="flex items-baseline gap-2">
-                    <p className="text-foreground dark:text-slate-50 font-medium text-sm">{inv.name}</p>
-                    {inv.firm && (
-                      <span className="text-secondary-foreground text-xs">• {inv.firm}</span>
-                    )}
-                  </div>
-                  <p className="text-secondary-foreground text-xs mt-1">{inv.next_action_type || "Follow-up needed"}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className={`text-xs font-medium ${inv.urgency === 'Overdue' ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}>
-                  {formatDate(inv.actionDate)}
-                </p>
-                <p className="text-muted-foreground text-[10px] mt-0.5">
-                  {inv.actionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                </p>
-              </div>
-            </div>
-          </Link>
+      <Section label="Overdue" icon={AlertCircle} color="text-red-500" count={overdue.length}>
+        {overdue.map(inv => {
+          const d = new Date(inv.next_action_date); d.setHours(0, 0, 0, 0);
+          const days = daysBetween(today, d);
+          return (
+            <InvestorRow
+              key={inv.id}
+              inv={inv}
+              badge={formatOverdue(days)}
+              badgeColor="border-red-200 bg-red-50 text-red-600"
+            />
+          );
+        })}
+      </Section>
+
+      <Section label="Due Today" icon={CalendarClock} color="text-amber-600" count={dueToday.length}>
+        {dueToday.map(inv => (
+          <InvestorRow key={inv.id} inv={inv} badge="Today" badgeColor="border-amber-200 bg-amber-50 text-amber-700" />
         ))}
-      </div>
+      </Section>
+
+      <Section label="Due This Week" icon={Clock} color="text-blue-500" count={dueThisWeek.length}>
+        {dueThisWeek.map(inv => {
+          const d = new Date(inv.next_action_date); d.setHours(0, 0, 0, 0);
+          return (
+            <InvestorRow
+              key={inv.id}
+              inv={inv}
+              badge={formatDue(d, today)}
+              badgeColor="border-blue-200 bg-blue-50 text-blue-600"
+            />
+          );
+        })}
+      </Section>
+
+      <Section label="No Next Action Set" icon={HelpCircle} color="text-slate-400" count={noAction.length}>
+        {noAction.map(inv => (
+          <InvestorRow key={inv.id} inv={inv} badge="No action set" badgeColor="border-slate-200 bg-slate-50 text-slate-500" />
+        ))}
+      </Section>
+
+      <Section label={`Stale (${STALE_DAYS}+ days)`} icon={Ghost} color="text-orange-500" count={stale.length}>
+        {stale.map(inv => {
+          const d = new Date(inv.last_contact_date); d.setHours(0, 0, 0, 0);
+          const days = daysBetween(today, d);
+          return (
+            <InvestorRow
+              key={inv.id}
+              inv={inv}
+              badge={`${days}d since contact`}
+              badgeColor="border-orange-200 bg-orange-50 text-orange-600"
+            />
+          );
+        })}
+      </Section>
     </div>
   );
 }

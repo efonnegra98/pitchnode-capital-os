@@ -1,97 +1,104 @@
 import React from "react";
-import { TrendingUp, TrendingDown, Activity, AlertTriangle } from "lucide-react";
+import { TrendingUp, AlertTriangle, Minus } from "lucide-react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "../../utils";
+
+const STALE_DAYS = 14;
+const NO_OUTREACH_DAYS = 21;
 
 export default function RaiseMomentum({ investors }) {
-  const fourteenDaysAgo = new Date();
-  fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
 
-  // Calculate activity metrics
-  const recentInvestors = investors.filter((inv) => {
-    if (!inv.created_date) return false;
-    const createdDate = new Date(inv.created_date);
-    return createdDate >= fourteenDaysAgo;
+  const active = investors.filter(i => i.status !== "Passed" && i.cadence_status !== "Closed");
+
+  const recentFollowUps = active.filter(i => {
+    if (!i.last_contact_date) return false;
+    const d = new Date(i.last_contact_date);
+    return (now - d) / (1000 * 60 * 60 * 24) <= 7;
   }).length;
 
-  const recentMeetings = investors.filter((inv) => {
-    if (!inv.next_action_date) return false;
-    const actionDate = new Date(inv.next_action_date);
-    const isRecent = actionDate >= fourteenDaysAgo;
-    const isMeeting = inv.next_action_type && 
-      (inv.next_action_type.includes("Meeting") || inv.next_action_type.includes("Intro"));
-    return isRecent && isMeeting;
+  const staleCount = active.filter(i => {
+    if (!i.last_contact_date) return true; // no contact = stale
+    const days = (now - new Date(i.last_contact_date)) / (1000 * 60 * 60 * 24);
+    return days >= STALE_DAYS;
   }).length;
 
-  const recentFollowUps = investors.filter((inv) => {
-    if (!inv.last_contact_date) return false;
-    const contactDate = new Date(inv.last_contact_date);
-    return contactDate >= fourteenDaysAgo;
-  }).length;
+  // Find last outreach date across all active investors
+  const lastOutreachDate = active.reduce((latest, i) => {
+    if (!i.last_contact_date) return latest;
+    const d = new Date(i.last_contact_date);
+    return !latest || d > latest ? d : latest;
+  }, null);
 
-  const totalActivity = recentInvestors + recentMeetings + recentFollowUps;
+  const daysSinceOutreach = lastOutreachDate
+    ? Math.floor((now - lastOutreachDate) / (1000 * 60 * 60 * 24))
+    : null;
 
-  // Determine momentum status
-  let status, icon, iconColor, bgColor, textColor, borderColor;
+  const noRecentOutreach = daysSinceOutreach === null || daysSinceOutreach >= NO_OUTREACH_DAYS;
 
-  if (totalActivity >= 10) {
-    status = "Strong Momentum";
-    icon = TrendingUp;
-    iconColor = "text-emerald-600";
-    bgColor = "bg-emerald-50";
-    textColor = "text-emerald-700";
-    borderColor = "border-emerald-200";
-  } else if (totalActivity >= 5) {
-    status = "Stable";
-    icon = Activity;
-    iconColor = "text-blue-600";
-    bgColor = "bg-blue-50";
-    textColor = "text-blue-700";
-    borderColor = "border-blue-200";
-  } else if (totalActivity >= 2) {
-    status = "Slowing";
-    icon = TrendingDown;
-    iconColor = "text-amber-600";
-    bgColor = "bg-amber-50";
-    textColor = "text-amber-700";
-    borderColor = "border-amber-200";
+  // Determine status
+  let status, label, sub, Icon, dot, bg, text, border;
+
+  if (active.length === 0) {
+    status = "neutral";
+    label = "No Investors";
+    sub = "Add investors to track momentum";
+    Icon = Minus;
+    dot = "bg-slate-300";
+    bg = "bg-slate-50";
+    text = "text-slate-500";
+    border = "border-slate-200";
+  } else if (noRecentOutreach) {
+    status = "red";
+    label = "At Risk";
+    sub = daysSinceOutreach !== null
+      ? `No outreach in ${daysSinceOutreach} days`
+      : "No outreach recorded";
+    Icon = AlertTriangle;
+    dot = "bg-red-500";
+    bg = "bg-red-50";
+    text = "text-red-700";
+    border = "border-red-200";
+  } else if (staleCount >= 3) {
+    status = "yellow";
+    label = "Slowing";
+    sub = `${staleCount} investor${staleCount !== 1 ? "s" : ""} stale (${STALE_DAYS}+ days)`;
+    Icon = AlertTriangle;
+    dot = "bg-amber-400";
+    bg = "bg-amber-50";
+    text = "text-amber-700";
+    border = "border-amber-200";
   } else {
-    status = "At Risk";
-    icon = AlertTriangle;
-    iconColor = "text-red-600";
-    bgColor = "bg-red-50";
-    textColor = "text-red-700";
-    borderColor = "border-red-200";
+    status = "green";
+    label = "On Track";
+    sub = `${recentFollowUps} follow-up${recentFollowUps !== 1 ? "s" : ""} in the last 7 days`;
+    Icon = TrendingUp;
+    dot = "bg-emerald-500";
+    bg = "bg-emerald-50";
+    text = "text-emerald-700";
+    border = "border-emerald-200";
   }
 
-  const Icon = icon;
-
   return (
-    <div className="glass rounded-xl p-6 border border-slate-200">
-      <div className="flex items-center justify-between mb-4">
+    <div className={`rounded-xl border ${border} ${bg} px-4 py-3 flex items-center justify-between gap-4`}>
+      <div className="flex items-center gap-3">
+        <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${dot}`} />
         <div>
-          <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">Raise Momentum</h2>
-          <p className="text-slate-400 text-xs mt-1">14-day activity indicator</p>
-        </div>
-        <Icon className={`w-5 h-5 ${iconColor}`} />
-      </div>
-
-      <div className={`${bgColor} ${borderColor} border rounded-lg px-4 py-3 mb-4`}>
-        <p className={`text-sm font-semibold ${textColor}`}>{status}</p>
-      </div>
-
-      <div className="grid grid-cols-3 gap-3">
-        <div className="bg-slate-50 rounded-lg p-3 text-center">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">New Contacts</p>
-          <p className="text-lg font-bold text-foreground">{recentInvestors}</p>
-        </div>
-        <div className="bg-slate-50 rounded-lg p-3 text-center">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Meetings</p>
-          <p className="text-lg font-bold text-foreground">{recentMeetings}</p>
-        </div>
-        <div className="bg-slate-50 rounded-lg p-3 text-center">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Follow-Ups</p>
-          <p className="text-lg font-bold text-foreground">{recentFollowUps}</p>
+          <p className={`text-sm font-semibold ${text}`}>
+            Momentum: {label}
+          </p>
+          <p className={`text-xs mt-0.5 ${text} opacity-80`}>{sub}</p>
         </div>
       </div>
+      {status !== "neutral" && (
+        <Link
+          to={createPageUrl("Investors")}
+          className={`text-[11px] font-medium ${text} opacity-80 hover:opacity-100 whitespace-nowrap transition-opacity`}
+        >
+          View →
+        </Link>
+      )}
     </div>
   );
 }
