@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ChevronDown, ChevronUp, Send } from "lucide-react";
 
 const statusColors = {
@@ -23,12 +23,12 @@ const cadenceColors = {
 };
 
 function getStaleness(dateStr) {
-  if (!dateStr) return null;
+  if (!dateStr) return { days: null, level: "none" };
   const days = Math.floor((new Date() - new Date(dateStr)) / (1000 * 60 * 60 * 24));
-  if (days >= 21) return { label: "At Risk", days, level: "critical" };
-  if (days >= 14) return { label: "At Risk", days, level: "high" };
-  if (days >= 7)  return { label: "Stale",   days, level: "medium" };
-  return { label: null, days, level: "ok" };
+  if (days >= 21) return { days, level: "critical" };
+  if (days >= 14) return { days, level: "high" };
+  if (days >= 7)  return { days, level: "medium" };
+  return { days, level: "ok" };
 }
 
 function formatRelative(days) {
@@ -39,6 +39,29 @@ function formatRelative(days) {
 
 function formatShortDate(dateStr) {
   return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function LastNoteTooltip({ note }) {
+  const [show, setShow] = useState(false);
+  if (!note) return null;
+
+  return (
+    <div className="relative inline-block">
+      <span
+        className="text-[10px] text-slate-400 italic truncate max-w-[140px] block cursor-help underline decoration-dotted"
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+      >
+        "{note.length > 40 ? note.slice(0, 40) + "…" : note}"
+      </span>
+      {show && (
+        <div className="absolute z-50 bottom-full left-0 mb-1 w-64 bg-slate-900 text-white text-xs rounded-lg p-3 shadow-xl leading-relaxed">
+          {note}
+          <div className="absolute top-full left-4 border-4 border-transparent border-t-slate-900" />
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function InvestorTable({ investors, sortField, sortDir, onSort, onEdit, onFollowUp }) {
@@ -69,13 +92,11 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-200">
-              <SortHeader field="name">Name</SortHeader>
-              <SortHeader field="firm">Firm</SortHeader>
+            <tr className="border-b border-slate-200 bg-slate-50/60">
+              <SortHeader field="name">Name / Firm</SortHeader>
               <SortHeader field="status">Status</SortHeader>
-              <SortHeader field="relationship_strength">Strength</SortHeader>
+              <SortHeader field="funnel_stage">Stage</SortHeader>
               <SortHeader field="next_action_date">Next Action</SortHeader>
-              <SortHeader field="cadence_status">Cadence</SortHeader>
               <SortHeader field="last_contact_date">Last Contact</SortHeader>
               <th className="py-3 px-4" />
             </tr>
@@ -83,23 +104,27 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
           <tbody className="divide-y divide-slate-100">
             {investors.map((inv) => {
               const staleness = getStaleness(inv.last_contact_date);
-              const isCritical = staleness?.level === "critical";
+              const isCritical = staleness.level === "critical";
+              const isHigh = staleness.level === "high";
+              const isMedium = staleness.level === "medium";
+
+              const rowBg = isCritical
+                ? "bg-red-50/50 hover:bg-red-50/80"
+                : isHigh
+                ? "bg-orange-50/30 hover:bg-orange-50/60"
+                : "hover:bg-slate-50";
 
               return (
                 <tr
                   key={inv.id}
                   onClick={() => onEdit(inv)}
-                  className={`cursor-pointer transition-colors ${
-                    isCritical
-                      ? "bg-red-50/40 hover:bg-red-50/70"
-                      : "hover:bg-slate-50"
-                  }`}
+                  className={`cursor-pointer transition-colors ${rowBg}`}
                 >
-                  {/* Name */}
-                  <td className="py-3 px-4 font-medium text-foreground">{inv.name}</td>
-
-                  {/* Firm */}
-                  <td className="py-3 px-4 text-muted-foreground">{inv.firm || "—"}</td>
+                  {/* Name + Firm */}
+                  <td className="py-3 px-4">
+                    <p className="font-medium text-foreground text-sm">{inv.name || <span className="text-slate-400 italic">No name</span>}</p>
+                    {inv.firm && <p className="text-xs text-muted-foreground mt-0.5">{inv.firm}</p>}
+                  </td>
 
                   {/* Status */}
                   <td className="py-3 px-4">
@@ -107,21 +132,19 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                       <span className={`text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full border ${statusColors[inv.status] || ""}`}>
                         {inv.status}
                       </span>
-                    ) : "—"}
+                    ) : <span className="text-slate-300">—</span>}
                   </td>
 
-                  {/* Relationship Strength */}
+                  {/* Funnel Stage */}
                   <td className="py-3 px-4">
-                    <span className={`text-xs font-medium ${strengthColors[inv.relationship_strength] || "text-slate-400"}`}>
-                      {inv.relationship_strength || "—"}
-                    </span>
+                    <span className="text-xs text-slate-500">{inv.funnel_stage || "—"}</span>
                   </td>
 
-                  {/* Next Action + Last Note */}
+                  {/* Next Action */}
                   <td className="py-3 px-4">
                     {inv.next_action_date ? (
                       <div>
-                        <p className="text-foreground text-xs">
+                        <p className="text-foreground text-xs font-medium">
                           {new Date(inv.next_action_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                         </p>
                         {inv.next_action_type && (
@@ -129,33 +152,20 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                         )}
                       </div>
                     ) : (
-                      inv.last_note ? null : <span className="text-xs text-muted-foreground">—</span>
+                      <span className="text-[11px] text-slate-300 italic">Not set</span>
                     )}
-                    {inv.last_note && (
-                      <p className="text-[10px] text-slate-400 italic mt-0.5 truncate max-w-[160px]" title={inv.last_note}>
-                        "{inv.last_note}"
-                      </p>
-                    )}
+                    {inv.last_note && <LastNoteTooltip note={inv.last_note} />}
                   </td>
 
-                  {/* Cadence */}
+                  {/* Last Contact — prominent staleness */}
                   <td className="py-3 px-4">
-                    {inv.cadence_status ? (
-                      <span className={`text-xs font-medium ${cadenceColors[inv.cadence_status] || "text-slate-400"}`}>
-                        {inv.cadence_status}
-                      </span>
-                    ) : "—"}
-                  </td>
-
-                  {/* Last Contact — enhanced */}
-                  <td className="py-3 px-4">
-                    {inv.last_contact_date && staleness ? (
+                    {staleness.days !== null ? (
                       <div className="flex items-center gap-2">
                         <div>
-                          <p className={`text-xs font-medium ${
-                            staleness.level === "critical" ? "text-red-600"
-                            : staleness.level === "high" ? "text-red-500"
-                            : staleness.level === "medium" ? "text-amber-600"
+                          <p className={`text-sm font-semibold ${
+                            isCritical ? "text-red-600"
+                            : isHigh ? "text-orange-500"
+                            : isMedium ? "text-amber-600"
                             : "text-slate-700"
                           }`}>
                             {formatRelative(staleness.days)}
@@ -164,32 +174,30 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                             {formatShortDate(inv.last_contact_date)}
                           </p>
                         </div>
-                        {staleness.label && (
+                        {(isCritical || isHigh) && (
                           <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                            staleness.level === "critical" || staleness.level === "high"
-                              ? "bg-red-100 text-red-600"
-                              : "bg-amber-100 text-amber-700"
+                            isCritical ? "bg-red-100 text-red-600" : "bg-orange-100 text-orange-600"
                           }`}>
-                            {staleness.label}
+                            {isCritical ? "Stale" : "Aging"}
                           </span>
                         )}
                       </div>
                     ) : (
-                      <span className="text-xs text-muted-foreground">—</span>
+                      <span className="text-xs text-red-400 font-medium italic">Never</span>
                     )}
                   </td>
 
-                  {/* Follow Up action */}
+                  {/* Quick Follow Up */}
                   <td className="py-3 px-3">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         onFollowUp(inv);
                       }}
-                      className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 hover:text-[#6D5DF6] border border-slate-200 hover:border-[#6D5DF6]/40 rounded-lg px-2.5 py-1.5 transition-all whitespace-nowrap"
+                      className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 hover:text-[#6D5DF6] border border-slate-200 hover:border-[#6D5DF6]/40 hover:bg-violet-50 rounded-lg px-2.5 py-1.5 transition-all whitespace-nowrap"
                     >
                       <Send className="w-3 h-3" />
-                      Follow Up
+                      Log
                     </button>
                   </td>
                 </tr>
