@@ -133,16 +133,13 @@ export default function Dashboard() {
         </div>
       ) : (
         <>
-          {/* 1. Action Required — always first */}
+          {/* 1. Action Required + Momentum — always first */}
           {hasInvestors && (
-            <CollapsibleSection title="Action Required" badge={investors.filter(i => {
-              if (!i.next_action_date || i.cadence_status === "Closed") return false;
-              const d = new Date(i.next_action_date); d.setHours(0,0,0,0);
-              const today = new Date(); today.setHours(0,0,0,0);
-              const in3 = new Date(today); in3.setDate(in3.getDate() + 3);
-              return d < today || d <= in3;
-            }).length || null} defaultOpen={true}>
-              <ActionRequired investors={investors} />
+            <CollapsibleSection title="Action Required" defaultOpen={true}>
+              <div className="space-y-3">
+                <RaiseMomentum investors={investors} />
+                <ActionRequired investors={investors} />
+              </div>
             </CollapsibleSection>
           )}
 
@@ -153,9 +150,9 @@ export default function Dashboard() {
             </CollapsibleSection>
           )}
 
-          {/* 3. Financial Metrics — collapsible, secondary weight */}
+          {/* 3. Financial Metrics — collapsible */}
           {hasUpdates ? (
-            <CollapsibleSection title="Financial Metrics" defaultOpen={true}>
+            <CollapsibleSection title="Financial Metrics" defaultOpen={false}>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                 <MetricCard
                   label="Monthly Revenue"
@@ -226,32 +223,33 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* 4. Raise Readiness — always visible when raise mode on (not gated by hasInvestors) */}
+          {/* 4. Raise Readiness — collapsed by default */}
           {company?.raise_mode && !hasInvestors && (
-            <CollapsibleSection title="Raise Readiness & Data Room" defaultOpen={true} id="raise-readiness">
+            <CollapsibleSection title="Raise Readiness & Data Room" defaultOpen={false} id="raise-readiness">
               <RaiseReadiness />
             </CollapsibleSection>
           )}
 
-          {/* 5. Capital Funnel — raise mode only */}
+          {/* 5. Secondary analytics — collapsed by default */}
           {company?.raise_mode && hasInvestors && (
-            <CollapsibleSection title="Capital Funnel" defaultOpen={false}>
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="lg:col-span-2">
-                    <RaiseMomentum investors={investors} />
+            <>
+              <CollapsibleSection title="Funnel Analytics" defaultOpen={false}>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2">
+                      <CapitalFunnel investors={investors} />
+                    </div>
+                    <SentimentOverview investors={investors} />
                   </div>
-                  <SentimentOverview investors={investors} />
-                </div>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="lg:col-span-2">
-                    <CapitalFunnel investors={investors} />
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <IntroConversion investors={investors} />
                   </div>
-                  <IntroConversion investors={investors} />
                 </div>
+              </CollapsibleSection>
+              <CollapsibleSection title="Raise Readiness & Data Room" defaultOpen={false} id="raise-readiness">
                 <RaiseReadiness />
-              </div>
-            </CollapsibleSection>
+              </CollapsibleSection>
+            </>
           )}
 
           {company?.raise_mode && !hasInvestors && (
