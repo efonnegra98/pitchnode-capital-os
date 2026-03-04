@@ -165,7 +165,7 @@ export default function BulkUploadModal({ companyId, existingInvestors, onClose,
       });
       if (isDup) { skippedDuplicate++; continue; }
 
-      await base44.entities.Investor.create({ ...rec, company_id: companyId });
+      await base44.entities.Investor.create({ ...rec, company_id: companyId, funnel_stage: rec.funnel_stage || "Identified" });
       importedCount++;
     }
 
