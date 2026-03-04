@@ -57,6 +57,7 @@ import TrialExpired from './pages/TrialExpired';
 import UpdateArchive from './pages/UpdateArchive';
 import UpdateBuilder from './pages/UpdateBuilder';
 import Upgrade from './pages/Upgrade';
+import Admin from './pages/Admin';
 import __Layout from './Layout.jsx';
 
 
@@ -71,6 +72,7 @@ export const PAGES = {
     "UpdateArchive": UpdateArchive,
     "UpdateBuilder": UpdateBuilder,
     "Upgrade": Upgrade,
+    "Admin": Admin,
 }
 
 export const pagesConfig = {
