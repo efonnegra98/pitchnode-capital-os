@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCompany } from "../components/useCompany";
 import { Input } from "@/components/ui/input";
-import { Search, Users } from "lucide-react";
+import { Search, Users, Upload } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import InvestorTable from "../components/investors/InvestorTable";
 import InvestorModal from "../components/investors/InvestorModal";
@@ -16,6 +16,7 @@ export default function Investors() {
   const [sortDir, setSortDir] = useState("asc");
   const [modalData, setModalData] = useState(null);
   const [followUpInvestor, setFollowUpInvestor] = useState(null);
+  const [showUpload, setShowUpload] = useState(false);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -122,6 +123,13 @@ export default function Investors() {
               className="pl-9 w-56"
             />
           </div>
+          <button
+            onClick={() => setShowUpload(true)}
+            className="px-4 py-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium transition-all whitespace-nowrap flex items-center gap-1.5"
+          >
+            <Upload className="w-4 h-4" />
+            Upload List
+          </button>
           <button
             onClick={() => setModalData({})}
             className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-medium transition-all whitespace-nowrap"
