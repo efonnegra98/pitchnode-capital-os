@@ -200,6 +200,27 @@ function LayoutContent({ children, currentPageName }) {
           </div>
         </nav>
 
+        {/* Admin link — only visible to admins */}
+        {user?.role === "admin" && (
+          <div className="px-4 pb-2">
+            <Link
+              to={createPageUrl("Admin")}
+              onClick={() => setSidebarOpen(false)}
+              className={`
+                group relative flex items-center gap-2.5 px-3 py-2.5 rounded-md text-[13px] font-medium
+                transition-colors duration-150
+                ${currentPageName === "Admin"
+                  ? "bg-[#6D5DF6]/10 text-[#6D5DF6]"
+                  : "text-slate-400 hover:text-slate-700 hover:bg-slate-50"
+                }
+              `}
+            >
+              <Shield className="w-[16px] h-[16px] flex-shrink-0" />
+              <span>Admin Console</span>
+            </Link>
+          </div>
+        )}
+
         {/* Footer */}
         <div className="px-4 py-3">
           <p className="text-[9px] text-slate-400 tracking-wider">v1.0</p>
