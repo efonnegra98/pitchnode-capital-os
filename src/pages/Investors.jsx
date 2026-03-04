@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import InvestorTable from "../components/investors/InvestorTable";
 import InvestorModal from "../components/investors/InvestorModal";
 import FollowUpModal from "../components/investors/FollowUpModal";
+import BulkUploadModal from "../components/investors/BulkUploadModal";
 
 export default function Investors() {
   const [search, setSearch] = useState("");
