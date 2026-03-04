@@ -3,7 +3,6 @@ import { AlertCircle, Clock, CalendarClock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../../utils";
 
-const STALE_DAYS = 14;
 const THIS_WEEK_DAYS = 7;
 
 function daysBetween(a, b) {
@@ -11,7 +10,6 @@ function daysBetween(a, b) {
 }
 
 function formatOverdue(days) {
-  if (days === 0) return "Today";
   if (days === 1) return "1 day overdue";
   return `${days} days overdue`;
 }
@@ -27,17 +25,17 @@ function Section({ label, icon: Icon, color, children, count }) {
   if (!count) return null;
   return (
     <div className="mb-4">
-      <div className={`flex items-center gap-2 mb-2`}>
+      <div className="flex items-center gap-2 mb-2">
         <Icon className={`w-3.5 h-3.5 ${color}`} />
         <span className={`text-[11px] font-semibold uppercase tracking-wider ${color}`}>{label}</span>
-        <span className={`text-[10px] font-bold rounded-full px-1.5 py-0.5 ml-1 bg-slate-100 text-slate-500`}>{count}</span>
+        <span className="text-[10px] font-bold rounded-full px-1.5 py-0.5 ml-1 bg-slate-100 text-slate-500">{count}</span>
       </div>
       <div className="space-y-1.5">{children}</div>
     </div>
   );
 }
 
-function InvestorRow({ inv, badge, badgeColor, onClick }) {
+function InvestorRow({ inv, badge, badgeColor }) {
   return (
     <Link
       to={createPageUrl("Investors")}
@@ -66,12 +64,10 @@ export default function ActionRequired({ investors }) {
   const weekEnd = new Date(today);
   weekEnd.setDate(weekEnd.getDate() + THIS_WEEK_DAYS);
 
-  const staleThreshold = new Date(today);
-  staleThreshold.setDate(staleThreshold.getDate() - STALE_DAYS);
-
   const active = investors.filter(i => i.cadence_status !== "Closed" && i.status !== "Passed");
 
-  // 1. Overdue
+  // Only investors WITH a next_action_date are shown here
+  // 1. Overdue: next_action_date is in the past
   const overdue = active.filter(i => {
     if (!i.next_action_date) return false;
     const d = new Date(i.next_action_date); d.setHours(0, 0, 0, 0);
@@ -85,27 +81,35 @@ export default function ActionRequired({ investors }) {
     return d.getTime() === today.getTime();
   });
 
-  // 3. Due This Week (excludes today/overdue)
+  // 3. Due This Week (after today, within 7 days)
   const dueThisWeek = active.filter(i => {
     if (!i.next_action_date) return false;
     const d = new Date(i.next_action_date); d.setHours(0, 0, 0, 0);
     return d > today && d <= weekEnd;
   }).sort((a, b) => new Date(a.next_action_date) - new Date(b.next_action_date));
 
-  // 4. No Next Action set
-  const noAction = active.filter(i => !i.next_action_date);
+  const totalItems = overdue.length + dueToday.length + dueThisWeek.length;
+  const hasInvestors = active.length > 0;
 
-  // 5. Stale (last contact > STALE_DAYS ago, not already overdue)
-  const stale = active.filter(i => {
-    if (!i.last_contact_date) return false;
-    const d = new Date(i.last_contact_date); d.setHours(0, 0, 0, 0);
-    // Don't double-list overdue ones
-    const isOverdue = i.next_action_date && new Date(i.next_action_date) < today;
-    return d <= staleThreshold && !isOverdue;
-  });
+  // No scheduled actions, but investors exist in pipeline
+  if (totalItems === 0 && hasInvestors) {
+    return (
+      <div className="glass rounded-xl p-5 border border-slate-100 bg-slate-50/50 text-center">
+        <p className="text-sm font-semibold text-slate-700 mb-1">Pipeline Ready</p>
+        <p className="text-xs text-slate-400 mb-3 max-w-xs mx-auto">
+          Your investor list has been imported. Begin outreach to activate your pipeline.
+        </p>
+        <Link
+          to={createPageUrl("Investors")}
+          className="inline-block text-xs font-medium text-violet-600 hover:text-violet-700 transition-colors border border-violet-200 rounded-lg px-3 py-1.5 hover:bg-violet-50"
+        >
+          View Investors →
+        </Link>
+      </div>
+    );
+  }
 
-  const totalItems = overdue.length + dueToday.length + dueThisWeek.length + noAction.length + stale.length;
-
+  // No investors at all
   if (totalItems === 0) {
     return (
       <div className="glass rounded-xl p-4 flex items-center gap-3 border border-green-100 bg-green-50/40">
@@ -121,7 +125,7 @@ export default function ActionRequired({ investors }) {
         <div className="flex items-center gap-2">
           <AlertCircle className={`w-4 h-4 ${overdue.length > 0 ? "text-red-500" : "text-amber-500"}`} />
           <span className="text-sm font-semibold text-slate-700">
-            {overdue.length > 0 ? `${overdue.length} overdue` : `${totalItems} item${totalItems !== 1 ? "s" : ""} need attention`}
+            {overdue.length > 0 ? `${overdue.length} overdue` : `${totalItems} upcoming follow-up${totalItems !== 1 ? "s" : ""}`}
           </span>
         </div>
         <Link to={createPageUrl("Investors")} className="text-xs text-violet-600 hover:text-violet-700 transition-colors">
@@ -134,12 +138,7 @@ export default function ActionRequired({ investors }) {
           const d = new Date(inv.next_action_date); d.setHours(0, 0, 0, 0);
           const days = daysBetween(today, d);
           return (
-            <InvestorRow
-              key={inv.id}
-              inv={inv}
-              badge={formatOverdue(days)}
-              badgeColor="border-red-200 bg-red-50 text-red-600"
-            />
+            <InvestorRow key={inv.id} inv={inv} badge={formatOverdue(days)} badgeColor="border-red-200 bg-red-50 text-red-600" />
           );
         })}
       </Section>
@@ -154,33 +153,7 @@ export default function ActionRequired({ investors }) {
         {dueThisWeek.map(inv => {
           const d = new Date(inv.next_action_date); d.setHours(0, 0, 0, 0);
           return (
-            <InvestorRow
-              key={inv.id}
-              inv={inv}
-              badge={formatDue(d, today)}
-              badgeColor="border-blue-200 bg-blue-50 text-blue-600"
-            />
-          );
-        })}
-      </Section>
-
-      <Section label="No Next Action Set" icon={HelpCircle} color="text-slate-400" count={noAction.length}>
-        {noAction.map(inv => (
-          <InvestorRow key={inv.id} inv={inv} badge="No action set" badgeColor="border-slate-200 bg-slate-50 text-slate-500" />
-        ))}
-      </Section>
-
-      <Section label={`Stale (${STALE_DAYS}+ days)`} icon={Ghost} color="text-orange-500" count={stale.length}>
-        {stale.map(inv => {
-          const d = new Date(inv.last_contact_date); d.setHours(0, 0, 0, 0);
-          const days = daysBetween(today, d);
-          return (
-            <InvestorRow
-              key={inv.id}
-              inv={inv}
-              badge={`${days}d since contact`}
-              badgeColor="border-orange-200 bg-orange-50 text-orange-600"
-            />
+            <InvestorRow key={inv.id} inv={inv} badge={formatDue(d, today)} badgeColor="border-blue-200 bg-blue-50 text-blue-600" />
           );
         })}
       </Section>
