@@ -178,6 +178,15 @@ export default function Investors() {
         />
       )}
 
+      {showUpload && (
+        <BulkUploadModal
+          companyId={companyId}
+          existingInvestors={investors}
+          onClose={() => setShowUpload(false)}
+          onImported={() => queryClient.invalidateQueries({ queryKey: ["investors", companyId] })}
+        />
+      )}
+
       {followUpInvestor && (
         <FollowUpModal
           investor={followUpInvestor}
