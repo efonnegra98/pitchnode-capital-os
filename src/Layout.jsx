@@ -12,7 +12,8 @@ import {
   Settings,
   Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  Shield
 } from "lucide-react";
 
 const navItems = [
