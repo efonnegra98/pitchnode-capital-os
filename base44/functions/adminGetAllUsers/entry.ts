@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
 Deno.serve(async (req) => {
   try {
@@ -10,12 +10,17 @@ Deno.serve(async (req) => {
     }
 
     // Fetch all user profiles, companies, investors, and updates as service role
-    const [profiles, companies, investors, updates] = await Promise.all([
-      base44.asServiceRole.entities.UserProfile.list(),
-      base44.asServiceRole.entities.Company.list(),
-      base44.asServiceRole.entities.Investor.list(),
-      base44.asServiceRole.entities.MonthlyUpdate.list(),
+    const [profilesRaw, companiesRaw, investorsRaw, updatesRaw] = await Promise.all([
+      base44.asServiceRole.entities.UserProfile.list('-created_date', 200),
+      base44.asServiceRole.entities.Company.list('-created_date', 200),
+      base44.asServiceRole.entities.Investor.list('-created_date', 500),
+      base44.asServiceRole.entities.MonthlyUpdate.list('-created_date', 500),
     ]);
+
+    const profiles = Array.isArray(profilesRaw) ? profilesRaw : [];
+    const companies = Array.isArray(companiesRaw) ? companiesRaw : [];
+    const investors = Array.isArray(investorsRaw) ? investorsRaw : [];
+    const updates = Array.isArray(updatesRaw) ? updatesRaw : [];
 
     const companiesById = Object.fromEntries(companies.map(c => [c.id, c]));
 
