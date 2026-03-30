@@ -165,6 +165,7 @@ export default function Investors() {
           onSort={handleSort}
           onEdit={(inv) => setModalData(inv)}
           onFollowUp={(inv) => setFollowUpInvestor(inv)}
+          onDelete={(id) => deleteMutation.mutate(id)}
         />
       )}
 

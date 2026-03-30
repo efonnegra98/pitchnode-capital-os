@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { ChevronDown, ChevronUp, Send } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { ChevronDown, ChevronUp, MoreHorizontal, Send, Pencil, Trash2 } from "lucide-react";
 
 const statusColors = {
   Warm: "bg-amber-50 text-amber-700 border-amber-200",
@@ -41,6 +41,56 @@ function formatShortDate(dateStr) {
   return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
+function ActionMenu({ inv, onEdit, onFollowUp, onDelete }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    if (open) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open]);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
+        className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+      >
+        <MoreHorizontal className="w-4 h-4" />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-8 z-50 w-44 bg-white border border-slate-200 rounded-lg shadow-lg py-1 overflow-hidden">
+          <button
+            onClick={(e) => { e.stopPropagation(); setOpen(false); onFollowUp(inv); }}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors text-left"
+          >
+            <Send className="w-3.5 h-3.5 text-slate-400" />
+            Log Activity
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); setOpen(false); onEdit(inv); }}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors text-left"
+          >
+            <Pencil className="w-3.5 h-3.5 text-slate-400" />
+            Edit Investor
+          </button>
+          <div className="border-t border-slate-100 my-1" />
+          <button
+            onClick={(e) => { e.stopPropagation(); setOpen(false); onDelete(inv); }}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            Delete Investor
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function LastNoteTooltip({ note }) {
   const [show, setShow] = useState(false);
   if (!note) return null;
@@ -64,7 +114,13 @@ function LastNoteTooltip({ note }) {
   );
 }
 
-export default function InvestorTable({ investors, sortField, sortDir, onSort, onEdit, onFollowUp }) {
+export default function InvestorTable({ investors, sortField, sortDir, onSort, onEdit, onFollowUp, onDelete }) {
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
+  const handleDeleteConfirm = () => {
+    if (deleteTarget) onDelete(deleteTarget.id);
+    setDeleteTarget(null);
+  };
   const SortHeader = ({ field, children }) => (
     <th
       className="text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium py-3 px-4 cursor-pointer hover:text-foreground transition-colors select-none"
@@ -79,6 +135,35 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
     </th>
   );
 
+  const DeleteConfirmModal = deleteTarget ? (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+      <div className="bg-white rounded-xl shadow-xl border border-slate-200 w-full max-w-sm mx-4 p-6">
+        <h3 className="text-sm font-semibold text-slate-900 mb-2">Delete Investor</h3>
+        <p className="text-sm text-slate-500 mb-6 leading-relaxed">
+          Are you sure you want to delete{" "}
+          <span className="font-medium text-slate-700">
+            {deleteTarget.name || deleteTarget.firm || "this investor"}
+          </span>
+          ? This action cannot be undone.
+        </p>
+        <div className="flex items-center justify-end gap-3">
+          <button
+            onClick={() => setDeleteTarget(null)}
+            className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleDeleteConfirm}
+            className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  ) : null;
+
   if (investors.length === 0) {
     return (
       <div className="glass rounded-xl p-12 text-center">
@@ -88,7 +173,9 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
   }
 
   return (
-    <div className="glass rounded-xl overflow-hidden">
+    <>
+      {DeleteConfirmModal}
+      <div className="glass rounded-xl overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -187,18 +274,14 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                     )}
                   </td>
 
-                  {/* Quick Follow Up */}
-                  <td className="py-3 px-3">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onFollowUp(inv);
-                      }}
-                      className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 hover:text-[#6D5DF6] border border-slate-200 hover:border-[#6D5DF6]/40 hover:bg-violet-50 rounded-lg px-2.5 py-1.5 transition-all whitespace-nowrap"
-                    >
-                      <Send className="w-3 h-3" />
-                      Log
-                    </button>
+                  {/* Actions */}
+                  <td className="py-3 px-3" onClick={(e) => e.stopPropagation()}>
+                    <ActionMenu
+                      inv={inv}
+                      onEdit={onEdit}
+                      onFollowUp={onFollowUp}
+                      onDelete={(inv) => setDeleteTarget(inv)}
+                    />
                   </td>
                 </tr>
               );
@@ -206,6 +289,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
           </tbody>
         </table>
       </div>
-    </div>
-  );
-}
+      </div>
+      </>
+      );
+      }
