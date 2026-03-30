@@ -23,6 +23,9 @@ import SentimentOverview from "../components/dashboard/SentimentOverview";
 import IntroConversion from "../components/dashboard/IntroConversion";
 import EmptyState from "../components/dashboard/EmptyState";
 import CollapsibleSection from "../components/dashboard/CollapsibleSection";
+import RaiseSignals from "../components/dashboard/RaiseSignals";
+import ModuleSignals from "../components/dashboard/ModuleSignals";
+import { computeRaiseSignals, getModuleSignals } from "../lib/raiseSignals";
 
 export default function Dashboard() {
   const { company, companyId, isLoading: companyLoading } = useCompany();
@@ -36,6 +39,12 @@ export default function Dashboard() {
   const { data: investors = [], isLoading: investorsLoading } = useQuery({
     queryKey: ["investors", companyId],
     queryFn: () => base44.entities.Investor.filter({ company_id: companyId }),
+    enabled: !!companyId,
+  });
+
+  const { data: readinessItems = [] } = useQuery({
+    queryKey: ["raise-readiness", companyId],
+    queryFn: () => base44.entities.RaiseReadinessItem.filter({ company_id: companyId }),
     enabled: !!companyId,
   });
 
@@ -74,6 +83,8 @@ export default function Dashboard() {
     }));
 
   const activeInvestors = investors.filter(i => i.status === 'Engaged' || i.status === 'Committed' || i.status === 'Warm');
+
+  const raiseSignals = computeRaiseSignals({ company, investors, updates, readinessItems });
 
   if (isLoading) {
     return (
@@ -133,6 +144,11 @@ export default function Dashboard() {
         </div>
       ) : (
         <>
+          {/* 0. Raise Signals — always first */}
+          <div className="mb-6">
+            <RaiseSignals signals={raiseSignals} />
+          </div>
+
           {/* 1. Action Required + Momentum — always first */}
           {hasInvestors && (
             <CollapsibleSection title="Action Required" defaultOpen={true}>
@@ -146,6 +162,7 @@ export default function Dashboard() {
           {/* 2. Raise Overview — prominent when raise mode on */}
           {company?.raise_mode && (
             <CollapsibleSection title="Round Overview" defaultOpen={true}>
+              <ModuleSignals signals={getModuleSignals(raiseSignals, "Round Overview")} />
               <RaiseOverview settings={company} />
             </CollapsibleSection>
           )}
@@ -153,6 +170,7 @@ export default function Dashboard() {
           {/* 3. Financial Metrics — collapsible */}
           {hasUpdates ? (
             <CollapsibleSection title="Financial Metrics" defaultOpen={false}>
+              <ModuleSignals signals={getModuleSignals(raiseSignals, "Financial Metrics")} />
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                 <MetricCard
                   label="Monthly Revenue"
@@ -226,6 +244,7 @@ export default function Dashboard() {
           {/* 4. Raise Readiness — collapsed by default */}
           {company?.raise_mode && !hasInvestors && (
             <CollapsibleSection title="Raise Readiness & Data Room" defaultOpen={false} id="raise-readiness">
+              <ModuleSignals signals={[...getModuleSignals(raiseSignals, "Raise Readiness"), ...getModuleSignals(raiseSignals, "Data Room")]} />
               <RaiseReadiness />
             </CollapsibleSection>
           )}
@@ -234,6 +253,7 @@ export default function Dashboard() {
           {company?.raise_mode && hasInvestors && (
             <>
               <CollapsibleSection title="Funnel Analytics" defaultOpen={false}>
+                <ModuleSignals signals={getModuleSignals(raiseSignals, "Funnel Analytics")} />
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2">
@@ -247,6 +267,7 @@ export default function Dashboard() {
                 </div>
               </CollapsibleSection>
               <CollapsibleSection title="Raise Readiness & Data Room" defaultOpen={false} id="raise-readiness">
+                <ModuleSignals signals={[...getModuleSignals(raiseSignals, "Raise Readiness"), ...getModuleSignals(raiseSignals, "Data Room")]} />
                 <RaiseReadiness />
               </CollapsibleSection>
             </>
