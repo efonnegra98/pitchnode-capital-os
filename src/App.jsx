@@ -59,7 +59,6 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
-      <Route path="/dataroom/:shareId" element={<PublicDataRoom />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
@@ -73,7 +72,12 @@ function App() {
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <NavigationTracker />
-          <AuthenticatedApp />
+          <Routes>
+            {/* Public route — no auth required */}
+            <Route path="/dataroom/:shareId" element={<PublicDataRoom />} />
+            {/* All other routes go through auth */}
+            <Route path="/*" element={<AuthenticatedApp />} />
+          </Routes>
         </Router>
         <Toaster />
       </QueryClientProvider>
