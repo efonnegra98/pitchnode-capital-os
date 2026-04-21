@@ -12,6 +12,7 @@ const TIME_FILTERS = [
   { label: "Last 3 Months", months: 3 },
   { label: "Last 6 Months", months: 6 },
   { label: "Last 12 Months", months: 12 },
+  { label: "Archived", months: null, archived: true },
 ];
 
 export default function UpdateArchive() {
@@ -25,11 +26,15 @@ export default function UpdateArchive() {
     enabled: !!companyId,
   });
 
-  // Only show sent updates
+  // Only show sent updates in main view; archived in their own tab
   const sentUpdates = useMemo(() => allUpdates.filter((u) => u.status === "sent"), [allUpdates]);
+  const archivedUpdates = useMemo(() => allUpdates.filter((u) => u.status === "archived"), [allUpdates]);
+
+  const isArchiveTab = timeFilter === "Archived";
 
   // Apply time filter
   const filteredUpdates = useMemo(() => {
+    if (isArchiveTab) return archivedUpdates;
     const filter = TIME_FILTERS.find((f) => f.label === timeFilter);
     if (!filter?.months) return sentUpdates;
     const cutoff = new Date();
@@ -38,7 +43,7 @@ export default function UpdateArchive() {
       const date = new Date(u.sent_date || u.created_date);
       return date >= cutoff;
     });
-  }, [sentUpdates, timeFilter]);
+  }, [sentUpdates, archivedUpdates, timeFilter, isArchiveTab]);
 
   const selectedUpdate = filteredUpdates.find((u) => u.id === selectedId);
   const companyName = company?.name || "";
@@ -88,8 +93,12 @@ export default function UpdateArchive() {
               onClick={() => setTimeFilter(f.label)}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                 timeFilter === f.label
-                  ? "bg-white text-violet-700 shadow-sm border border-slate-200"
-                  : "text-slate-500 hover:text-slate-700"
+                  ? f.archived
+                    ? "bg-white text-amber-600 shadow-sm border border-amber-200"
+                    : "bg-white text-violet-700 shadow-sm border border-slate-200"
+                  : f.archived
+                    ? "text-amber-500 hover:text-amber-600"
+                    : "text-slate-500 hover:text-slate-700"
               }`}
             >
               {f.label}
@@ -101,7 +110,7 @@ export default function UpdateArchive() {
         </span>
       </div>
 
-      {sentUpdates.length === 0 ? (
+      {sentUpdates.length === 0 && !isArchiveTab ? (
         <div className="bg-white border border-slate-200 rounded-2xl p-16 text-center shadow-sm">
           <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
             <Send className="w-6 h-6 text-slate-400" />
@@ -124,7 +133,9 @@ export default function UpdateArchive() {
           <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
               <FileText className="w-4 h-4 text-violet-600" />
-              <h3 className="text-sm font-semibold text-slate-700">KPI Comparison — All Sent Updates</h3>
+              <h3 className="text-sm font-semibold text-slate-700">
+                {isArchiveTab ? "Archived Drafts" : "KPI Comparison — All Sent Updates"}
+              </h3>
               <span className="ml-auto text-[10px] uppercase tracking-wider text-slate-400 font-medium">
                 {filteredUpdates.length} Periods
               </span>
@@ -164,7 +175,9 @@ export default function UpdateArchive() {
                       <td className="px-4 py-3.5 text-right text-slate-700">{formatCurrency(u.cash_balance)}</td>
                       <td className="px-4 py-3.5 text-right text-slate-700">{u.runway_months ? `${u.runway_months} mo` : "—"}</td>
                       <td className="px-4 py-3.5 text-right text-xs text-slate-400">
-                        {u.sent_date ? new Date(u.sent_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
+                        {u.status === "archived"
+                          ? <span className="text-amber-500 font-medium">Archived</span>
+                          : u.sent_date ? new Date(u.sent_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
                       </td>
                     </tr>
                   ))}
@@ -173,7 +186,7 @@ export default function UpdateArchive() {
             </div>
             {filteredUpdates.length === 0 && (
               <div className="px-6 py-10 text-center text-sm text-slate-400">
-                No updates match the selected time range.
+                {isArchiveTab ? "No archived updates yet. Archive drafts from the Update Builder." : "No updates match the selected time range."}
               </div>
             )}
           </div>

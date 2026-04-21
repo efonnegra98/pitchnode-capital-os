@@ -1,0 +1,73 @@
+{
+  "name": "MonthlyUpdate",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "description": "ID of the company this update belongs to"
+    },
+    "month": {
+      "type": "string",
+      "description": "Month and year (e.g. January 2026)"
+    },
+    "revenue": {
+      "type": "number",
+      "description": "Monthly revenue in dollars"
+    },
+    "revenue_growth": {
+      "type": "number",
+      "description": "Revenue growth percentage"
+    },
+    "burn_rate": {
+      "type": "number",
+      "description": "Monthly burn rate in dollars"
+    },
+    "runway_months": {
+      "type": "number",
+      "description": "Runway in months"
+    },
+    "cash_balance": {
+      "type": "number",
+      "description": "Current cash balance"
+    },
+    "highlights": {
+      "type": "string",
+      "description": "Key highlights for the month"
+    },
+    "hiring_updates": {
+      "type": "string",
+      "description": "Hiring and team updates"
+    },
+    "product_updates": {
+      "type": "string",
+      "description": "Product development updates"
+    },
+    "key_wins": {
+      "type": "string",
+      "description": "Key wins and milestones"
+    },
+    "asks": {
+      "type": "string",
+      "description": "Asks from investors (capital, hires, intros)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "sent",
+        "archived"
+      ],
+      "default": "draft",
+      "description": "Update status"
+    },
+    "sent_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the update was sent"
+    }
+  },
+  "required": [
+    "company_id",
+    "month"
+  ]
+}
