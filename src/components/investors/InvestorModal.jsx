@@ -306,10 +306,12 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
             <div className="mt-4">
               <div className="flex items-center justify-between mb-1">
                 <Label>Next Action Type</Label>
-                <span className="flex items-center gap-1 text-[10px] text-violet-500 font-medium">
-                  <Sparkles className="w-3 h-3" />
-                  AI Suggested: {suggestNextActionLabel(form)}
-                </span>
+                {form.sentiment && form.funnel_stage && (
+                  <span className="flex items-center gap-1 text-[10px] text-violet-500 font-medium">
+                    <Sparkles className="w-3 h-3" />
+                    AI Suggested: {suggestNextActionLabel(form)}
+                  </span>
+                )}
               </div>
               <Select value={form.next_action_type || ""} onValueChange={(v) => handleChange("next_action_type", v)}>
                 <SelectTrigger className="mt-1">
