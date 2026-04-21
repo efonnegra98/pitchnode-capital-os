@@ -10,14 +10,13 @@ import SendToInvestorModal from "../dataroom/SendToInvestorModal";
 import DataRoomActivity from "../dataroom/DataRoomActivity";
 
 const DEFAULT_ITEMS = [
-  { item_name: "Pitch Deck Finalized", order: 1 },
-  { item_name: "Financial Model Updated", order: 2 },
-  { item_name: "Cap Table Clean", order: 3 },
-  { item_name: "KPI Dashboard Updated", order: 4 },
-  { item_name: "Legal Structure Verified", order: 5 },
-  { item_name: "Data Room Organized", order: 6 },
-  { item_name: "Customer References Ready", order: 7 },
-  { item_name: "Use of Funds Breakdown Prepared", order: 8 },
+  { item_name: "Pitch Deck", order: 1 },
+  { item_name: "Financial Model", order: 2 },
+  { item_name: "Capitalization Table", order: 3 },
+  { item_name: "Key Metrics & KPIs", order: 4 },
+  { item_name: "Corporate & Legal Documents", order: 5 },
+  { item_name: "Customer References & Testimonials", order: 6 },
+  { item_name: "Use of Funds", order: 7 },
 ];
 
 const statusIcons = {
