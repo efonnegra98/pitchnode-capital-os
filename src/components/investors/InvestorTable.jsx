@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, ChevronUp, MoreHorizontal, Send, Pencil, Trash2 } from "lucide-react";
+import { suggestNextActionLabel } from "../../lib/nextActionSuggestion";
 
 const statusColors = {
   Warm: "bg-amber-50 text-amber-700 border-amber-200",
@@ -234,12 +235,14 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                         <p className="text-foreground text-xs font-medium">
                           {new Date(inv.next_action_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                         </p>
-                        {inv.next_action_type && (
-                          <p className="text-muted-foreground text-[10px] mt-0.5">{inv.next_action_type}</p>
-                        )}
+                        <p className="text-muted-foreground text-[10px] mt-0.5">
+                          {suggestNextActionLabel(inv)}
+                        </p>
                       </div>
                     ) : (
-                      <span className="text-[11px] text-slate-300 italic">Not set</span>
+                      <div>
+                        <p className="text-[10px] text-slate-400 italic">{suggestNextActionLabel(inv)}</p>
+                      </div>
                     )}
                     {inv.last_note && <LastNoteTooltip note={inv.last_note} />}
                   </td>

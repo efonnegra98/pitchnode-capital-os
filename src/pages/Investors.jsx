@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCompany } from "../components/useCompany";
+import { suggestNextActionType } from "../lib/nextActionSuggestion";
 import { Input } from "@/components/ui/input";
 import { Search, Users, Upload } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
@@ -32,11 +33,12 @@ export default function Investors() {
 
   const saveMutation = useMutation({
     mutationFn: async (formData) => {
-      if (formData.id) {
-        const { id, created_date, updated_date, created_by, ...rest } = formData;
+      const enriched = { ...formData, next_action_type: suggestNextActionType(formData) };
+      if (enriched.id) {
+        const { id, created_date, updated_date, created_by, ...rest } = enriched;
         return base44.entities.Investor.update(id, rest);
       }
-      return base44.entities.Investor.create({ ...formData, company_id: companyId });
+      return base44.entities.Investor.create({ ...enriched, company_id: companyId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["investors", companyId] });

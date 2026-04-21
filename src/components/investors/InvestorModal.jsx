@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X, Trash2 } from "lucide-react";
+import { X, Trash2, Sparkles } from "lucide-react";
+import { suggestNextActionLabel } from "../../lib/nextActionSuggestion";
 
 export default function InvestorModal({ investor, onSave, onDelete, onClose, isSaving }) {
   const [validationError, setValidationError] = useState("");
@@ -303,7 +304,13 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
               </div>
             </div>
             <div className="mt-4">
-              <Label>Next Action Type</Label>
+              <div className="flex items-center justify-between mb-1">
+                <Label>Next Action Type</Label>
+                <span className="flex items-center gap-1 text-[10px] text-violet-500 font-medium">
+                  <Sparkles className="w-3 h-3" />
+                  AI Suggested: {suggestNextActionLabel(form)}
+                </span>
+              </div>
               <Select value={form.next_action_type || ""} onValueChange={(v) => handleChange("next_action_type", v)}>
                 <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select action type" />
@@ -314,6 +321,9 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
                   ))}
                 </SelectContent>
               </Select>
+              <p className="text-[11px] text-slate-400 mt-1.5 leading-snug">
+                Auto-set on save based on Sentiment + Funnel Stage + Objections.
+              </p>
             </div>
           </div>
 
