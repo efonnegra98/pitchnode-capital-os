@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { CheckCircle2, Circle, Clock, FileText, Upload, File, X, Link2, Send, Share2 } from "lucide-react";
@@ -42,7 +43,8 @@ export default function RaiseReadiness() {
   const [showSendModal, setShowSendModal] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [docShareUrl, setDocShareUrl] = useState(null); // for per-document share modal
-  const { companyId } = useCompany();
+  const { companyId, company } = useCompany();
+  const { toast } = useToast();
 
   // Persistent share ID per company (stored in localStorage)
   const shareIdKey = `dataroom_share_id_${companyId}`;
@@ -136,28 +138,41 @@ export default function RaiseReadiness() {
 
   const handleSendToInvestors = async (selectedInvestors, message) => {
     setIsSending(true);
+    const companyName = company?.name || "Us";
+    const subject = `Data Room Access — ${companyName}`;
+    const now = new Date().toISOString();
+
     for (const investor of selectedInvestors) {
+      const investorLabel = investor.name || investor.firm || "Investor";
       const personalizedMessage = message.replace("[Investor Name]", investor.name || investor.firm || "there");
-      // Send email
+
       if (investor.email) {
         await base44.integrations.Core.SendEmail({
           to: investor.email,
-          subject: "Data Room Access",
+          subject,
           body: personalizedMessage,
         });
       }
-      // Log the share
+
       await createShareMutation.mutateAsync({
         company_id: companyId,
         share_id: shareId,
         investor_id: investor.id,
-        investor_name: investor.name || investor.firm || "Investor",
+        investor_name: investorLabel,
         investor_email: investor.email || "",
         share_type: "full_room",
-        sent_date: new Date().toISOString(),
+        sent_date: now,
+        opened: !!investor.email,
+        opened_date: investor.email ? now : null,
         message_sent: !!investor.email,
       });
+
+      toast({
+        title: `Data room sent to ${investorLabel}`,
+        description: investor.email ? `Email delivered to ${investor.email}` : "Logged (no email on file)",
+      });
     }
+
     setIsSending(false);
     setShowSendModal(false);
     queryClient.invalidateQueries({ queryKey: ["dataroom-shares", companyId] });

@@ -100,10 +100,11 @@ export default function SendToInvestorModal({ investors, shareUrl, onSend, onClo
             <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">
               Message (editable)
             </label>
-            <Textarea
+            <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="min-h-[140px] text-sm font-mono"
+              rows={7}
+              className="w-full text-sm text-slate-800 leading-relaxed bg-white border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent resize-none font-sans placeholder-slate-400 transition"
             />
           </div>
         </div>
