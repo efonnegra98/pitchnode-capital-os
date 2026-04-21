@@ -56,7 +56,7 @@ export default function RaiseReadiness() {
   };
 
   const shareId = companyId ? getOrCreateShareId() : null;
-  const fullShareUrl = shareId ? `https://capitalos.us/dataroom/${shareId}` : "";
+  const fullShareUrl = shareId ? `${window.location.origin}/dataroom/${shareId}` : "";
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["raise-readiness", companyId],
@@ -121,7 +121,7 @@ export default function RaiseReadiness() {
 
   const handleDocumentShare = (item) => {
     const docShareId = `${shareId}-doc-${item.id.slice(-6)}`;
-    const url = `https://capitalos.us/dataroom/${shareId}/doc/${docShareId}`;
+    const url = `${window.location.origin}/dataroom/${docShareId}`;
     setDocShareUrl(url);
     // Log document share
     createShareMutation.mutate({

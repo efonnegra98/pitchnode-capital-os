@@ -54,11 +54,22 @@ export default function DataRoomActivity({ shares }) {
               </div>
             </div>
 
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 text-right">
               {share.opened ? (
-                <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
-                  <Eye className="w-3 h-3" /> Opened
-                </span>
+                <div>
+                  <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
+                    <Eye className="w-3 h-3" /> Opened
+                  </span>
+                  {share.opened_date && (
+                    <p className="text-[9px] text-emerald-500 mt-1 text-center">
+                      {new Date(share.opened_date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </p>
+                  )}
+                </div>
               ) : (
                 <span className="text-[10px] font-medium text-slate-400 bg-slate-100 rounded-full px-2 py-0.5">
                   Not yet viewed
