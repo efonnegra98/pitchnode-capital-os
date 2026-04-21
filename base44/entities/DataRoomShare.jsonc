@@ -1,0 +1,67 @@
+{
+  "name": "DataRoomShare",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "description": "ID of the company this share belongs to"
+    },
+    "share_id": {
+      "type": "string",
+      "description": "Unique share identifier for the URL"
+    },
+    "investor_id": {
+      "type": "string",
+      "description": "ID of the investor this was sent to (null if just a link share)"
+    },
+    "investor_name": {
+      "type": "string",
+      "description": "Name of the investor"
+    },
+    "investor_email": {
+      "type": "string",
+      "description": "Email of the investor"
+    },
+    "document_item_id": {
+      "type": "string",
+      "description": "If set, this is a share for a specific document; otherwise it's the full data room"
+    },
+    "document_name": {
+      "type": "string",
+      "description": "Name of the specific document shared (if applicable)"
+    },
+    "sent_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the link was sent"
+    },
+    "opened": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the link has been opened"
+    },
+    "opened_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the link was first opened"
+    },
+    "message_sent": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether an email was sent with the link"
+    },
+    "share_type": {
+      "type": "string",
+      "enum": [
+        "full_room",
+        "document"
+      ],
+      "default": "full_room",
+      "description": "Whether this is a full data room or individual document share"
+    }
+  },
+  "required": [
+    "company_id",
+    "share_id"
+  ]
+}
