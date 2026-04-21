@@ -31,17 +31,24 @@ export default function DataRoomActivity({ shares }) {
             </div>
 
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-800 truncate">
-                {share.investor_name || "Link shared"}
-                {share.document_name && (
-                  <span className="text-slate-400 font-normal"> — {share.document_name}</span>
-                )}
-              </p>
+              {/* Email-access view log: show "Viewed by email on date" in green */}
+              {share.opened && share.investor_email && share.investor_email === share.investor_name ? (
+                <p className="text-sm font-medium text-emerald-700 truncate">
+                  Viewed by {share.investor_email}
+                </p>
+              ) : (
+                <p className="text-sm font-medium text-slate-800 truncate">
+                  {share.investor_name || "Link shared"}
+                  {share.document_name && (
+                    <span className="text-slate-400 font-normal"> — {share.document_name}</span>
+                  )}
+                </p>
+              )}
               <div className="flex items-center gap-2 mt-0.5">
                 <Clock className="w-3 h-3 text-slate-400" />
                 <span className="text-[10px] text-slate-400">
-                  {share.sent_date
-                    ? new Date(share.sent_date).toLocaleDateString("en-US", {
+                  {(share.opened_date || share.sent_date)
+                    ? new Date(share.opened_date || share.sent_date).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
