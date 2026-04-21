@@ -1,24 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
-import UpdatePreview from "../components/update/UpdatePreview";
+import { Plus, Send, Calendar, FileText } from "lucide-react";
+import ArchiveDetailPanel from "../components/update/ArchiveDetailPanel";
 import { useCompany } from "../components/useCompany";
+
+const TIME_FILTERS = [
+  { label: "All Time", months: null },
+  { label: "Last 3 Months", months: 3 },
+  { label: "Last 6 Months", months: 6 },
+  { label: "Last 12 Months", months: 12 },
+];
 
 export default function UpdateArchive() {
   const [selectedId, setSelectedId] = useState(null);
+  const [timeFilter, setTimeFilter] = useState("All Time");
   const { company, companyId } = useCompany();
 
-  const { data: updates = [], isLoading } = useQuery({
+  const { data: allUpdates = [], isLoading } = useQuery({
     queryKey: ["monthly-updates", companyId],
     queryFn: () => base44.entities.MonthlyUpdate.filter({ company_id: companyId }, "-created_date", 100),
     enabled: !!companyId,
   });
 
+  // Only show sent updates
+  const sentUpdates = useMemo(() => allUpdates.filter((u) => u.status === "sent"), [allUpdates]);
+
+  // Apply time filter
+  const filteredUpdates = useMemo(() => {
+    const filter = TIME_FILTERS.find((f) => f.label === timeFilter);
+    if (!filter?.months) return sentUpdates;
+    const cutoff = new Date();
+    cutoff.setMonth(cutoff.getMonth() - filter.months);
+    return sentUpdates.filter((u) => {
+      const date = new Date(u.sent_date || u.created_date);
+      return date >= cutoff;
+    });
+  }, [sentUpdates, timeFilter]);
+
+  const selectedUpdate = filteredUpdates.find((u) => u.id === selectedId);
   const companyName = company?.name || "";
-  const selectedUpdate = updates.find((u) => u.id === selectedId);
 
   const formatCurrency = (val) => {
     if (!val && val !== 0) return "—";
@@ -40,10 +63,11 @@ export default function UpdateArchive() {
 
   return (
     <div className="p-6 lg:p-10 max-w-7xl mx-auto">
+      {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-foreground tracking-tight">Archive</h1>
-          <p className="text-muted-foreground text-sm mt-1">Permanent record of investor communications and reporting.</p>
+          <p className="text-slate-500 text-sm mt-1">Your complete investor communication history</p>
         </div>
         <Link
           to={createPageUrl("UpdateBuilder")}
@@ -54,14 +78,37 @@ export default function UpdateArchive() {
         </Link>
       </div>
 
-      {updates.length === 0 ? (
-        <div className="glass rounded-xl p-16 text-center border border-slate-200">
-          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-            <Plus className="w-6 h-6 text-slate-400" />
+      {/* Filter Bar */}
+      <div className="flex items-center gap-2 mb-6">
+        <Calendar className="w-4 h-4 text-slate-400" />
+        <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
+          {TIME_FILTERS.map((f) => (
+            <button
+              key={f.label}
+              onClick={() => setTimeFilter(f.label)}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                timeFilter === f.label
+                  ? "bg-white text-violet-700 shadow-sm border border-slate-200"
+                  : "text-slate-500 hover:text-slate-700"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <span className="text-xs text-slate-400 ml-2">
+          {filteredUpdates.length} update{filteredUpdates.length !== 1 ? "s" : ""}
+        </span>
+      </div>
+
+      {sentUpdates.length === 0 ? (
+        <div className="bg-white border border-slate-200 rounded-2xl p-16 text-center shadow-sm">
+          <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+            <Send className="w-6 h-6 text-slate-400" />
           </div>
-          <h3 className="text-base font-semibold text-slate-800 mb-2">No updates yet.</h3>
+          <h3 className="text-base font-semibold text-slate-800 mb-2">No sent updates yet</h3>
           <p className="text-sm text-slate-500 mb-6 max-w-sm mx-auto">
-            Create your first investor update to begin building your reporting history.
+            Updates appear here once they've been sent to investors. Drafts are only visible in the Update Builder.
           </p>
           <Link
             to={createPageUrl("UpdateBuilder")}
@@ -72,75 +119,74 @@ export default function UpdateArchive() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
-          {/* List */}
-          <div className="xl:col-span-2 space-y-2">
-            {/* KPI Comparison Header */}
-            <div className="glass rounded-xl p-4 mb-4">
-              <h3 className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium mb-3">KPI Comparison</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="text-muted-foreground">
-                      <th className="text-left font-medium pb-2">Period</th>
-                      <th className="text-right font-medium pb-2">Rev</th>
-                      <th className="text-right font-medium pb-2">Burn</th>
-                      <th className="text-right font-medium pb-2">Runway</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {updates.slice(0, 6).map((u) => (
-                      <tr key={u.id} className="text-muted-foreground">
-                        <td className="py-1.5 text-foreground font-medium">{u.month?.substring(0, 3)}</td>
-                        <td className="py-1.5 text-right">{formatCurrency(u.revenue)}</td>
-                        <td className="py-1.5 text-right">{formatCurrency(u.burn_rate)}</td>
-                        <td className="py-1.5 text-right">{u.runway_months ? `${u.runway_months}mo` : "—"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+        <div className="space-y-6">
+          {/* ── KPI Comparison Table — Hero Element ── */}
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-violet-600" />
+              <h3 className="text-sm font-semibold text-slate-700">KPI Comparison — All Sent Updates</h3>
+              <span className="ml-auto text-[10px] uppercase tracking-wider text-slate-400 font-medium">
+                {filteredUpdates.length} Periods
+              </span>
             </div>
-
-            {/* Timeline */}
-            {updates.map((update) => (
-              <button
-                key={update.id}
-                onClick={() => setSelectedId(update.id)}
-                className={`w-full text-left rounded-xl p-4 transition-all ${
-                  selectedId === update.id
-                    ? "bg-violet-50 border border-violet-200"
-                    : "glass hover:bg-slate-50"
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 rounded-full ${update.status === 'sent' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                    <p className="text-foreground font-medium text-sm">{update.month}</p>
-                  </div>
-                  <span className={`text-[10px] uppercase tracking-wider font-medium ${
-                    update.status === 'sent' ? 'text-emerald-600' : 'text-amber-600'
-                  }`}>
-                    {update.status}
-                  </span>
-                </div>
-                {update.highlights && (
-                  <p className="text-muted-foreground text-xs mt-2 line-clamp-1 pl-5">{update.highlights}</p>
-                )}
-              </button>
-            ))}
-          </div>
-
-          {/* Detail View */}
-          <div className="xl:col-span-3">
-            {selectedUpdate ? (
-              <UpdatePreview data={selectedUpdate} companyName={companyName} />
-            ) : (
-              <div className="glass rounded-xl p-12 text-center">
-                <p className="text-muted-foreground text-sm">Select an update to view details</p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-50">
+                  <tr>
+                    <th className="text-left text-xs font-semibold text-slate-500 px-6 py-3 uppercase tracking-wider">Period</th>
+                    <th className="text-right text-xs font-semibold text-slate-500 px-4 py-3 uppercase tracking-wider">Revenue</th>
+                    <th className="text-right text-xs font-semibold text-slate-500 px-4 py-3 uppercase tracking-wider">Growth</th>
+                    <th className="text-right text-xs font-semibold text-slate-500 px-4 py-3 uppercase tracking-wider">Burn Rate</th>
+                    <th className="text-right text-xs font-semibold text-slate-500 px-4 py-3 uppercase tracking-wider">Cash</th>
+                    <th className="text-right text-xs font-semibold text-slate-500 px-4 py-3 uppercase tracking-wider">Runway</th>
+                    <th className="text-right text-xs font-semibold text-slate-500 px-4 py-3 uppercase tracking-wider">Sent</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredUpdates.map((u) => (
+                    <tr
+                      key={u.id}
+                      onClick={() => setSelectedId(selectedId === u.id ? null : u.id)}
+                      className={`cursor-pointer transition-colors ${
+                        selectedId === u.id ? "bg-violet-50" : "hover:bg-slate-50"
+                      }`}
+                    >
+                      <td className="px-6 py-3.5 font-semibold text-slate-800">{u.month}</td>
+                      <td className="px-4 py-3.5 text-right text-slate-700">{formatCurrency(u.revenue)}</td>
+                      <td className="px-4 py-3.5 text-right">
+                        {u.revenue_growth ? (
+                          <span className={`font-medium ${u.revenue_growth > 0 ? "text-emerald-600" : "text-red-500"}`}>
+                            {u.revenue_growth > 0 ? "+" : ""}{u.revenue_growth}%
+                          </span>
+                        ) : <span className="text-slate-400">—</span>}
+                      </td>
+                      <td className="px-4 py-3.5 text-right text-slate-700">{formatCurrency(u.burn_rate)}</td>
+                      <td className="px-4 py-3.5 text-right text-slate-700">{formatCurrency(u.cash_balance)}</td>
+                      <td className="px-4 py-3.5 text-right text-slate-700">{u.runway_months ? `${u.runway_months} mo` : "—"}</td>
+                      <td className="px-4 py-3.5 text-right text-xs text-slate-400">
+                        {u.sent_date ? new Date(u.sent_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {filteredUpdates.length === 0 && (
+              <div className="px-6 py-10 text-center text-sm text-slate-400">
+                No updates match the selected time range.
               </div>
             )}
           </div>
+
+          {/* ── Detail Panel ── */}
+          {selectedUpdate && (
+            <ArchiveDetailPanel
+              data={selectedUpdate}
+              companyName={companyName}
+              companyLogo={company?.logo_url}
+              onClose={() => setSelectedId(null)}
+            />
+          )}
         </div>
       )}
     </div>
