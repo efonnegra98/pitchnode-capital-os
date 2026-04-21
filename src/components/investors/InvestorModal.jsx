@@ -74,12 +74,12 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
               />
             </div>
             <div>
-              <Label>Firm <span className="text-slate-400 font-normal text-xs">(or Name required)</span></Label>
+              <Label>Firm / Organization <span className="text-slate-400 font-normal text-xs">(or Name required)</span></Label>
               <Input
                 value={form.firm}
                 onChange={(e) => { handleChange("firm", e.target.value); setValidationError(""); }}
                 className="mt-1"
-                placeholder="Investment firm"
+                placeholder="e.g. a16z, Family Office, Syndicate"
               />
             </div>
           </div>
