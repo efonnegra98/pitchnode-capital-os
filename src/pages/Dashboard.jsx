@@ -1,6 +1,6 @@
 import React from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useCompany } from "../components/useCompany";
 import {
   DollarSign,
@@ -83,6 +83,23 @@ export default function Dashboard() {
     }));
 
   const activeInvestors = investors.filter(i => i.status === 'Engaged' || i.status === 'Committed' || i.status === 'Warm');
+
+  const queryClient = useQueryClient();
+
+  const updateMetricMutation = useMutation({
+    mutationFn: ({ field, value }) => {
+      if (latestUpdate?.id) {
+        return base44.entities.MonthlyUpdate.update(latestUpdate.id, { [field]: value });
+      }
+      // Create a new update record if none exists yet
+      const now = new Date();
+      const month = now.toLocaleString("en-US", { month: "long", year: "numeric" });
+      return base44.entities.MonthlyUpdate.create({ company_id: companyId, month, [field]: value });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["monthly-updates", companyId] }),
+  });
+
+  const saveMetric = (field) => (value) => updateMetricMutation.mutateAsync({ field, value });
 
   const raiseSignals = computeRaiseSignals({ company, investors, updates, readinessItems });
 
@@ -179,12 +196,14 @@ export default function Dashboard() {
                   trend={revTrend?.value}
                   trendDirection={revTrend?.direction}
                   subtext="vs last month"
+                  onSave={saveMetric("revenue")}
                 />
                 <MetricCard
                   label="Revenue Growth"
                   value={latestUpdate?.revenue_growth ? `${latestUpdate.revenue_growth}%` : "—"}
                   icon={TrendingUp}
                   trendDirection={latestUpdate?.revenue_growth > 0 ? 'up' : latestUpdate?.revenue_growth < 0 ? 'down' : null}
+                  onSave={saveMetric("revenue_growth")}
                 />
                 <MetricCard
                   label="Burn Rate"
@@ -193,11 +212,13 @@ export default function Dashboard() {
                   trend={burnTrend?.value}
                   trendDirection={burnTrend?.direction === 'up' ? 'down' : burnTrend?.direction === 'down' ? 'up' : null}
                   subtext="vs last month"
+                  onSave={saveMetric("burn_rate")}
                 />
                 <MetricCard
                   label="Runway"
                   value={latestUpdate?.runway_months ? `${latestUpdate.runway_months} mo` : "—"}
                   icon={Clock}
+                  onSave={saveMetric("runway_months")}
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
@@ -205,6 +226,7 @@ export default function Dashboard() {
                   label="Cash Balance"
                   value={formatCurrency(latestUpdate?.cash_balance)}
                   icon={Wallet}
+                  onSave={saveMetric("cash_balance")}
                 />
                 <MetricCard
                   label="Active Investors"
