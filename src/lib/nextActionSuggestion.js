@@ -5,13 +5,13 @@
 export function suggestNextActionType(investor) {
   const { sentiment, funnel_stage, objections = [], cadence_status, last_contact_date } = investor;
 
-  // 1. Positive + Intro Call → Schedule Partner Meeting
-  if (sentiment === "Positive" && funnel_stage === "Intro Call") {
+  // 1. Positive/Champion + Intro Call → Schedule Partner Meeting
+  if ((sentiment === "Positive" || sentiment === "Champion") && funnel_stage === "Intro Call") {
     return "Schedule Meeting";
   }
 
-  // 2. Positive + Partner Meeting → Send Soft Commit Ask (mapped to Send Materials as closest enum)
-  if (sentiment === "Positive" && funnel_stage === "Partner Meeting") {
+  // 2. Positive or Champion + Partner Meeting → Send Soft Commit Ask
+  if ((sentiment === "Positive" || sentiment === "Champion") && funnel_stage === "Partner Meeting") {
     return "Send Materials";
   }
 
@@ -50,11 +50,11 @@ export function suggestNextActionType(investor) {
 export function suggestNextActionLabel(investor) {
   const { sentiment, funnel_stage, objections = [], cadence_status, last_contact_date } = investor;
 
-  if (sentiment === "Positive" && funnel_stage === "Intro Call") {
+  if ((sentiment === "Positive" || sentiment === "Champion") && funnel_stage === "Intro Call") {
     return "Schedule Partner Meeting";
   }
 
-  if (sentiment === "Positive" && funnel_stage === "Partner Meeting") {
+  if ((sentiment === "Positive" || sentiment === "Champion") && funnel_stage === "Partner Meeting") {
     return "Send Soft Commit Ask";
   }
 
