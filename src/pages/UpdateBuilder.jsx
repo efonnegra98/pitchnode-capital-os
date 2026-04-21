@@ -8,11 +8,13 @@ import UpdateForm from "../components/update/UpdateForm";
 import UpdatePreview from "../components/update/UpdatePreview";
 import { useCompany } from "../components/useCompany";
 import toast, { Toaster } from "react-hot-toast";
+import DuplicateDraftModal from "../components/update/DuplicateDraftModal";
 
 export default function UpdateBuilder() {
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({});
+  const [duplicateDraft, setDuplicateDraft] = useState(null);
   const queryClient = useQueryClient();
 
   const { company, companyId, isLoading: companyLoading } = useCompany();
@@ -20,6 +22,12 @@ export default function UpdateBuilder() {
   const { data: updates = [], isLoading: updatesLoading } = useQuery({
     queryKey: ["monthly-updates", companyId],
     queryFn: () => base44.entities.MonthlyUpdate.filter({ company_id: companyId }),
+    enabled: !!companyId,
+  });
+
+  const { data: investors = [] } = useQuery({
+    queryKey: ["investors", companyId],
+    queryFn: () => base44.entities.Investor.filter({ company_id: companyId }),
     enabled: !!companyId,
   });
 
@@ -83,6 +91,12 @@ export default function UpdateBuilder() {
   });
 
   const handleNewUpdate = () => {
+    const currentMonth = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
+    const existingDraft = updates.find(u => u.month === currentMonth && u.status === 'draft');
+    if (existingDraft) {
+      setDuplicateDraft(existingDraft);
+      return;
+    }
     createNewUpdateMutation.mutate();
   };
 
@@ -109,6 +123,15 @@ export default function UpdateBuilder() {
     return (
       <div className="p-6 lg:p-10 max-w-5xl mx-auto">
         <Toaster position="top-right" />
+
+      {duplicateDraft && (
+        <DuplicateDraftModal
+          draft={duplicateDraft}
+          onOpenExisting={() => { setDuplicateDraft(null); handleEdit(duplicateDraft); }}
+          onCreateNew={() => { setDuplicateDraft(null); createNewUpdateMutation.mutate(); }}
+          onClose={() => setDuplicateDraft(null)}
+        />
+      )}
         
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -207,6 +230,8 @@ export default function UpdateBuilder() {
           onBack={() => { setShowForm(false); setEditingId(null); }}
           isSaving={saveMutation.isPending || sendMutation.isPending}
           onFormChange={setFormData}
+          investors={investors}
+          company={company}
         />
         <div className="hidden xl:block">
           <UpdatePreview
