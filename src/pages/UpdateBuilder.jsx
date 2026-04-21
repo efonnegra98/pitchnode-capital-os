@@ -156,6 +156,19 @@ export default function UpdateBuilder() {
           </div>
         </div>
 
+        {/* Status legend */}
+        {updates.length > 0 && (
+          <div className="flex items-center gap-4 mb-4 px-1">
+            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Status:</span>
+            <span className="flex items-center gap-1.5 text-[11px] text-slate-500">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" /> Sent
+            </span>
+            <span className="flex items-center gap-1.5 text-[11px] text-slate-500">
+              <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" /> Draft
+            </span>
+          </div>
+        )}
+
         {updates.length === 0 ? (
           <div className="glass rounded-xl p-12 text-center border border-slate-200">
             <div className="flex justify-center mb-4">

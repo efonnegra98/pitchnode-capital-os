@@ -54,38 +54,46 @@ export default function RaiseOverview({ settings }) {
           </div>
         </div>
 
-        {/* Metrics Grid */}
+        {/* Metrics Grid — padded and rounded to match Financial MetricCards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
-            <div className="flex items-center gap-2 mb-2">
-              <Target className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
-              <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground dark:text-muted-foreground/90 font-medium">Target</p>
+          <div className="bg-white rounded-xl p-5 border border-slate-200 metric-glow">
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-[11px] uppercase tracking-[0.15em] text-slate-500 font-medium">Target</p>
+              <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
+                <Target className="w-4 h-4 text-violet-600" />
+              </div>
             </div>
-            <p className="text-xl font-bold text-foreground dark:text-slate-50">{formatCurrency(target)}</p>
+            <p className="text-2xl font-bold text-slate-800 tracking-tight">{formatCurrency(target)}</p>
           </div>
 
-          <div className="bg-emerald-50 dark:bg-emerald-950/50 rounded-lg p-4 border border-emerald-200 dark:border-emerald-900/50">
-            <div className="flex items-center gap-2 mb-2">
-              <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <p className="text-[10px] uppercase tracking-[0.15em] text-emerald-600 dark:text-emerald-400 font-medium">Committed</p>
+          <div className="bg-white rounded-xl p-5 border border-emerald-200 metric-glow">
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-[11px] uppercase tracking-[0.15em] text-emerald-600 font-medium">Committed</p>
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <CheckCircle className="w-4 h-4 text-emerald-600" />
+              </div>
             </div>
-            <p className="text-xl font-bold text-emerald-700 dark:text-emerald-300">{formatCurrency(committed)}</p>
+            <p className="text-2xl font-bold text-emerald-700 tracking-tight">{formatCurrency(committed)}</p>
           </div>
 
-          <div className="bg-amber-50 dark:bg-amber-950/50 rounded-lg p-4 border border-amber-200 dark:border-amber-900/50">
-            <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-              <p className="text-[10px] uppercase tracking-[0.15em] text-amber-600 dark:text-amber-400 font-medium">Soft</p>
+          <div className="bg-white rounded-xl p-5 border border-amber-200 metric-glow">
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-[11px] uppercase tracking-[0.15em] text-amber-600 font-medium">Soft Commits</p>
+              <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                <TrendingUp className="w-4 h-4 text-amber-600" />
+              </div>
             </div>
-            <p className="text-xl font-bold text-amber-700 dark:text-amber-300">{formatCurrency(soft)}</p>
+            <p className="text-2xl font-bold text-amber-700 tracking-tight">{formatCurrency(soft)}</p>
           </div>
 
-          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-3.5 h-3.5 rounded border border-slate-300 dark:border-slate-600" />
-              <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground dark:text-muted-foreground/90 font-medium">Remaining</p>
+          <div className="bg-white rounded-xl p-5 border border-slate-200 metric-glow">
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-[11px] uppercase tracking-[0.15em] text-slate-500 font-medium">Remaining</p>
+              <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center">
+                <div className="w-4 h-4 rounded border-2 border-slate-300" />
+              </div>
             </div>
-            <p className="text-xl font-bold text-foreground dark:text-slate-200">{formatCurrency(remaining)}</p>
+            <p className="text-2xl font-bold text-slate-800 tracking-tight">{formatCurrency(remaining)}</p>
           </div>
         </div>
 

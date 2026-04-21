@@ -28,6 +28,21 @@ export default function CapitalFunnel({ investors }) {
 
   const maxCount = Math.max(...counts.slice(0, 6).map(c => c.count), 1);
 
+  if (!investors || investors.length === 0) {
+    return (
+      <div className="glass rounded-xl p-6 border border-border flex flex-col items-center justify-center min-h-[220px] text-center">
+        <p className="text-sm font-semibold text-slate-700 mb-1">No investor data yet</p>
+        <p className="text-xs text-slate-400 mb-4 max-w-xs">Add your first investor to start tracking your raise pipeline</p>
+        <a
+          href="/Investors"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs font-semibold hover:from-violet-500 hover:to-indigo-500 transition-all"
+        >
+          + Add Investor
+        </a>
+      </div>
+    );
+  }
+
   return (
     <div className="glass rounded-xl p-6 border border-border">
       <div className="flex items-center justify-between mb-6">
