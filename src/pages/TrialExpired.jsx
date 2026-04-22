@@ -1,38 +1,62 @@
 import React from "react";
-import { useCompany } from "@/components/useCompany";
-import { Button } from "@/components/ui/button";
-import { Lock, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
+
+const features = [
+  "Investor CRM with sentiment tracking",
+  "AI-drafted investor updates",
+  "Shareable data room with access tracking",
+  "Raise analytics & funnel visibility",
+  "Command Center with priority signals",
+];
 
 export default function TrialExpired() {
-  const { company } = useCompany();
-
   return (
-    <div className="min-h-screen bg-[#F8F9FB] flex items-center justify-center px-6">
-      <div className="max-w-md text-center">
-        <div className="w-16 h-16 rounded-full bg-[#6D5DF6]/10 flex items-center justify-center mx-auto mb-6">
-          <Lock className="w-8 h-8 text-[#6D5DF6]" />
+    <div className="min-h-screen bg-white flex items-center justify-center px-6 py-16">
+      <div className="w-full max-w-sm">
+        {/* Label */}
+        <p className="text-center text-xs font-semibold uppercase tracking-widest text-slate-400 mb-6">
+          Capital OS Pro
+        </p>
+
+        {/* Card */}
+        <div className="bg-white rounded-2xl shadow-xl shadow-slate-100 border border-slate-100 px-8 py-10">
+          {/* Title */}
+          <h1 className="text-2xl font-bold text-slate-900 text-center mb-1">Capital OS</h1>
+
+          {/* Price */}
+          <div className="text-center mt-4 mb-2">
+            <span className="text-5xl font-extrabold text-slate-900">$49</span>
+            <span className="text-slate-400 text-lg font-normal"> / month</span>
+          </div>
+
+          {/* Subtext */}
+          <p className="text-center text-slate-500 text-sm mb-8">
+            Operate your raise with structure and control.
+          </p>
+
+          {/* Features */}
+          <ul className="space-y-3 mb-8">
+            {features.map((f) => (
+              <li key={f} className="flex items-start gap-2.5 text-sm text-slate-700">
+                <span className="mt-0.5 text-slate-900 font-bold flex-shrink-0">✓</span>
+                {f}
+              </li>
+            ))}
+          </ul>
+
+          {/* CTA */}
+          <a
+            href="https://platformcapitalos.com/login"
+            className="block w-full text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm py-3.5 rounded-full transition-colors"
+          >
+            Start Your 7-Day Free Trial
+          </a>
+
+          {/* Footer */}
+          <p className="text-center text-xs text-slate-400 mt-4">Cancel anytime.</p>
+          <p className="text-center text-xs text-slate-400 mt-1">
+            Included at no cost for PitchNode Accelerator companies.
+          </p>
         </div>
-        
-        <h1 className="text-3xl font-bold text-[#0F172A] mb-4">
-          Your Trial Has Ended
-        </h1>
-        
-        <p className="text-[#64748B] mb-8">
-          Thanks for trying CapitalOS! To continue accessing your investor dashboard and updates, please upgrade to a paid plan.
-        </p>
-
-        <Link to={createPageUrl("Upgrade")}>
-          <Button className="bg-[#6D5DF6] hover:bg-[#5346E0] w-full h-12">
-            <Sparkles className="w-4 h-4 mr-2" />
-            View Pricing & Upgrade
-          </Button>
-        </Link>
-
-        <p className="text-xs text-[#64748B] mt-6">
-          Questions? Contact support at hello@pitchnode.com
-        </p>
       </div>
     </div>
   );
