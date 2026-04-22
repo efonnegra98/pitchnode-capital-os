@@ -48,11 +48,14 @@ export default function TrialExpired() {
             href="https://platformcapitalos.com/login"
             className="block w-full text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm py-3.5 rounded-full transition-colors"
           >
-            Start Your 7-Day Free Trial
+            Upgrade to Continue
           </a>
+          <p className="text-center text-xs text-slate-500 mt-3">
+            Continue managing your raise without interruption.
+          </p>
 
           {/* Footer */}
-          <p className="text-center text-xs text-slate-400 mt-4">Cancel anytime.</p>
+          <p className="text-center text-xs text-slate-400 mt-3">Cancel anytime.</p>
           <p className="text-center text-xs text-slate-400 mt-1">
             Included at no cost for PitchNode Accelerator companies.
           </p>
