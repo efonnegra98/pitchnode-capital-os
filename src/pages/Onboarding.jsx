@@ -36,7 +36,7 @@ export default function Onboarding() {
   });
 
   const [updateForm, setUpdateForm] = useState({
-    month: "",
+    month: new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' }),
     revenue: "",
     burn_rate: "",
     highlights: "",
@@ -157,9 +157,11 @@ export default function Onboarding() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">P</span>
-            </div>
+            <img
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698fe466c243851910a585ea/ae8a53466_pn_black_full3.png"
+              alt="PitchNode"
+              className="h-10 w-auto"
+            />
             <h1 className="text-2xl font-bold text-slate-900">Get Started</h1>
           </div>
           <p className="text-slate-600">Set up your Capital OS in under 10 minutes</p>
