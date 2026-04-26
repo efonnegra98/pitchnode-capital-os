@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X, Trash2, Sparkles } from "lucide-react";
+import { X, Trash2, Sparkles, Linkedin } from "lucide-react";
 import { suggestNextActionLabel } from "../../lib/nextActionSuggestion";
 import ActivityLog from "./ActivityLog";
 
@@ -15,6 +15,7 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
     name: "",
     firm: "",
     email: "",
+    linkedin_url: "",
     contact_method: "",
     stage_focus: "",
     check_size: "",
@@ -99,6 +100,30 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
               />
             </div>
             <div>
+              <div className="flex items-center justify-between">
+                <Label>LinkedIn URL</Label>
+                {form.linkedin_url && (
+                  <a
+                    href={form.linkedin_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-[11px] font-medium text-[#0077B5] hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Linkedin className="w-3 h-3" /> View on LinkedIn
+                  </a>
+                )}
+              </div>
+              <Input
+                value={form.linkedin_url}
+                onChange={(e) => handleChange("linkedin_url", e.target.value)}
+                className="mt-1"
+                placeholder="https://linkedin.com/in/..."
+              />
+            </div>
+          </div>
+
+          <div>
               <Label>Contact Method</Label>
               <Select value={form.contact_method || ""} onValueChange={(v) => handleChange("contact_method", v)}>
                 <SelectTrigger className="mt-1">
@@ -111,7 +136,6 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
                 </SelectContent>
               </Select>
             </div>
-          </div>
 
           <div>
             <Label>Investor Type</Label>

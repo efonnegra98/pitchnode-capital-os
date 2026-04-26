@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, ChevronUp, MoreHorizontal, Send, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, MoreHorizontal, Send, Pencil, Trash2, Linkedin } from "lucide-react";
 import { suggestNextActionLabel } from "../../lib/nextActionSuggestion";
 
 const statusColors = {
@@ -237,7 +237,21 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                 >
                   {/* Name + Firm */}
                   <td className="py-3 px-4">
-                    <p className="font-medium text-foreground text-sm">{inv.name || <span className="text-slate-400 italic">No name</span>}</p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-medium text-foreground text-sm">{inv.name || <span className="text-slate-400 italic">No name</span>}</p>
+                      {inv.linkedin_url && (
+                        <a
+                          href={inv.linkedin_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex-shrink-0 text-[#0077B5] hover:text-[#005885] transition-colors"
+                          title="View on LinkedIn"
+                        >
+                          <Linkedin className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                    </div>
                     {inv.firm && <p className="text-xs text-muted-foreground mt-0.5">{inv.firm}</p>}
                   </td>
 
