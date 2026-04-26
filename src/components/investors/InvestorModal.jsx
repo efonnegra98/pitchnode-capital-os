@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X, Trash2, Sparkles } from "lucide-react";
 import { suggestNextActionLabel } from "../../lib/nextActionSuggestion";
+import ActivityLog from "./ActivityLog";
 
 export default function InvestorModal({ investor, onSave, onDelete, onClose, isSaving }) {
   const [validationError, setValidationError] = useState("");
@@ -338,6 +339,15 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
               placeholder="Notes about this investor..."
             />
           </div>
+
+          <ActivityLog
+            entries={[...(form.activity_log || [])].reverse()}
+            onAdd={(text) => {
+              const newEntry = { text, timestamp: new Date().toISOString() };
+              const updated = [...(form.activity_log || []), newEntry];
+              handleChange("activity_log", updated);
+            }}
+          />
         </div>
 
         <div className="flex items-center justify-between p-5 border-t border-slate-200">

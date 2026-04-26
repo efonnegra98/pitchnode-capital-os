@@ -1,0 +1,194 @@
+{
+  "name": "Investor",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "description": "ID of the company this investor belongs to"
+    },
+    "name": {
+      "type": "string",
+      "description": "Investor full name"
+    },
+    "firm": {
+      "type": "string",
+      "description": "Investment firm name"
+    },
+    "investor_type": {
+      "type": "string",
+      "enum": [
+        "Angel",
+        "Family Office",
+        "Venture Capital",
+        "Private Equity",
+        "Strategic/Corporate",
+        "Other"
+      ],
+      "description": "Type of investor"
+    },
+    "stage_focus": {
+      "type": "string",
+      "enum": [
+        "Pre-Seed",
+        "Seed",
+        "Series A",
+        "Series B+",
+        "Growth"
+      ],
+      "description": "Stage focus of the investor"
+    },
+    "check_size": {
+      "type": "string",
+      "description": "Typical check size range"
+    },
+    "relationship_strength": {
+      "type": "string",
+      "enum": [
+        "New",
+        "Building",
+        "Strong",
+        "Champion"
+      ],
+      "description": "Relationship strength level"
+    },
+    "sentiment": {
+      "type": "string",
+      "enum": [
+        "Skeptical",
+        "Curious",
+        "Positive",
+        "Champion",
+        "Neutral"
+      ],
+      "description": "Investor sentiment towards the opportunity"
+    },
+    "objections": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Valuation",
+          "Market Risk",
+          "Traction",
+          "Team",
+          "Timing"
+        ]
+      },
+      "description": "Key objections or concerns"
+    },
+    "intro_source": {
+      "type": "string",
+      "description": "Source of introduction (e.g., LP, advisor, founder)"
+    },
+    "intro_strength": {
+      "type": "string",
+      "enum": [
+        "Cold",
+        "Warm",
+        "Direct"
+      ],
+      "description": "Strength of introduction"
+    },
+    "intro_by": {
+      "type": "string",
+      "description": "Name of person who made the introduction"
+    },
+    "last_contact_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of last contact"
+    },
+    "last_note": {
+      "type": "string",
+      "description": "Most recent follow-up note logged"
+    },
+    "contact_method": {
+      "type": "string",
+      "enum": [
+        "Email",
+        "LinkedIn",
+        "Phone Call",
+        "In Person",
+        "Event",
+        "Other"
+      ],
+      "description": "Preferred or last used contact method"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Warm",
+        "Engaged",
+        "Passed",
+        "Committed"
+      ],
+      "description": "Current investor status"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notes about the investor"
+    },
+    "email": {
+      "type": "string",
+      "description": "Investor email address"
+    },
+    "next_action_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date for next scheduled action"
+    },
+    "next_action_type": {
+      "type": "string",
+      "enum": [
+        "Follow-up Email",
+        "Send Materials",
+        "Schedule Meeting",
+        "Partner Intro",
+        "Waiting on Response",
+        "Data Room Access",
+        "Term Sheet Review"
+      ],
+      "description": "Type of next action required"
+    },
+    "cadence_status": {
+      "type": "string",
+      "enum": [
+        "On Track",
+        "Overdue",
+        "Waiting",
+        "Closed"
+      ],
+      "description": "Follow-up cadence status"
+    },
+    "funnel_stage": {
+      "type": "string",
+      "enum": [
+        "Identified",
+        "Contacted",
+        "Intro Call",
+        "Partner Meeting",
+        "Due Diligence",
+        "Term Sheet"
+      ],
+      "description": "Current stage in capital funnel"
+    },
+    "activity_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Chronological log of activity entries"
+    }
+  },
+  "required": [
+    "company_id"
+  ]
+}
