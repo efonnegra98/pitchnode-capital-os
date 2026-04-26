@@ -15,6 +15,9 @@ export default function Investors() {
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState("name");
   const [sortDir, setSortDir] = useState("asc");
+  const [filterStage, setFilterStage] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterSentiment, setFilterSentiment] = useState("all");
   const [modalData, setModalData] = useState(null);
   const [followUpInvestor, setFollowUpInvestor] = useState(null);
   const [showUpload, setShowUpload] = useState(false);
@@ -80,11 +83,14 @@ export default function Investors() {
   const sortedFiltered = useMemo(() => {
     let filtered = investors.filter((inv) => {
       const q = search.toLowerCase();
-      return (
+      const matchSearch =
         inv.name?.toLowerCase().includes(q) ||
         inv.firm?.toLowerCase().includes(q) ||
-        inv.status?.toLowerCase().includes(q)
-      );
+        inv.status?.toLowerCase().includes(q);
+      const matchStage = filterStage === "all" || inv.funnel_stage === filterStage;
+      const matchStatus = filterStatus === "all" || inv.status === filterStatus;
+      const matchSentiment = filterSentiment === "all" || inv.sentiment === filterSentiment;
+      return matchSearch && matchStage && matchStatus && matchSentiment;
     });
 
     filtered.sort((a, b) => {
@@ -95,7 +101,7 @@ export default function Investors() {
     });
 
     return filtered;
-  }, [investors, search, sortField, sortDir]);
+  }, [investors, search, sortField, sortDir, filterStage, filterStatus, filterSentiment]);
 
   if (isLoading) {
     return (
@@ -110,7 +116,7 @@ export default function Investors() {
 
   return (
     <div className="p-6 lg:p-10 max-w-7xl mx-auto">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
         <div>
           <h1 className="text-2xl font-bold text-foreground tracking-tight">Investor Tracking</h1>
           <p className="text-muted-foreground text-sm mt-1">{investors.length} contacts</p>
@@ -139,6 +145,48 @@ export default function Investors() {
             + Add Investor
           </button>
         </div>
+      </div>
+
+      {/* Filter Bar */}
+      <div className="flex flex-wrap items-center gap-2 mb-6">
+        <select
+          value={filterStage}
+          onChange={(e) => setFilterStage(e.target.value)}
+          className="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-violet-400"
+        >
+          <option value="all">All Stages</option>
+          {["Identified", "Contacted", "Intro Call", "Partner Meeting", "Due Diligence", "Term Sheet"].map(s => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-violet-400"
+        >
+          <option value="all">All Statuses</option>
+          {["Warm", "Engaged", "Passed", "Committed"].map(s => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+        <select
+          value={filterSentiment}
+          onChange={(e) => setFilterSentiment(e.target.value)}
+          className="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-violet-400"
+        >
+          <option value="all">All Sentiments</option>
+          {["Champion", "Positive", "Curious", "Neutral", "Skeptical"].map(s => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+        {(filterStage !== "all" || filterStatus !== "all" || filterSentiment !== "all") && (
+          <button
+            onClick={() => { setFilterStage("all"); setFilterStatus("all"); setFilterSentiment("all"); }}
+            className="text-xs text-violet-600 hover:text-violet-800 font-medium px-2 py-1 rounded-md hover:bg-violet-50 transition-colors"
+          >
+            Clear filters
+          </button>
+        )}
       </div>
 
       {investors.length === 0 ? (

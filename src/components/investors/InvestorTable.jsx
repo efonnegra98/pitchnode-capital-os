@@ -259,16 +259,16 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                   <td className="py-3 px-4">
                     {inv.next_action_date ? (
                       <div>
-                        <p className="text-foreground text-xs font-medium">
+                        <p className="text-slate-900 text-xs font-semibold">
                           {new Date(inv.next_action_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                         </p>
-                        <p className="text-muted-foreground text-[10px] mt-0.5">
+                        <p className="text-slate-600 text-[11px] font-medium mt-0.5">
                           {suggestNextActionLabel(inv)}
                         </p>
                       </div>
                     ) : (
                       <div>
-                        <p className="text-[10px] text-slate-400 italic">{suggestNextActionLabel(inv)}</p>
+                        <p className="text-[11px] text-slate-600 font-medium">{suggestNextActionLabel(inv)}</p>
                       </div>
                     )}
                     {inv.last_note && <LastNoteTooltip note={inv.last_note} />}
@@ -296,7 +296,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                         )}
                       </div>
                     ) : (
-                      <span className="text-xs text-red-400 font-medium italic">Never</span>
+                      <span className="text-xs text-slate-400 italic">Never</span>
                     )}
                   </td>
 
