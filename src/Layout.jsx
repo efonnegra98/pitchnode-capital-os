@@ -57,7 +57,7 @@ function LayoutContent({ children, currentPageName }) {
   useEffect(() => {
     const checkAccess = async () => {
       // Skip check for public pages
-      if (currentPageName === "Gateway" || currentPageName === "AccessRequest" || currentPageName === "Onboarding" || currentPageName === "Upgrade" || currentPageName === "TrialExpired") {
+      if (currentPageName === "Gateway" || currentPageName === "AccessRequest" || currentPageName === "Onboarding" || currentPageName === "Upgrade" || currentPageName === "TrialExpired" || currentPageName === "Subscribe") {
         setCheckingAccess(false);
         return;
       }
@@ -101,14 +101,18 @@ function LayoutContent({ children, currentPageName }) {
         const company = companies[0];
         
         if (company) {
-          const now = new Date();
-          const trialEnd = new Date(company.trial_end_date);
-          const isTrialExpired = company.subscription_status !== "active" && now > trialEnd;
-          
-          if (isTrialExpired) {
-            navigate(createPageUrl("TrialExpired"));
+          const isActive = company.subscription_status === "active";
+          const isTrialing = company.subscription_status === "trialing" && company.trial_end_date && new Date() < new Date(company.trial_end_date);
+
+          if (!isActive && !isTrialing) {
+            // Trial expired or never started — send to subscribe page
+            navigate(createPageUrl("Subscribe"));
             return;
           }
+        } else {
+          // No company record yet — something went wrong in onboarding, redirect to subscribe
+          navigate(createPageUrl("Subscribe"));
+          return;
         }
 
         setCheckingAccess(false);
@@ -244,7 +248,7 @@ function LayoutContent({ children, currentPageName }) {
         </div>
 
         {/* Trial Banner */}
-        {currentPageName !== "Gateway" && currentPageName !== "AccessRequest" && currentPageName !== "Onboarding" && currentPageName !== "Upgrade" && currentPageName !== "TrialExpired" && (
+        {currentPageName !== "Gateway" && currentPageName !== "AccessRequest" && currentPageName !== "Onboarding" && currentPageName !== "Upgrade" && currentPageName !== "TrialExpired" && currentPageName !== "Subscribe" && (
           <TrialBanner company={company} user={user} />
         )}
 

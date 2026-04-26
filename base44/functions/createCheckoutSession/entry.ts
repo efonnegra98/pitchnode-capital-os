@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
         company_id,
       },
       success_url: `${origin}/Dashboard?checkout=success`,
-      cancel_url: `${origin}/Upgrade?checkout=canceled`,
+      cancel_url: `${origin}/Subscribe?checkout=canceled`,
     });
 
     return Response.json({ url: session.url });

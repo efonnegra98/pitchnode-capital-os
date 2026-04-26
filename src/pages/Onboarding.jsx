@@ -74,7 +74,7 @@ export default function Onboarding() {
       }
     },
     onSuccess: () => {
-      navigate(createPageUrl("Dashboard"));
+      navigate(createPageUrl("Subscribe"));
     },
   });
 

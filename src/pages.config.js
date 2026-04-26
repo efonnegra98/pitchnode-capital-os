@@ -58,6 +58,7 @@ import UpdateArchive from './pages/UpdateArchive';
 import UpdateBuilder from './pages/UpdateBuilder';
 import Upgrade from './pages/Upgrade';
 import Admin from './pages/Admin';
+import Subscribe from './pages/Subscribe';
 import __Layout from './Layout.jsx';
 
 
@@ -73,6 +74,7 @@ export const PAGES = {
     "UpdateBuilder": UpdateBuilder,
     "Upgrade": Upgrade,
     "Admin": Admin,
+    "Subscribe": Subscribe,
 }
 
 export const pagesConfig = {
