@@ -9,20 +9,6 @@ const statusColors = {
   Committed: "bg-emerald-50 text-emerald-700 border-emerald-200",
 };
 
-const strengthColors = {
-  New: "text-slate-400",
-  Building: "text-amber-600",
-  Strong: "text-blue-600",
-  Champion: "text-emerald-600",
-};
-
-const cadenceColors = {
-  "On Track": "text-emerald-600",
-  "Overdue": "text-red-600",
-  "Waiting": "text-amber-600",
-  "Closed": "text-slate-400",
-};
-
 function getStaleness(dateStr) {
   if (!dateStr) return { days: null, level: "none" };
   const days = Math.floor((new Date() - new Date(dateStr)) / (1000 * 60 * 60 * 24));
@@ -124,7 +110,7 @@ function LastNoteTooltip({ note }) {
   if (!note) return null;
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block mt-1">
       <span
         className="text-[10px] text-slate-400 italic truncate max-w-[140px] block cursor-help underline decoration-dotted"
         onMouseEnter={() => setShow(true)}
@@ -149,9 +135,10 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
     if (deleteTarget) onDelete(deleteTarget.id);
     setDeleteTarget(null);
   };
+
   const SortHeader = ({ field, children }) => (
     <th
-      className="text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium py-3 px-4 cursor-pointer hover:text-foreground transition-colors select-none"
+      className="text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium py-3 px-5 cursor-pointer hover:text-foreground transition-colors select-none"
       onClick={() => onSort(field)}
     >
       <span className="flex items-center gap-1">
@@ -204,132 +191,130 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
     <>
       {DeleteConfirmModal}
       <div className="glass rounded-xl overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-slate-200 bg-slate-50/60">
-              <SortHeader field="name">Name / Firm</SortHeader>
-              <SortHeader field="status">Status</SortHeader>
-              <SortHeader field="funnel_stage">Stage</SortHeader>
-              <SortHeader field="next_action_date">Next Action</SortHeader>
-              <SortHeader field="last_contact_date">Last Contact</SortHeader>
-              <th className="py-3 px-4" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {investors.map((inv) => {
-              const staleness = getStaleness(inv.last_contact_date);
-              const isCritical = staleness.level === "critical";
-              const isHigh = staleness.level === "high";
-              const isMedium = staleness.level === "medium";
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-slate-200 bg-slate-50/60">
+                <SortHeader field="name">Name / Firm</SortHeader>
+                <SortHeader field="status">Status</SortHeader>
+                <SortHeader field="funnel_stage">Stage</SortHeader>
+                <SortHeader field="next_action_date">Next Action</SortHeader>
+                <SortHeader field="last_contact_date">Last Contact</SortHeader>
+                <th className="py-3 px-5" />
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {investors.map((inv) => {
+                const staleness = getStaleness(inv.last_contact_date);
+                const isCritical = staleness.level === "critical";
+                const isHigh = staleness.level === "high";
+                const isMedium = staleness.level === "medium";
 
-              const rowBg = isCritical
-                ? "bg-red-50/50 hover:bg-red-50/80"
-                : isHigh
-                ? "bg-orange-50/30 hover:bg-orange-50/60"
-                : "hover:bg-slate-50";
+                const rowBg = isCritical
+                  ? "bg-red-50/50 hover:bg-red-50/80"
+                  : isHigh
+                  ? "bg-orange-50/30 hover:bg-orange-50/60"
+                  : "hover:bg-slate-50";
 
-              return (
-                <tr
-                  key={inv.id}
-                  onClick={() => onEdit(inv)}
-                  className={`cursor-pointer transition-colors ${rowBg}`}
-                >
-                  {/* Name + Firm */}
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-1.5">
-                      <p className="font-medium text-foreground text-sm">{inv.name || <span className="text-slate-400 italic">No name</span>}</p>
-                      {inv.linkedin_url && (
-                        <a
-                          href={inv.linkedin_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="flex-shrink-0 text-[#0077B5] hover:text-[#005885] transition-colors"
-                          title="View on LinkedIn"
-                        >
-                          <Linkedin className="w-3.5 h-3.5" />
-                        </a>
-                      )}
-                    </div>
-                    {inv.firm && <p className="text-xs text-muted-foreground mt-0.5">{inv.firm}</p>}
-                  </td>
-
-                  {/* Status */}
-                  <td className="py-3 px-4">
-                    {inv.status ? (
-                      <span className={`text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full border ${statusColors[inv.status] || ""}`}>
-                        {inv.status}
-                      </span>
-                    ) : <span className="text-slate-300">—</span>}
-                  </td>
-
-                  {/* Funnel Stage */}
-                  <td className="py-3 px-4">
-                    <span className="text-xs text-slate-500">{inv.funnel_stage || "—"}</span>
-                  </td>
-
-                  {/* Next Action */}
-                  <td className="py-3 px-4">
-                    {inv.next_action_date ? (
-                      <div>
-                        <p className="text-slate-900 text-xs font-semibold">
-                          {new Date(inv.next_action_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                        </p>
-                        <p className="text-slate-600 text-[11px] font-medium mt-0.5">
-                          {suggestNextActionLabel(inv)}
-                        </p>
-                      </div>
-                    ) : (
-                      <div>
-                        <p className="text-[11px] text-slate-600 font-medium">{suggestNextActionLabel(inv)}</p>
-                      </div>
-                    )}
-                    {inv.last_note && <LastNoteTooltip note={inv.last_note} />}
-                  </td>
-
-                  {/* Last Contact — prominent staleness */}
-                  <td className="py-3 px-4">
-                    {staleness.days !== null ? (
-                      <div className="flex items-center gap-2">
-                        <div>
-                          <p className={`text-sm font-semibold ${
-                            isCritical ? "text-red-600"
-                            : isHigh ? "text-orange-500"
-                            : isMedium ? "text-amber-600"
-                            : "text-slate-700"
-                          }`}>
-                            {formatRelative(staleness.days)}
-                          </p>
-                          <p className="text-[10px] text-muted-foreground mt-0.5">
-                            {formatShortDate(inv.last_contact_date)}
-                          </p>
-                        </div>
-                        {(isCritical || isHigh) && (
-                          <AgingBadge critical={isCritical} />
+                return (
+                  <tr
+                    key={inv.id}
+                    onClick={() => onEdit(inv)}
+                    className={`cursor-pointer transition-colors ${rowBg}`}
+                  >
+                    {/* Name + Firm */}
+                    <td className="py-5 px-5">
+                      <div className="flex items-center gap-1.5">
+                        <p className="font-medium text-foreground text-sm">{inv.name || <span className="text-slate-400 italic">No name</span>}</p>
+                        {inv.linkedin_url && (
+                          <a
+                            href={inv.linkedin_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex-shrink-0 text-[#0077B5] hover:text-[#005885] transition-colors"
+                            title="View on LinkedIn"
+                          >
+                            <Linkedin className="w-3.5 h-3.5" />
+                          </a>
                         )}
                       </div>
-                    ) : (
-                      <span className="text-xs text-slate-400 italic">Never</span>
-                    )}
-                  </td>
+                      {inv.firm && <p className="text-xs text-muted-foreground mt-1">{inv.firm}</p>}
+                    </td>
 
-                  {/* Actions */}
-                  <td className="py-3 px-3" onClick={(e) => e.stopPropagation()}>
-                    <ActionMenu
-                      inv={inv}
-                      onEdit={onEdit}
-                      onFollowUp={onFollowUp}
-                      onDelete={(inv) => setDeleteTarget(inv)}
-                    />
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    {/* Status */}
+                    <td className="py-5 px-5">
+                      {inv.status ? (
+                        <span className={`text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full border ${statusColors[inv.status] || ""}`}>
+                          {inv.status}
+                        </span>
+                      ) : <span className="text-slate-300">—</span>}
+                    </td>
+
+                    {/* Funnel Stage */}
+                    <td className="py-5 px-5">
+                      <span className="text-xs text-slate-500">{inv.funnel_stage || "—"}</span>
+                    </td>
+
+                    {/* Next Action */}
+                    <td className="py-5 px-5">
+                      {inv.next_action_date ? (
+                        <div>
+                          <p className="text-slate-900 text-xs font-semibold">
+                            {new Date(inv.next_action_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                          </p>
+                          <p className="text-slate-500 text-[11px] mt-0.5">
+                            {suggestNextActionLabel(inv)}
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-[11px] text-slate-500">{suggestNextActionLabel(inv)}</p>
+                      )}
+                      {inv.last_note && <LastNoteTooltip note={inv.last_note} />}
+                    </td>
+
+                    {/* Last Contact */}
+                    <td className="py-5 px-5">
+                      {staleness.days !== null ? (
+                        <div className="flex items-center gap-2">
+                          <div>
+                            <p className={`text-sm font-semibold ${
+                              isCritical ? "text-red-600"
+                              : isHigh ? "text-orange-500"
+                              : isMedium ? "text-amber-600"
+                              : "text-slate-700"
+                            }`}>
+                              {formatRelative(staleness.days)}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">
+                              {formatShortDate(inv.last_contact_date)}
+                            </p>
+                          </div>
+                          {(isCritical || isHigh) && (
+                            <AgingBadge critical={isCritical} />
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-400 italic">Never</span>
+                      )}
+                    </td>
+
+                    {/* Actions */}
+                    <td className="py-5 px-4" onClick={(e) => e.stopPropagation()}>
+                      <ActionMenu
+                        inv={inv}
+                        onEdit={onEdit}
+                        onFollowUp={onFollowUp}
+                        onDelete={(inv) => setDeleteTarget(inv)}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
-      </div>
-      </>
-      );
-      }
+    </>
+  );
+}
