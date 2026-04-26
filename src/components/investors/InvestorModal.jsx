@@ -110,16 +110,19 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
                     className="flex items-center gap-1 text-[11px] font-medium text-[#0077B5] hover:underline"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Linkedin className="w-3 h-3" /> View on LinkedIn
+                    <Linkedin className="w-3 h-3" /> View Profile
                   </a>
                 )}
               </div>
-              <Input
-                value={form.linkedin_url}
-                onChange={(e) => handleChange("linkedin_url", e.target.value)}
-                className="mt-1"
-                placeholder="https://linkedin.com/in/..."
-              />
+              <div className="relative mt-1">
+                <Linkedin className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#0077B5]" />
+                <Input
+                  value={form.linkedin_url}
+                  onChange={(e) => handleChange("linkedin_url", e.target.value)}
+                  className="pl-8"
+                  placeholder="linkedin.com/in/username"
+                />
+              </div>
             </div>
           </div>
 
