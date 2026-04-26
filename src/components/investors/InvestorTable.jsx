@@ -2,6 +2,29 @@ import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, ChevronUp, MoreHorizontal, Send, Pencil, Trash2, Linkedin } from "lucide-react";
 import { suggestNextActionLabel } from "../../lib/nextActionSuggestion";
 
+const avatarColors = [
+  "bg-violet-100 text-violet-700",
+  "bg-blue-100 text-blue-700",
+  "bg-emerald-100 text-emerald-700",
+  "bg-amber-100 text-amber-700",
+  "bg-pink-100 text-pink-700",
+  "bg-indigo-100 text-indigo-700",
+  "bg-teal-100 text-teal-700",
+  "bg-orange-100 text-orange-700",
+];
+
+function getAvatarColor(name) {
+  const str = name || "?";
+  const idx = str.charCodeAt(0) % avatarColors.length;
+  return avatarColors[idx];
+}
+
+function getInitials(name, firm) {
+  if (name?.trim()) return name.trim()[0].toUpperCase();
+  if (firm?.trim()) return firm.trim()[0].toUpperCase();
+  return "?";
+}
+
 const statusColors = {
   Warm: "bg-amber-50 text-amber-700 border-amber-200",
   Engaged: "bg-blue-50 text-blue-700 border-blue-200",
@@ -224,22 +247,29 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                   >
                     {/* Name + Firm */}
                     <td className="py-5 px-5">
-                      <div className="flex items-center gap-1.5">
-                        <p className="font-medium text-foreground text-sm">{inv.name || <span className="text-slate-400 italic">No name</span>}</p>
-                        {inv.linkedin_url && (
-                          <a
-                            href={inv.linkedin_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="flex-shrink-0 text-[#0077B5] hover:text-[#005885] transition-colors"
-                            title="View on LinkedIn"
-                          >
-                            <Linkedin className="w-3.5 h-3.5" />
-                          </a>
-                        )}
+                      <div className="flex items-center gap-3">
+                        <div className={`w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center text-sm font-semibold ${getAvatarColor(inv.name || inv.firm)}`}>
+                          {getInitials(inv.name, inv.firm)}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <p className="font-medium text-foreground text-sm">{inv.name || <span className="text-slate-400 italic">No name</span>}</p>
+                            {inv.linkedin_url && (
+                              <a
+                                href={inv.linkedin_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="flex-shrink-0 text-[#0077B5] hover:text-[#005885] transition-colors"
+                                title="View on LinkedIn"
+                              >
+                                <Linkedin className="w-3.5 h-3.5" />
+                              </a>
+                            )}
+                          </div>
+                          {inv.firm && <p className="text-xs text-muted-foreground mt-0.5">{inv.firm}</p>}
+                        </div>
                       </div>
-                      {inv.firm && <p className="text-xs text-muted-foreground mt-1">{inv.firm}</p>}
                     </td>
 
                     {/* Status */}
