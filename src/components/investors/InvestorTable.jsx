@@ -92,6 +92,33 @@ function ActionMenu({ inv, onEdit, onFollowUp, onDelete }) {
   );
 }
 
+function AgingBadge({ critical }) {
+  const [show, setShow] = useState(false);
+  const label = critical ? "Stale" : "Aging";
+  const colors = critical ? "bg-red-100 text-red-600" : "bg-orange-100 text-orange-600";
+  const tip = critical
+    ? "No contact in 21+ days — this relationship is going cold. Follow up immediately."
+    : "No contact in 14+ days — this relationship may be going cold. Follow up soon.";
+
+  return (
+    <div className="relative inline-block">
+      <span
+        className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded cursor-help ${colors}`}
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+      >
+        {label}
+      </span>
+      {show && (
+        <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-slate-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl leading-relaxed pointer-events-none whitespace-normal text-center">
+          {tip}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
+        </div>
+      )}
+    </div>
+  );
+}
+
 function LastNoteTooltip({ note }) {
   const [show, setShow] = useState(false);
   if (!note) return null;
@@ -265,11 +292,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                           </p>
                         </div>
                         {(isCritical || isHigh) && (
-                          <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                            isCritical ? "bg-red-100 text-red-600" : "bg-orange-100 text-orange-600"
-                          }`}>
-                            {isCritical ? "Stale" : "Aging"}
-                          </span>
+                          <AgingBadge critical={isCritical} />
                         )}
                       </div>
                     ) : (
