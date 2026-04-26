@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
-import { useCompany } from "../components/useCompany";
+import React from "react";
+
+const STRIPE_PAYMENT_URL = "https://buy.stripe.com/3cI00jf5Demc8vteLS7Zu00";
 
 const features = [
   "Investor CRM with sentiment tracking",
@@ -11,18 +11,8 @@ const features = [
 ];
 
 export default function TrialExpired() {
-  const [loading, setLoading] = useState(false);
-  const { company } = useCompany();
-
-  const handleSubscribe = async () => {
-    if (!company?.id) return;
-    setLoading(true);
-    const res = await base44.functions.invoke("createCheckoutSession", { company_id: company.id });
-    if (res.data?.url) {
-      window.location.href = res.data.url;
-    } else {
-      setLoading(false);
-    }
+  const handleSubscribe = () => {
+    window.location.href = STRIPE_PAYMENT_URL;
   };
 
   return (
@@ -62,10 +52,9 @@ export default function TrialExpired() {
           {/* CTA */}
           <button
             onClick={handleSubscribe}
-            disabled={loading || !company?.id}
-            className="block w-full text-center bg-slate-900 hover:bg-slate-800 disabled:opacity-60 text-white font-semibold text-sm py-3.5 rounded-full transition-colors"
+            className="block w-full text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm py-3.5 rounded-full transition-colors"
           >
-            {loading ? "Redirecting to checkout…" : "Upgrade to Continue"}
+            Subscribe Now
           </button>
           <p className="text-center text-xs text-slate-500 mt-3">
             Continue managing your raise without interruption.

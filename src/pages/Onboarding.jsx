@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Progress } from "@/components/ui/progress";
 import { Check, ChevronRight, Plus, X } from "lucide-react";
 import { createPageUrl } from "../utils";
+
+const STRIPE_PAYMENT_URL = "https://buy.stripe.com/3cI00jf5Demc8vteLS7Zu00";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function Onboarding() {
@@ -74,7 +76,7 @@ export default function Onboarding() {
       }
     },
     onSuccess: () => {
-      navigate(createPageUrl("Subscribe"));
+      window.location.href = STRIPE_PAYMENT_URL;
     },
   });
 

@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
-import { useCompany } from "../components/useCompany";
+import React from "react";
+
+const STRIPE_PAYMENT_URL = "https://buy.stripe.com/3cI00jf5Demc8vteLS7Zu00";
 
 const features = [
   "Investor CRM with sentiment tracking",
@@ -12,21 +11,8 @@ const features = [
 ];
 
 export default function Subscribe() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const { company } = useCompany();
-
-  const handleSubscribe = async () => {
-    if (!company?.id) return;
-    setLoading(true);
-    setError("");
-    const res = await base44.functions.invoke("createCheckoutSession", { company_id: company.id });
-    if (res.data?.url) {
-      window.location.href = res.data.url;
-    } else {
-      setError("Something went wrong. Please try again.");
-      setLoading(false);
-    }
+  const handleSubscribe = () => {
+    window.location.href = STRIPE_PAYMENT_URL;
   };
 
   return (
@@ -72,17 +58,12 @@ export default function Subscribe() {
             ))}
           </ul>
 
-          {error && (
-            <p className="text-center text-xs text-red-500 mb-3">{error}</p>
-          )}
-
           {/* CTA */}
           <button
             onClick={handleSubscribe}
-            disabled={loading || !company?.id}
-            className="block w-full text-center bg-slate-900 hover:bg-slate-800 disabled:opacity-60 text-white font-semibold text-sm py-3.5 rounded-full transition-colors"
+            className="block w-full text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm py-3.5 rounded-full transition-colors"
           >
-            {loading ? "Redirecting to checkout…" : "Subscribe Now"}
+            Subscribe Now
           </button>
 
           <p className="text-center text-xs text-slate-400 mt-4">Cancel anytime.</p>
