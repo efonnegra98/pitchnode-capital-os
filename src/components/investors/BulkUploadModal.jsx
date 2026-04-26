@@ -1,22 +1,21 @@
 import React, { useState, useRef, useCallback } from "react";
-import { X, Upload, FileSpreadsheet, Download, ChevronRight, Check, AlertCircle } from "lucide-react";
+import { X, Upload, FileSpreadsheet, Download, Check } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
-// Field definitions for mapping
-const INVESTOR_FIELDS = [
-  { key: "name",              label: "Name" },
-  { key: "firm",              label: "Company / Firm" },
-  { key: "email",             label: "Email" },
-  { key: "stage_focus",       label: "Stage Focus" },
-  { key: "check_size",        label: "Check Size" },
-  { key: "notes",             label: "Notes" },
-  { key: "last_contact_date", label: "Last Contact Date" },
-  { key: "contact_method",    label: "Contact Method" },
-];
+// Expected columns in template
+const TEMPLATE_HEADERS = ["Investor Name", "Firm/Organization", "Email", "Investor Type", "Stage Focus"];
 
-const TEMPLATE_HEADERS = ["Name", "Firm", "Email", "Stage", "Check Size", "Notes", "Last Contact Date", "Contact Method"];
+// Auto-map CSV headers to entity fields
+function mapHeader(h) {
+  const lower = h.toLowerCase();
+  if (lower.includes("name") && !lower.includes("firm") && !lower.includes("org")) return "name";
+  if (lower.includes("firm") || lower.includes("organization") || lower.includes("company")) return "firm";
+  if (lower.includes("email")) return "email";
+  if (lower.includes("type") || lower.includes("investor type")) return "investor_type";
+  if (lower.includes("stage")) return "stage_focus";
+  return null;
+}
 
-// Parse CSV text into rows
 function parseCSV(text) {
   const lines = text.trim().split(/\r?\n/);
   if (lines.length < 2) return { headers: [], rows: [] };
@@ -33,89 +32,65 @@ function parseCSV(text) {
     const obj = {};
     headers.forEach((h, i) => { obj[h] = cols[i] || ""; });
     return obj;
-  });
+  }).filter(row => Object.values(row).some(v => v.trim()));
   return { headers, rows };
 }
 
-// Try to auto-match a column header to an investor field
-function autoMatch(header) {
-  const h = header.toLowerCase();
-  if (h.includes("name") && !h.includes("firm") && !h.includes("company")) return "name";
-  if (h.includes("firm") || h.includes("company") || h.includes("organization")) return "firm";
-  if (h.includes("email")) return "email";
-  if (h.includes("stage")) return "stage_focus";
-  if (h.includes("check") || h.includes("size")) return "check_size";
-  if (h.includes("note")) return "notes";
-  if (h.includes("contact") && h.includes("date")) return "last_contact_date";
-  if (h.includes("method") || h.includes("channel")) return "contact_method";
-  return "";
+function buildRecord(row, headers) {
+  const rec = {};
+  headers.forEach(h => {
+    const field = mapHeader(h);
+    if (field && row[h]) rec[field] = row[h];
+  });
+  return rec;
 }
 
 function downloadTemplate() {
-  const csv = TEMPLATE_HEADERS.join(",") + "\n" + "Sarah Chen,Acme Ventures,sarah@acme.vc,Seed,\"$100k-$500k\",Met at demo day,2024-11-01,Email";
-  const blob = new Blob([csv], { type: "text/csv" });
+  const rows = [
+    TEMPLATE_HEADERS.join(","),
+    "Sarah Chen,Acme Ventures,sarah@acme.vc,Venture Capital,Seed",
+    "James Okafor,FO Capital,,Family Office,Pre-Seed",
+  ].join("\n");
+  const blob = new Blob([rows], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "investor_list_template.csv";
+  a.download = "investor_import_template.csv";
   a.click();
   URL.revokeObjectURL(url);
 }
 
-const STEPS = ["upload", "map", "confirm"];
+const INVESTOR_TYPE_VALUES = ["Angel", "Family Office", "Venture Capital", "Private Equity", "Strategic/Corporate", "Other"];
+const STAGE_FOCUS_VALUES = ["Pre-Seed", "Seed", "Series A", "Series B+", "Growth"];
+
+function sanitizeRecord(rec) {
+  const out = { ...rec };
+  if (out.investor_type && !INVESTOR_TYPE_VALUES.includes(out.investor_type)) out.investor_type = undefined;
+  if (out.stage_focus && !STAGE_FOCUS_VALUES.includes(out.stage_focus)) out.stage_focus = undefined;
+  return out;
+}
 
 export default function BulkUploadModal({ companyId, existingInvestors, onClose, onImported }) {
-  const [step, setStep] = useState("upload");
-  const [dragging, setDragging] = useState(false);
+  const [step, setStep] = useState("upload"); // upload | preview | success
   const [fileName, setFileName] = useState("");
   const [headers, setHeaders] = useState([]);
   const [rows, setRows] = useState([]);
-  const [mapping, setMapping] = useState({}); // colHeader -> investorField key
   const [importing, setImporting] = useState(false);
-  const [result, setResult] = useState(null); // { imported, skippedInvalid, skippedDuplicate }
+  const [importedCount, setImportedCount] = useState(0);
+  const [dragging, setDragging] = useState(false);
   const fileRef = useRef();
 
   const processFile = useCallback(async (file) => {
     setFileName(file.name);
-    let text;
-    if (file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) {
-      // Use base44 extraction for Excel
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      const res = await base44.integrations.Core.ExtractDataFromUploadedFile({
-        file_url,
-        json_schema: {
-          type: "object",
-          properties: {
-            rows: {
-              type: "array",
-              items: { type: "object", additionalProperties: { type: "string" } }
-            }
-          }
-        }
-      });
-      if (res.status !== "success" || !res.output?.rows?.length) {
-        alert("Could not read the Excel file. Please try a CSV.");
-        return;
-      }
-      const hdrs = Object.keys(res.output.rows[0]);
-      setHeaders(hdrs);
-      setRows(res.output.rows);
-      const autoMap = {};
-      hdrs.forEach(h => { const m = autoMatch(h); if (m) autoMap[h] = m; });
-      setMapping(autoMap);
-      setStep("map");
+    const text = await file.text();
+    const parsed = parseCSV(text);
+    if (!parsed.headers.length || !parsed.rows.length) {
+      alert("Could not parse the file. Please check the format and try again.");
       return;
     }
-    // CSV
-    text = await file.text();
-    const parsed = parseCSV(text);
-    if (!parsed.headers.length) { alert("Could not parse the file."); return; }
     setHeaders(parsed.headers);
     setRows(parsed.rows);
-    const autoMap = {};
-    parsed.headers.forEach(h => { const m = autoMatch(h); if (m) autoMap[h] = m; });
-    setMapping(autoMap);
-    setStep("map");
+    setStep("preview");
   }, []);
 
   const handleDrop = useCallback((e) => {
@@ -125,80 +100,52 @@ export default function BulkUploadModal({ companyId, existingInvestors, onClose,
     if (file) processFile(file);
   }, [processFile]);
 
-  const handleFile = (e) => {
+  const handleFileInput = (e) => {
     const file = e.target.files[0];
     if (file) processFile(file);
   };
 
-  // Build preview of what will be imported
-  const buildRecords = () => {
-    return rows.map(row => {
-      const rec = {};
-      Object.entries(mapping).forEach(([col, field]) => {
-        if (field && row[col] !== undefined) rec[field] = row[col];
-      });
-      return rec;
-    });
-  };
-
   const handleImport = async () => {
     setImporting(true);
-    const records = buildRecords();
+    let count = 0;
 
-    let importedCount = 0;
-    let skippedInvalid = 0;
-    let skippedDuplicate = 0;
+    for (const row of rows) {
+      const rec = buildRecord(row, headers);
+      if (!rec.name?.trim() && !rec.firm?.trim()) continue;
 
-    for (const rec of records) {
-      const hasName = rec.name?.trim();
-      const hasFirm = rec.firm?.trim();
-      if (!hasName && !hasFirm) { skippedInvalid++; continue; }
-
-      // Duplicate check
       const isDup = existingInvestors.some(inv => {
         if (rec.email?.trim() && inv.email?.trim()) {
           return rec.email.trim().toLowerCase() === inv.email.trim().toLowerCase();
         }
-        const nameMatch = rec.name?.trim().toLowerCase() === inv.name?.trim().toLowerCase();
-        const firmMatch = rec.firm?.trim().toLowerCase() === inv.firm?.trim().toLowerCase();
-        return nameMatch && firmMatch && (rec.name?.trim() || rec.firm?.trim());
+        return (
+          rec.name?.trim().toLowerCase() === inv.name?.trim().toLowerCase() &&
+          rec.firm?.trim().toLowerCase() === inv.firm?.trim().toLowerCase() &&
+          (rec.name?.trim() || rec.firm?.trim())
+        );
       });
-      if (isDup) { skippedDuplicate++; continue; }
+      if (isDup) continue;
 
-      await base44.entities.Investor.create({ ...rec, company_id: companyId, funnel_stage: rec.funnel_stage || "Identified" });
-      importedCount++;
+      const sanitized = sanitizeRecord(rec);
+      await base44.entities.Investor.create({ ...sanitized, company_id: companyId, funnel_stage: "Identified" });
+      count++;
     }
 
-    setResult({ imported: importedCount, skippedInvalid, skippedDuplicate, total: records.length });
+    setImportedCount(count);
     setImporting(false);
-    setStep("confirm");
+    setStep("success");
     onImported();
   };
 
-  const statsPreview = () => {
-    const records = buildRecords();
-    const valid = records.filter(r => r.name?.trim() || r.firm?.trim());
-    return { total: records.length, valid: valid.length, invalid: records.length - valid.length };
-  };
+  const previewRows = rows.slice(0, 5);
+  const previewHeaders = headers.filter(h => mapHeader(h));
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-          <div>
-            <h2 className="text-base font-semibold text-slate-800">Upload Investor List</h2>
-            <div className="flex items-center gap-2 mt-1">
-              {STEPS.map((s, i) => (
-                <React.Fragment key={s}>
-                  <span className={`text-[11px] font-medium capitalize ${step === s ? "text-violet-600" : "text-slate-300"}`}>
-                    {s === "upload" ? "Upload" : s === "map" ? "Map Columns" : "Import"}
-                  </span>
-                  {i < STEPS.length - 1 && <ChevronRight className="w-3 h-3 text-slate-200" />}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
+          <h2 className="text-base font-semibold text-slate-800">Import Investor List</h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
             <X className="w-5 h-5" />
           </button>
@@ -208,7 +155,7 @@ export default function BulkUploadModal({ companyId, existingInvestors, onClose,
 
           {/* STEP: Upload */}
           {step === "upload" && (
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div
                 onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
                 onDragLeave={() => setDragging(false)}
@@ -219,15 +166,25 @@ export default function BulkUploadModal({ companyId, existingInvestors, onClose,
                 }`}
               >
                 <FileSpreadsheet className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                <p className="text-sm font-medium text-slate-600">Drag & drop your file here</p>
+                <p className="text-sm font-medium text-slate-600">Drag & drop your CSV here</p>
                 <p className="text-xs text-slate-400 mt-1">or click to browse</p>
-                <p className="text-[11px] text-slate-300 mt-3">Supports .csv and .xlsx</p>
-                <input ref={fileRef} type="file" accept=".csv,.xlsx,.xls" className="hidden" onChange={handleFile} />
+                <p className="text-[11px] text-slate-300 mt-3">Supports .csv files</p>
+                <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleFileInput} />
+              </div>
+
+              {/* Column guide */}
+              <div className="bg-slate-50 rounded-xl p-4">
+                <p className="text-xs font-semibold text-slate-600 mb-2">Expected columns</p>
+                <div className="flex flex-wrap gap-2">
+                  {TEMPLATE_HEADERS.map(h => (
+                    <span key={h} className="text-[11px] font-mono bg-white border border-slate-200 text-slate-600 px-2 py-0.5 rounded">{h}</span>
+                  ))}
+                </div>
               </div>
 
               <button
                 onClick={downloadTemplate}
-                className="flex items-center gap-2 text-xs text-violet-600 hover:text-violet-700 transition-colors mx-auto"
+                className="flex items-center gap-2 text-xs text-violet-600 hover:text-violet-700 transition-colors"
               >
                 <Download className="w-3.5 h-3.5" />
                 Download CSV Template
@@ -235,108 +192,103 @@ export default function BulkUploadModal({ companyId, existingInvestors, onClose,
             </div>
           )}
 
-          {/* STEP: Map Columns */}
-          {step === "map" && (
+          {/* STEP: Preview */}
+          {step === "preview" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm text-slate-600">
-                  <span className="font-medium">{fileName}</span> — {rows.length} rows found
+                <p className="text-sm text-slate-700">
+                  <span className="font-medium">{fileName}</span>
+                  <span className="text-slate-400 ml-2">· {rows.length} rows detected</span>
                 </p>
                 <button onClick={downloadTemplate} className="flex items-center gap-1.5 text-xs text-violet-500 hover:text-violet-700">
                   <Download className="w-3 h-3" /> Template
                 </button>
               </div>
 
-              <p className="text-xs text-slate-400">Map your file's columns to investor fields. Skip any that don't apply.</p>
-
-              <div className="space-y-2">
-                {headers.map(col => (
-                  <div key={col} className="flex items-center gap-3">
-                    <span className="text-xs font-mono bg-slate-100 text-slate-600 px-2 py-1 rounded w-44 truncate flex-shrink-0">{col}</span>
-                    <span className="text-slate-300 text-xs">→</span>
-                    <select
-                      value={mapping[col] || ""}
-                      onChange={e => setMapping(m => ({ ...m, [col]: e.target.value }))}
-                      className="flex-1 text-xs border border-slate-200 rounded-lg px-2 py-1.5 text-slate-700 bg-white focus:outline-none focus:border-violet-400"
-                    >
-                      <option value="">— Skip —</option>
-                      {INVESTOR_FIELDS.map(f => (
-                        <option key={f.key} value={f.key}>{f.label}</option>
+              <div>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Preview (first 5 rows)</p>
+                <div className="overflow-x-auto rounded-xl border border-slate-200">
+                  <table className="w-full text-xs">
+                    <thead className="bg-slate-50">
+                      <tr>
+                        {previewHeaders.map(h => (
+                          <th key={h} className="text-left text-[11px] font-semibold text-slate-500 px-3 py-2 uppercase tracking-wider whitespace-nowrap">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {previewRows.map((row, i) => (
+                        <tr key={i} className="hover:bg-slate-50">
+                          {previewHeaders.map(h => (
+                            <td key={h} className="px-3 py-2 text-slate-700 max-w-[140px] truncate">{row[h] || <span className="text-slate-300">—</span>}</td>
+                          ))}
+                        </tr>
                       ))}
-                    </select>
-                  </div>
-                ))}
+                    </tbody>
+                  </table>
+                </div>
+                {rows.length > 5 && (
+                  <p className="text-[11px] text-slate-400 mt-1.5">+ {rows.length - 5} more rows not shown</p>
+                )}
               </div>
 
-              {(() => {
-                const { total, valid, invalid } = statsPreview();
-                return (
-                  <div className="mt-4 bg-slate-50 rounded-lg px-4 py-3 text-xs text-slate-500 flex gap-4">
-                    <span>{total} rows</span>
-                    <span className="text-emerald-600 font-medium">✓ {valid} valid</span>
-                    {invalid > 0 && <span className="text-amber-600">⚠ {invalid} will be skipped (no name or firm)</span>}
-                  </div>
-                );
-              })()}
+              <div className="bg-violet-50 border border-violet-100 rounded-xl px-4 py-3 text-xs text-violet-700">
+                <strong>{rows.length}</strong> investors will be added to your pipeline. Duplicates will be skipped automatically.
+              </div>
             </div>
           )}
 
-          {/* STEP: Confirm / Result */}
-          {step === "confirm" && result && (
-            <div className="text-center py-6 space-y-5">
+          {/* STEP: Success */}
+          {step === "success" && (
+            <div className="text-center py-8 space-y-4">
               <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
                 <Check className="w-7 h-7 text-emerald-600" />
               </div>
               <div>
-                <p className="text-lg font-semibold text-slate-800">Import Complete</p>
-                <p className="text-sm text-slate-500 mt-1">{fileName}</p>
+                <p className="text-lg font-semibold text-slate-800">
+                  {importedCount} investor{importedCount !== 1 ? "s" : ""} added to your pipeline
+                </p>
+                <p className="text-sm text-slate-400 mt-1">{fileName}</p>
               </div>
-              <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto">
-                <div className="bg-slate-50 rounded-xl p-3">
-                  <p className="text-2xl font-bold text-slate-800">{result.total}</p>
-                  <p className="text-[11px] text-slate-400 mt-1">Rows Found</p>
-                </div>
-                <div className="bg-emerald-50 rounded-xl p-3">
-                  <p className="text-2xl font-bold text-emerald-700">{result.imported}</p>
-                  <p className="text-[11px] text-emerald-500 mt-1">Imported</p>
-                </div>
-                <div className="bg-amber-50 rounded-xl p-3">
-                  <p className="text-2xl font-bold text-amber-700">{result.skippedInvalid + result.skippedDuplicate}</p>
-                  <p className="text-[11px] text-amber-500 mt-1">Skipped</p>
-                </div>
-              </div>
-              {(result.skippedInvalid > 0 || result.skippedDuplicate > 0) && (
-                <div className="text-xs text-slate-400 space-y-0.5">
-                  {result.skippedInvalid > 0 && <p>{result.skippedInvalid} row{result.skippedInvalid !== 1 ? "s" : ""} missing name and firm</p>}
-                  {result.skippedDuplicate > 0 && <p>{result.skippedDuplicate} duplicate{result.skippedDuplicate !== 1 ? "s" : ""} skipped</p>}
-                </div>
-              )}
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between gap-3">
-          <button onClick={onClose} className="text-sm text-slate-500 hover:text-slate-700 transition-colors">
-            {step === "confirm" ? "Close" : "Cancel"}
-          </button>
-          {step === "map" && (
-            <div className="flex gap-3">
-              <button
-                onClick={() => setStep("upload")}
-                className="px-4 py-2 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                Back
-              </button>
-              <button
-                onClick={handleImport}
-                disabled={importing}
-                className="px-5 py-2 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-medium transition-all disabled:opacity-60"
-              >
-                {importing ? "Importing…" : `Import Investors`}
-              </button>
-            </div>
+        <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
+          {step === "success" ? (
+            <div />
+          ) : (
+            <button onClick={onClose} className="text-sm text-slate-500 hover:text-slate-700 transition-colors">Cancel</button>
           )}
+
+          <div className="flex gap-3">
+            {step === "preview" && (
+              <>
+                <button
+                  onClick={() => setStep("upload")}
+                  className="px-4 py-2 text-sm border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleImport}
+                  disabled={importing}
+                  className="px-5 py-2 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-medium transition-all disabled:opacity-60"
+                >
+                  {importing ? "Importing…" : `Import ${rows.length} Investor${rows.length !== 1 ? "s" : ""}`}
+                </button>
+              </>
+            )}
+            {step === "success" && (
+              <button
+                onClick={onClose}
+                className="px-5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium transition-all"
+              >
+                Done
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
