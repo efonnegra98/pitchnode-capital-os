@@ -215,7 +215,7 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
                 <SelectValue placeholder="Select stage" />
               </SelectTrigger>
               <SelectContent>
-                {["Identified", "Contacted", "Intro Call", "Partner Meeting", "Due Diligence", "Term Sheet"].map((s) => (
+                {["Identified", "Contacted", "Intro Call", "Partner Meeting", "Due Diligence", "Soft Commit", "Hard Commit"].map((s) => (
                   <SelectItem key={s} value={s}>{s}</SelectItem>
                 ))}
               </SelectContent>

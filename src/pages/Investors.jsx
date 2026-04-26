@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Search, Users, Upload } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import InvestorTable from "../components/investors/InvestorTable";
+import InvestorBoard from "../components/investors/InvestorBoard";
 import InvestorModal from "../components/investors/InvestorModal";
 import FollowUpModal from "../components/investors/FollowUpModal";
 import BulkUploadModal from "../components/investors/BulkUploadModal";
@@ -21,9 +22,15 @@ export default function Investors() {
   const [modalData, setModalData] = useState(null);
   const [followUpInvestor, setFollowUpInvestor] = useState(null);
   const [showUpload, setShowUpload] = useState(false);
+  const [viewMode, setViewMode] = useState("list"); // "list" | "board"
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const stageMutation = useMutation({
+    mutationFn: ({ id, funnel_stage }) => base44.entities.Investor.update(id, { funnel_stage }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["investors", companyId] }),
+  });
   const { companyId, isLoading: companyLoading } = useCompany();
 
   const { data: investors = [], isLoading: investorsLoading } = useQuery({
@@ -131,6 +138,21 @@ export default function Investors() {
               className="pl-9 w-56"
             />
           </div>
+          {/* List / Board toggle */}
+          <div className="flex items-center bg-slate-100 rounded-lg p-1 gap-0.5">
+            <button
+              onClick={() => setViewMode("list")}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${viewMode === "list" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+            >
+              List
+            </button>
+            <button
+              onClick={() => setViewMode("board")}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${viewMode === "board" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+            >
+              Board
+            </button>
+          </div>
           <button
             onClick={() => setShowUpload(true)}
             className="px-4 py-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium transition-all whitespace-nowrap flex items-center gap-1.5"
@@ -207,6 +229,12 @@ export default function Investors() {
             Add First Investor
           </button>
         </div>
+      ) : viewMode === "board" ? (
+        <InvestorBoard
+          investors={sortedFiltered}
+          onEdit={(inv) => setModalData(inv)}
+          onStageChange={(id, funnel_stage) => stageMutation.mutate({ id, funnel_stage })}
+        />
       ) : (
         <InvestorTable
           investors={sortedFiltered}

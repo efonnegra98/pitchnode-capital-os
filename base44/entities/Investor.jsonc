@@ -172,7 +172,8 @@
         "Intro Call",
         "Partner Meeting",
         "Due Diligence",
-        "Term Sheet"
+        "Soft Commit",
+        "Hard Commit"
       ],
       "description": "Current stage in capital funnel"
     },
