@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useCompany } from "../components/useCompany";
@@ -26,9 +26,24 @@ import CollapsibleSection from "../components/dashboard/CollapsibleSection";
 import RaiseSignals from "../components/dashboard/RaiseSignals";
 import ModuleSignals from "../components/dashboard/ModuleSignals";
 import { computeRaiseSignals, getModuleSignals } from "../lib/raiseSignals";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Dashboard() {
   const { company, companyId, isLoading: companyLoading } = useCompany();
+  const { toast } = useToast();
+
+  // Show success toast after Stripe checkout redirect
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("checkout") === "success") {
+      toast({
+        title: "Subscription activated!",
+        description: "Welcome to CapitalOS Pro. Your account is now fully active.",
+      });
+      // Clean up URL
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
 
   const { data: updates = [], isLoading: updatesLoading } = useQuery({
     queryKey: ["monthly-updates", companyId],

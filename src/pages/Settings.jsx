@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Save, Upload, AlertTriangle } from "lucide-react";
+import BillingSection from "../components/settings/BillingSection";
 import { useToast } from "@/components/ui/use-toast";
 
 function SectionHeader({ title, description }) {
@@ -350,7 +351,10 @@ export default function Settings() {
           </div>
         </section>
 
-        {/* ─── 5. Account ─── */}
+        {/* ─── 5. Billing ─── */}
+        <BillingSection company={company} companyId={companyId} />
+
+        {/* ─── 6. Account ─── */}
         <section className="bg-white border border-slate-200 rounded-2xl p-7 shadow-sm">
           <SectionHeader title="Account" />
           <div className="space-y-5">

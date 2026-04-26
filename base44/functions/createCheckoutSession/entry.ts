@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 import Stripe from 'npm:stripe@17.5.0';
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY"));
@@ -27,24 +27,36 @@ Deno.serve(async (req) => {
 
     let customerId = company.stripe_customer_id;
 
-    // Create Stripe customer if doesn't exist
+    // Create Stripe customer if not yet created
     if (!customerId) {
       const customer = await stripe.customers.create({
         email: user.email,
+        name: company.founder_name || user.full_name || '',
         metadata: {
-          company_id: company_id,
-          company_name: company.name
-        }
+          company_id,
+          company_name: company.name,
+          user_email: user.email,
+        },
       });
       customerId = customer.id;
-      
-      // Save customer ID to company
+
       await base44.asServiceRole.entities.Company.update(company_id, {
-        stripe_customer_id: customerId
+        stripe_customer_id: customerId,
       });
     }
 
-    // Create checkout session
+    // Check if customer already has an active subscription
+    const existingSubscriptions = await stripe.subscriptions.list({
+      customer: customerId,
+      status: 'active',
+      limit: 1,
+    });
+    if (existingSubscriptions.data.length > 0) {
+      return Response.json({ error: 'Already subscribed' }, { status: 409 });
+    }
+
+    const origin = req.headers.get('origin') || 'https://app.pitchnode.com';
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
@@ -55,11 +67,18 @@ Deno.serve(async (req) => {
           quantity: 1,
         },
       ],
-      success_url: `${req.headers.get('origin')}/Dashboard?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get('origin')}/Upgrade`,
+      allow_promotion_codes: true,
+      billing_address_collection: 'auto',
+      subscription_data: {
+        metadata: {
+          company_id,
+        },
+      },
       metadata: {
-        company_id: company_id
-      }
+        company_id,
+      },
+      success_url: `${origin}/Dashboard?checkout=success`,
+      cancel_url: `${origin}/Upgrade?checkout=canceled`,
     });
 
     return Response.json({ url: session.url });
