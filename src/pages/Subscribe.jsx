@@ -12,34 +12,36 @@ const features = [
 
 export default function Subscribe() {
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-16">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <img
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698fe466c243851910a585ea/ae8a53466_pn_black_full3.png"
-            alt="PitchNode"
-            className="h-9 w-auto mx-auto mb-6"
-          />
-          <h1 className="text-2xl font-bold text-slate-900">Subscribe to CapitalOS</h1>
-          <p className="text-slate-500 text-sm mt-2">
-            Activate your account to access the CapitalOS platform.
-          </p>
+    <div className="min-h-screen bg-white flex items-center justify-center px-6 py-16">
+      <div className="w-full max-w-sm">
+        {/* Headline */}
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">Get Full Access to Capital OS.</h1>
+          <p className="text-slate-500 text-sm">Everything you need to run an institutional-grade raise — in one platform.</p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm px-8 py-8">
+        <div className="bg-white rounded-2xl shadow-xl shadow-slate-100 border border-slate-100 px-8 py-10">
+
+          {/* Card Title */}
+          <h2 className="text-center text-lg font-bold text-slate-900 mb-4">Capital OS</h2>
+
           {/* Price */}
-          <div className="text-center mb-6">
-            <span className="text-4xl font-extrabold text-slate-900">$49</span>
-            <span className="text-slate-400 text-base font-normal"> / month</span>
+          <div className="text-center mt-4 mb-2">
+            <span className="text-5xl font-extrabold text-slate-900">$49</span>
+            <span className="text-slate-400 text-lg font-normal"> / month</span>
           </div>
+
+          {/* Subtext */}
+          <p className="text-center text-slate-500 text-sm mb-8">
+            Your raise deserves the right infrastructure.
+          </p>
 
           {/* Features */}
           <ul className="space-y-3 mb-8">
             {features.map((f) => (
               <li key={f} className="flex items-start gap-2.5 text-sm text-slate-700">
-                <span className="mt-0.5 text-[#6D5DF6] font-bold flex-shrink-0">✓</span>
+                <span className="mt-0.5 text-slate-900 font-bold flex-shrink-0">✓</span>
                 {f}
               </li>
             ))}
@@ -48,13 +50,18 @@ export default function Subscribe() {
           {/* CTA */}
           <a
             href={STRIPE_PAYMENT_URL}
-            className="block w-full text-center bg-[#6D5DF6] hover:bg-[#5c4de0] text-white font-semibold text-sm py-3 rounded-lg transition-colors"
+            className="block w-full text-center bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm py-3.5 rounded-full transition-colors"
           >
             Subscribe Now
           </a>
+          <p className="text-center text-xs text-slate-500 mt-3">
+            Unlock full access in 30 seconds.
+          </p>
 
-          <p className="text-center text-xs text-slate-400 mt-4">
-            Cancel anytime. Included at no cost for PitchNode Accelerator companies.
+          {/* Footer */}
+          <p className="text-center text-xs text-slate-400 mt-3">Cancel anytime.</p>
+          <p className="text-center text-xs text-slate-400 mt-1">
+            Included at no cost for PitchNode Accelerator companies.
           </p>
         </div>
       </div>
