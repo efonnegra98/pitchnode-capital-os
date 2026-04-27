@@ -217,10 +217,7 @@ function LayoutContent({ children, currentPageName }) {
           </div>
         )}
 
-        {/* Footer */}
-        <div className="px-4 py-3">
-          <p className="text-[9px] text-slate-400 tracking-wider">v1.0</p>
-        </div>
+
       </aside>
 
       {/* Main Content */}
