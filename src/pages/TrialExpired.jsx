@@ -18,11 +18,6 @@ export default function TrialExpired() {
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm">
-        {/* Label */}
-        <p className="text-center text-xs font-semibold uppercase tracking-widest text-slate-400 mb-6">
-          Capital OS Pro
-        </p>
-
         {/* Headline */}
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-slate-900 mb-2">Your 7-Day Trial Has Ended.</h1>
