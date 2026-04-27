@@ -27,6 +27,9 @@ export default function TrialExpired() {
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-xl shadow-slate-100 border border-slate-100 px-8 py-10">
 
+          {/* Card Title */}
+          <h2 className="text-center text-lg font-bold text-slate-900 mb-4">Capital OS</h2>
+
           {/* Price */}
           <div className="text-center mt-4 mb-2">
             <span className="text-5xl font-extrabold text-slate-900">$49</span>
