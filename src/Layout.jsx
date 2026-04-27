@@ -56,61 +56,52 @@ function LayoutContent({ children, currentPageName }) {
 
   useEffect(() => {
     const checkAccess = async () => {
-      // Skip check for public pages
-      if (currentPageName === "Gateway" || currentPageName === "AccessRequest" || currentPageName === "Onboarding" || currentPageName === "Upgrade" || currentPageName === "TrialExpired" || currentPageName === "Subscribe") {
+      // Skip check for these pages — always accessible
+      const bypassPages = ["Gateway", "AccessRequest", "Onboarding", "Upgrade", "TrialExpired", "Subscribe"];
+      if (bypassPages.includes(currentPageName)) {
         setCheckingAccess(false);
         return;
       }
 
       try {
         const user = await base44.auth.me();
+
+        // Not logged in — redirect to login
         if (!user) {
-          setCheckingAccess(false);
+          base44.auth.redirectToLogin();
           return;
         }
 
-        // Check if user has a profile and if onboarding is completed
-        const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
-        
-        // If no profile exists, redirect to onboarding
-        if (profiles.length === 0) {
-          navigate(createPageUrl("Onboarding"));
-          return;
-        }
-
-        // Check if onboarding is completed
-        if (!profiles[0].onboarding_completed) {
-          navigate(createPageUrl("Onboarding"));
-          return;
-        }
-
-        // Verify user has a company_id
-        if (!profiles[0].company_id) {
-          navigate(createPageUrl("Onboarding"));
-          return;
-        }
-
-        // Admins and owners bypass trial/subscription checks entirely
+        // Admins bypass all checks
         if (user.role === "admin" || user.role === "owner") {
           setCheckingAccess(false);
           return;
         }
 
-        // Check trial status
+        // Check profile / onboarding
+        const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+
+        if (profiles.length === 0 || !profiles[0].onboarding_completed || !profiles[0].company_id) {
+          navigate(createPageUrl("Onboarding"));
+          return;
+        }
+
+        // Check subscription
         const companies = await base44.entities.Company.filter({ id: profiles[0].company_id });
         const company = companies[0];
-        
-        if (company) {
-          const isActive = company.subscription_status === "active";
-          const isTrialing = company.subscription_status === "trialing" && company.trial_end_date && new Date() < new Date(company.trial_end_date);
 
-          if (!isActive && !isTrialing) {
-            // Trial expired or never started — send to subscribe page
-            navigate(createPageUrl("Subscribe"));
-            return;
-          }
-        } else {
-          // No company record yet — something went wrong in onboarding, redirect to subscribe
+        if (!company) {
+          navigate(createPageUrl("Subscribe"));
+          return;
+        }
+
+        const isActive = company.subscription_status === "active";
+        const isTrialing =
+          company.subscription_status === "trialing" &&
+          company.trial_end_date &&
+          new Date() < new Date(company.trial_end_date);
+
+        if (!isActive && !isTrialing) {
           navigate(createPageUrl("Subscribe"));
           return;
         }
