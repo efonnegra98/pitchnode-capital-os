@@ -1,10 +1,32 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "../utils";
 
 export default function Gateway() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const user = await base44.auth.me();
+        if (user) {
+          // Already logged in — check if they have a profile
+          const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+          if (profiles.length === 0 || !profiles[0].onboarding_completed) {
+            navigate(createPageUrl("Onboarding"));
+          } else {
+            navigate(createPageUrl("Dashboard"));
+          }
+        }
+      } catch {
+        // Not authenticated — stay on Gateway
+      }
+    };
+    checkAuth();
+  }, [navigate]);
+
   const handleSignIn = () => {
     base44.auth.redirectToLogin();
   };
