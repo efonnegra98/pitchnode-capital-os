@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import { appParams } from '@/lib/app-params';
 import PublicDataRoom from './pages/PublicDataRoom';
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -34,7 +35,14 @@ const AuthenticatedApp = () => {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
+      navigateToLogin();
+      return null;
+    }
+  }
+
+  // Not authenticated and no error — redirect to login
+  if (!isLoadingAuth && !isLoadingPublicSettings && !authError) {
+    if (!appParams.token) {
       navigateToLogin();
       return null;
     }
