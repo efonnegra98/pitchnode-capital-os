@@ -11,8 +11,6 @@ import { Check, ChevronRight, Plus, X } from "lucide-react";
 import { createPageUrl } from "../utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-const STRIPE_PAYMENT_URL = "https://buy.stripe.com/3cI00jf5Demc8vteLS7Zu00";
-
 export default function Onboarding() {
   const [step, setStep] = useState(1);
   const [investors, setInvestors] = useState([]);
@@ -76,7 +74,7 @@ export default function Onboarding() {
       }
     },
     onSuccess: () => {
-      window.location.href = STRIPE_PAYMENT_URL;
+      navigate(createPageUrl("Dashboard"));
     },
   });
 
