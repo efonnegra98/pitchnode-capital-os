@@ -9,6 +9,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { appParams } from '@/lib/app-params';
 import PublicDataRoom from './pages/PublicDataRoom';
+import Gateway from './pages/Gateway';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -19,7 +20,7 @@ const LayoutWrapper = ({ children, currentPageName }) => Layout ?
   : <>{children}</>;
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -35,17 +36,14 @@ const AuthenticatedApp = () => {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      navigateToLogin();
-      return null;
+      // Not logged in — show Gateway (public landing page)
+      return <Gateway />;
     }
   }
 
-  // Not authenticated and no error — redirect to login
-  if (!isLoadingAuth && !isLoadingPublicSettings && !authError) {
-    if (!appParams.token) {
-      navigateToLogin();
-      return null;
-    }
+  // No token at all — show Gateway
+  if (!appParams.token) {
+    return <Gateway />;
   }
 
   // Render the main app
