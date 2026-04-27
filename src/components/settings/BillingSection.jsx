@@ -34,7 +34,7 @@ function StatusBadge({ status }) {
 
 export default function BillingSection({ company, companyId }) {
   const [loadingPortal, setLoadingPortal] = useState(false);
-  const [loadingCheckout, setLoadingCheckout] = useState(false);
+
   const [error, setError] = useState(null);
 
   const status = company?.subscription_status;
@@ -62,21 +62,10 @@ export default function BillingSection({ company, companyId }) {
     }
   };
 
-  const handleSubscribe = async () => {
-    setError(null);
-    setLoadingCheckout(true);
-    try {
-      const res = await base44.functions.invoke("createCheckoutSession", { company_id: companyId });
-      if (res.data?.url) {
-        window.location.href = res.data.url;
-      } else {
-        setError(res.data?.error || "Could not start checkout.");
-      }
-    } catch (err) {
-      setError(err.message || "Something went wrong.");
-    } finally {
-      setLoadingCheckout(false);
-    }
+  const STRIPE_PAYMENT_URL = "https://buy.stripe.com/3cI00jf5Demc8vteLS7Zu00";
+
+  const handleSubscribe = () => {
+    window.open(STRIPE_PAYMENT_URL, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -121,11 +110,10 @@ export default function BillingSection({ company, companyId }) {
           ) : (
             <Button
               onClick={handleSubscribe}
-              disabled={loadingCheckout}
               className="bg-violet-600 hover:bg-violet-700 text-white gap-2"
             >
               <CreditCard className="w-4 h-4" />
-              {loadingCheckout ? "Redirecting..." : "Subscribe Now"}
+              Subscribe Now
             </Button>
           )}
         </div>

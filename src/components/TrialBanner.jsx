@@ -2,8 +2,7 @@ import React from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Clock, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
+const STRIPE_PAYMENT_URL = "https://buy.stripe.com/3cI00jf5Demc8vteLS7Zu00";
 
 export default function TrialBanner({ company, user }) {
   if (!company || company.subscription_status === "active") {
@@ -30,12 +29,12 @@ export default function TrialBanner({ company, user }) {
                 <span className="font-semibold text-[#6D5DF6]">{daysRemaining} days</span> remaining in your free trial
               </span>
             </div>
-            <Link to={createPageUrl("Upgrade")}>
+            <a href={STRIPE_PAYMENT_URL} target="_blank" rel="noopener noreferrer">
               <Button size="sm" className="bg-[#6D5DF6] hover:bg-[#5346E0]">
                 <Sparkles className="w-3.5 h-3.5 mr-1.5" />
                 Upgrade Now
               </Button>
-            </Link>
+            </a>
           </div>
         </div>
       </div>
