@@ -38,7 +38,7 @@ export default function TrialExpired() {
 
           {/* Subtext */}
           <p className="text-center text-slate-500 text-sm mb-8">
-            Operate your raise with structure and control.
+            Your raise doesn't stop. Neither should your tools.
           </p>
 
           {/* Features */}
@@ -59,7 +59,7 @@ export default function TrialExpired() {
             Subscribe Now
           </button>
           <p className="text-center text-xs text-slate-500 mt-3">
-            Continue managing your raise without interruption.
+            Unlock full access in 30 seconds.
           </p>
 
           {/* Footer */}
