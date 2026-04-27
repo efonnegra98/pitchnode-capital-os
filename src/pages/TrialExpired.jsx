@@ -23,10 +23,14 @@ export default function TrialExpired() {
           Capital OS Pro
         </p>
 
+        {/* Headline */}
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">Your 7-Day Trial Has Ended.</h1>
+          <p className="text-slate-500 text-sm">Subscribe to keep full access to your investor CRM, data room, and raise analytics.</p>
+        </div>
+
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-xl shadow-slate-100 border border-slate-100 px-8 py-10">
-          {/* Title */}
-          <h1 className="text-2xl font-bold text-slate-900 text-center mb-1">Capital OS</h1>
 
           {/* Price */}
           <div className="text-center mt-4 mb-2">
