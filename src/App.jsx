@@ -10,6 +10,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { appParams } from '@/lib/app-params';
 import PublicDataRoom from './pages/PublicDataRoom';
 import Gateway from './pages/Gateway';
+import AccessRequest from './pages/AccessRequest';
 import { base44 } from '@/api/base44Client';
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -85,8 +86,9 @@ function App() {
         <Router>
           <NavigationTracker />
           <Routes>
-            {/* Public route — no auth required */}
+            {/* Public routes — no auth required */}
             <Route path="/dataroom/:shareId" element={<PublicDataRoom />} />
+            <Route path="/AccessRequest" element={<AccessRequest />} />
             {/* All other routes go through auth */}
             <Route path="/*" element={<AuthenticatedApp />} />
           </Routes>
