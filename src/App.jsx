@@ -10,6 +10,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { appParams } from '@/lib/app-params';
 import PublicDataRoom from './pages/PublicDataRoom';
 import Gateway from './pages/Gateway';
+import { base44 } from '@/api/base44Client';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
