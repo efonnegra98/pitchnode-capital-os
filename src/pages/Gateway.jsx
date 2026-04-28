@@ -57,8 +57,8 @@ export default function Gateway() {
         </div>
 
         {/* Headline */}
-        <h1 className="text-3xl font-bold text-white mb-3" style={{ letterSpacing: "-0.02em" }}>
-          Institutional infrastructure<br />for disciplined raises.
+        <h1 className="font-bold text-white mb-3" style={{ fontSize: "2.5rem", letterSpacing: "-0.02em", lineHeight: "1.15" }}>
+          Your Fundraising Command Center.
         </h1>
         <p className="text-slate-400 text-sm leading-relaxed mb-10">
           Your command center for running a high-signal, founder-grade capital raise.
