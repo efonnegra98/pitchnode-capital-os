@@ -26,7 +26,7 @@ export default function Gateway() {
   }, [navigate]);
 
   const handleSignIn = () => {
-    base44.auth.redirectToLogin();
+    base44.auth.redirectToLogin(window.location.href);
   };
 
   const GoogleIcon = () => (
