@@ -60,8 +60,8 @@ export default function Gateway() {
         <h1 className="font-bold text-white mb-3" style={{ fontSize: "2.5rem", letterSpacing: "-0.02em", lineHeight: "1.15" }}>
           Your Fundraising Command Center.
         </h1>
-        <p className="text-slate-400 text-sm leading-relaxed mb-10">
-          Your command center for running a high-signal, founder-grade capital raise.
+        <p className="text-sm leading-relaxed mb-10" style={{ color: "#9ca3af" }}>
+          The investor CRM, data room, and raise analytics built for serious founders.
         </p>
 
         {/* Sign in button */}
