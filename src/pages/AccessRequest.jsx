@@ -48,11 +48,18 @@ Reason: ${form.reason}
           <p className="text-slate-600 mb-8">
             We've received your access request. Our team will review it and get back to you shortly.
           </p>
-          <Link to={createPageUrl("Gateway")}>
-            <Button variant="outline" className="gap-2">
-              <ArrowLeft className="w-4 h-4" /> Back to home
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link to={createPageUrl("Gateway")}>
+              <Button variant="outline" className="gap-2">
+                <ArrowLeft className="w-4 h-4" /> Back to home
+              </Button>
+            </Link>
+            <Link to={createPageUrl("Gateway")}>
+              <Button className="bg-slate-900 hover:bg-slate-800 gap-2">
+                Try Again
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
