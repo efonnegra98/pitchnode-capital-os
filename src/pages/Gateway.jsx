@@ -50,18 +50,10 @@ export default function Gateway() {
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center text-center px-6 w-full max-w-sm">
 
-        {/* Logo */}
-        <img
-          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698fe466c243851910a585ea/ae8a53466_pn_black_full3.png"
-          alt="PitchNode"
-          className="h-9 w-auto brightness-0 invert mb-10"
-        />
-
-        {/* Eyebrow */}
-        <div className="inline-flex items-center gap-2 mb-5">
-          <span className="w-5 h-px bg-[#6D5DF6]" />
-          <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-[#6D5DF6]">Capital OS</span>
-          <span className="w-5 h-px bg-[#6D5DF6]" />
+        {/* Wordmark */}
+        <div className="mb-10 flex flex-col items-center">
+          <h2 className="text-2xl font-bold text-white tracking-tight">Capital OS</h2>
+          <p className="text-[12px] text-slate-500 mt-1">by PitchNode</p>
         </div>
 
         {/* Headline */}
