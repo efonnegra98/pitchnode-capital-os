@@ -36,8 +36,13 @@ const AuthenticatedApp = () => {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Not logged in — show Gateway (public landing page)
-      return <Gateway />;
+      // Redirect to Gateway automatically
+      base44.auth.redirectToLogin(window.location.href);
+      return (
+        <div className="fixed inset-0 flex items-center justify-center bg-[#0f0f0f]">
+          <p className="text-gray-400 text-sm">Redirecting you back to sign in...</p>
+        </div>
+      );
     }
   }
 
