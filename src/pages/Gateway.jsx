@@ -41,7 +41,7 @@ export default function Gateway() {
       {/* Left Panel — Dark Brand */}
       <div
         className="hidden lg:flex flex-col justify-between w-[52%] relative overflow-hidden px-14 py-12"
-        style={{ background: "linear-gradient(155deg, #0D0F1C 0%, #111827 60%, #0A0E1A 100%)" }}
+        style={{ background: "linear-gradient(155deg, #0a0a0a 0%, #0f0f1a 50%, #1a1a2e 100%)" }}
       >
         {/* Subtle grid overlay */}
         <div
