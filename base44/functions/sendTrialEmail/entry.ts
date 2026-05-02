@@ -58,11 +58,6 @@ Subscribe to get back in and continue managing your raise.
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-
-    if (user?.role !== 'admin') {
-      return Response.json({ error: 'Forbidden' }, { status: 403 });
-    }
 
     const { email_number } = await req.json();
 
