@@ -1,0 +1,27 @@
+{
+  "name": "TrialEmail",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user this was sent to"
+    },
+    "company_id": {
+      "type": "string",
+      "description": "Company ID"
+    },
+    "email_number": {
+      "type": "number",
+      "description": "Which email in the sequence (1, 2, 3, or 4)"
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the email was sent"
+    }
+  },
+  "required": [
+    "user_email",
+    "email_number"
+  ]
+}
