@@ -86,6 +86,13 @@ Deno.serve(async (req) => {
         continue;
       }
 
+      // Skip admins
+      const userCheck = await base44.asServiceRole.entities.User.filter({ email: profile.user_email });
+      if (userCheck[0]?.role === 'admin' || userCheck[0]?.role === 'owner') {
+        skipped++;
+        continue;
+      }
+
       // Get company to confirm trial status
       const companies = await base44.asServiceRole.entities.Company.filter({ id: profile.company_id });
       const company = companies[0];
@@ -135,10 +142,8 @@ Deno.serve(async (req) => {
         }
       }
 
-      // Get first name from user record
-      const users = await base44.asServiceRole.entities.User.filter({ email: profile.user_email });
-      const userRecord = users[0];
-      const fullName = userRecord?.full_name || profile.user_email.split('@')[0];
+      // Get first name from user record (already fetched above as userCheck)
+      const fullName = userCheck[0]?.full_name || profile.user_email.split('@')[0];
       const firstName = fullName.split(' ')[0];
 
       const bodyHtml = `<div style="font-family:sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:560px;margin:0 auto;padding:24px;">
