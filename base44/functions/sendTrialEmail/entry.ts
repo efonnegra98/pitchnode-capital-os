@@ -118,8 +118,8 @@ Deno.serve(async (req) => {
       const targetDays = DAY_MAP[email_number];
 
       if (email_number === 4) {
-        // Only send if trial has actually expired
-        if (!isExpired) {
+        // Only send if 7+ days have passed AND no active subscription
+        if (daysSinceStart < 7 || isActive) {
           skipped++;
           continue;
         }
