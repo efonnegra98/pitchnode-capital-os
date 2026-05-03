@@ -114,8 +114,8 @@ Deno.serve(async (req) => {
       // Email 2: send on day 3
       // Email 3: send on day 6 (1 day before 7-day trial ends)
       // Email 4: send on day 7+ (trial expired)
-      const DAY_MAP = { 1: 0, 2: 3, 3: 6, 4: 7 };
-      const targetDay = DAY_MAP[email_number];
+      const DAY_MAP = { 1: [0, 1], 2: [3], 3: [6], 4: null };
+      const targetDays = DAY_MAP[email_number];
 
       if (email_number === 4) {
         // Only send if trial has actually expired
@@ -124,8 +124,8 @@ Deno.serve(async (req) => {
           continue;
         }
       } else {
-        // Only send on the EXACT target day
-        if (daysSinceStart !== targetDay) {
+        // Only send on the exact target day(s)
+        if (!targetDays.includes(daysSinceStart)) {
           skipped++;
           continue;
         }
