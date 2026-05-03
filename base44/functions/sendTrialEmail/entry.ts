@@ -95,13 +95,11 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      // For emails 1-3: only send if still trialing
-      // For email 4: only send if trial has expired
       const now = new Date();
+      const trialStart = new Date(company.trial_start_date);
       const trialEnd = company.trial_end_date ? new Date(company.trial_end_date) : null;
-      const isTrialing = company.subscription_status === 'trialing';
-      const isExpired = company.subscription_status === 'expired' || (trialEnd && now > trialEnd);
       const isActive = company.subscription_status === 'active';
+      const isExpired = company.subscription_status === 'expired' || (trialEnd && now > trialEnd);
 
       // Skip users who have already subscribed
       if (isActive) {
@@ -109,14 +107,32 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      if (email_number < 4 && !isTrialing) {
-        skipped++;
-        continue;
-      }
+      // Calculate how many full days have elapsed since trial started
+      const daysSinceStart = Math.floor((now - trialStart) / (1000 * 60 * 60 * 24));
 
-      if (email_number === 4 && !isExpired) {
-        skipped++;
-        continue;
+      // Email 1: send on day 0 (same day trial started)
+      // Email 2: send on day 3
+      // Email 3: send on day 6 (1 day before 7-day trial ends)
+      // Email 4: send on day 7+ (trial expired)
+      const DAY_MAP = { 1: 0, 2: 3, 3: 6, 4: 7 };
+      const targetDay = DAY_MAP[email_number];
+
+      if (email_number === 4) {
+        // Only send if trial has actually expired
+        if (!isExpired) {
+          skipped++;
+          continue;
+        }
+      } else {
+        // Only send on or after the target day, and only while still trialing
+        if (daysSinceStart < targetDay) {
+          skipped++;
+          continue;
+        }
+        if (company.subscription_status !== 'trialing') {
+          skipped++;
+          continue;
+        }
       }
 
       // Get first name from user record
