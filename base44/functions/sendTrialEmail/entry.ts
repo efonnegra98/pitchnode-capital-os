@@ -124,8 +124,8 @@ Deno.serve(async (req) => {
           continue;
         }
       } else {
-        // Only send on or after the target day, and only while still trialing
-        if (daysSinceStart < targetDay) {
+        // Only send on the EXACT target day
+        if (daysSinceStart !== targetDay) {
           skipped++;
           continue;
         }
