@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { X, Trash2, Sparkles, Linkedin, Globe } from "lucide-react";
 import { suggestNextActionLabel } from "../../lib/nextActionSuggestion";
 import ActivityLog from "./ActivityLog";
+import SmartNextAction from "./SmartNextAction";
 
 const FIRM_TYPES = ["Venture Capital", "Angel", "Family Office", "Corporate / Strategic", "Accelerator", "Private Equity", "Other"];
 const STAGES = ["Pre-Seed", "Seed", "Series A", "Series B+", "Growth"];
@@ -86,6 +87,11 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
         </div>
 
         <div className="p-5 space-y-4">
+
+          {/* ── SMART NEXT ACTION ── */}
+          {investor?.id && (
+            <SmartNextAction investor={form} variant="card" />
+          )}
 
           {/* ── FIRM IDENTITY ── */}
           <SectionHeader>Firm Identity</SectionHeader>

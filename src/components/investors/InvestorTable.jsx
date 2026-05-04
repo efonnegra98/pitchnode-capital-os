@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, ChevronUp, MoreHorizontal, Send, Pencil, Trash2, Globe, Linkedin } from "lucide-react";
-import { suggestNextActionLabel } from "../../lib/nextActionSuggestion";
+import SmartNextAction from "./SmartNextAction";
 
 const avatarColors = [
   "bg-violet-100 text-violet-700",
@@ -332,6 +332,9 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                           {inv.portfolio_count ? (
                             <p className="text-[10px] text-slate-400">{inv.portfolio_count} portfolio cos</p>
                           ) : null}
+                          <div className="mt-1.5">
+                            <SmartNextAction investor={inv} variant="inline" />
+                          </div>
                         </div>
                       </div>
                     </td>
