@@ -47,85 +47,110 @@ export function getSmartNextAction(investor) {
 
   if (funnel_stage === "Identified") {
     return {
-      action: "Make first contact",
-      reason: sentiment === "Champion" ? "Strong signal — reach out now" : "Investor not yet contacted",
-      urgency: sentiment === "Champion" ? "high" : "medium",
+      action: "Start researching this firm",
+      reason: "Review thesis fit before making contact",
+      urgency: "low",
     };
   }
 
-  if (funnel_stage === "Contacted") {
-    if (daysSince !== null && daysSince >= 7) {
-      return {
-        action: "Send a follow-up email",
-        reason: `Last contact ${daysStr} — time to check in`,
-        urgency: daysSince >= 14 ? "high" : "medium",
-      };
-    }
+  if (funnel_stage === "Researching") {
     return {
-      action: "Schedule an intro call",
-      reason: "Move the conversation to a meeting",
+      action: "Send initial outreach",
+      reason: "Research complete — time to make first contact",
       urgency: "medium",
     };
   }
 
-  if (funnel_stage === "Intro Call") {
+  if (funnel_stage === "Outreach Sent") {
+    if (daysSince !== null && daysSince >= 7) {
+      return {
+        action: "Send a follow-up email",
+        reason: `Outreach sent ${daysStr} with no response`,
+        urgency: daysSince >= 14 ? "high" : "medium",
+      };
+    }
+    return {
+      action: "Await response & follow up if needed",
+      reason: "Outreach sent — give it a few days",
+      urgency: "low",
+    };
+  }
+
+  if (funnel_stage === "Intro Call Scheduled") {
+    return {
+      action: "Prepare for intro call",
+      reason: "Review investor thesis and prepare talking points",
+      urgency: "high",
+    };
+  }
+
+  if (funnel_stage === "Intro Call Complete") {
     if (sentiment === "Positive" || sentiment === "Champion") {
       return {
-        action: "Schedule a partner meeting",
-        reason: "Positive sentiment — strike while it's hot",
+        action: "Send a follow-up recap & next steps",
+        reason: daysStr ? `Call was ${daysStr} — strong interest, move fast` : "Great call — follow up promptly",
         urgency: "high",
       };
     }
     if (objections.length > 0) {
       return {
-        action: `Address ${objections[0]} concerns`,
+        action: `Address ${objections[0]} concern`,
         reason: "Send targeted materials to overcome objection",
         urgency: "medium",
       };
     }
     return {
-      action: "Send follow-up materials",
-      reason: daysStr ? `Last contact ${daysStr}` : "Keep momentum after intro call",
+      action: "Send follow-up and gauge interest",
+      reason: daysStr ? `Call was ${daysStr}` : "Follow up after intro call",
       urgency: "medium",
     };
   }
 
-  if (funnel_stage === "Partner Meeting") {
-    if (sentiment === "Positive" || sentiment === "Champion") {
-      return {
-        action: "Share data room access",
-        reason: "High interest — give them full diligence materials",
-        urgency: "high",
-      };
-    }
+  if (funnel_stage === "Interest Confirmed") {
     return {
-      action: "Send a soft-commit ask",
-      reason: daysStr ? `Meeting was ${daysStr} — time to ask` : "Follow up after partner meeting",
-      urgency: "medium",
+      action: "Share data room access",
+      reason: "Interest confirmed — give them full diligence materials",
+      urgency: "high",
     };
   }
 
-  if (funnel_stage === "Due Diligence") {
+  if (funnel_stage === "Diligence") {
     return {
       action: "Check in on diligence progress",
-      reason: daysStr ? `Last contact ${daysStr}` : "Keep diligence on track",
+      reason: daysStr ? `Last contact ${daysStr}` : "Keep diligence moving forward",
       urgency: daysSince !== null && daysSince >= 7 ? "high" : "medium",
     };
   }
 
-  if (funnel_stage === "Soft Commit") {
+  if (funnel_stage === "Term Sheet") {
     return {
-      action: "Move to term sheet review",
-      reason: "Soft commit in place — push for hard commit",
+      action: "Review and negotiate term sheet",
+      reason: "Term sheet received — move quickly to close",
       urgency: "high",
     };
   }
 
-  if (funnel_stage === "Hard Commit") {
+  if (funnel_stage === "Closed Won") {
     return {
       action: "Confirm wire details & close",
-      reason: "Hard commit secured — finalize the investment",
+      reason: "Investment secured — finalize paperwork",
       urgency: "high",
+    };
+  }
+
+  if (funnel_stage === "Closed Lost") {
+    return {
+      action: "Send a gracious closing note",
+      reason: "Keep the relationship warm for future rounds",
+      urgency: "low",
+    };
+  }
+
+  if (funnel_stage === "Pass") {
+    return {
+      action: "Archive and revisit in next round",
+      reason: "Passed on this round — stay on their radar",
+      urgency: "low",
     };
   }
 

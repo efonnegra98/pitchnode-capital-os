@@ -189,12 +189,16 @@
       "type": "string",
       "enum": [
         "Identified",
-        "Contacted",
-        "Intro Call",
-        "Partner Meeting",
-        "Due Diligence",
-        "Soft Commit",
-        "Hard Commit"
+        "Researching",
+        "Outreach Sent",
+        "Intro Call Scheduled",
+        "Intro Call Complete",
+        "Interest Confirmed",
+        "Diligence",
+        "Term Sheet",
+        "Closed Won",
+        "Closed Lost",
+        "Pass"
       ],
       "description": "Current stage in capital funnel"
     },

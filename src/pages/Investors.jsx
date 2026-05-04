@@ -178,7 +178,7 @@ export default function Investors() {
           className="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-violet-400"
         >
           <option value="all">All Funnel Stages</option>
-          {["Identified", "Contacted", "Intro Call", "Partner Meeting", "Due Diligence", "Soft Commit", "Hard Commit"].map(s => (
+          {["Identified", "Researching", "Outreach Sent", "Intro Call Scheduled", "Intro Call Complete", "Interest Confirmed", "Diligence", "Term Sheet", "Closed Won", "Closed Lost", "Pass"].map(s => (
             <option key={s} value={s}>{s}</option>
           ))}
         </select>
