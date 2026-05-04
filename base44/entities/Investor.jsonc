@@ -6,21 +6,42 @@
       "type": "string",
       "description": "ID of the company this investor belongs to"
     },
-    "name": {
-      "type": "string",
-      "description": "Investor full name"
-    },
     "firm": {
       "type": "string",
-      "description": "Investment firm name"
+      "description": "Investment firm / company name (primary identifier)"
+    },
+    "firm_type": {
+      "type": "string",
+      "enum": [
+        "Venture Capital",
+        "Angel",
+        "Family Office",
+        "Corporate / Strategic",
+        "Accelerator",
+        "Private Equity",
+        "Other"
+      ],
+      "description": "Type of investment firm"
+    },
+    "website_url": {
+      "type": "string",
+      "description": "Firm website URL"
+    },
+    "portfolio_count": {
+      "type": "number",
+      "description": "Number of portfolio companies"
+    },
+    "name": {
+      "type": "string",
+      "description": "Primary contact name at the firm"
     },
     "email": {
       "type": "string",
-      "description": "Investor email address"
+      "description": "Contact email"
     },
     "linkedin_url": {
       "type": "string",
-      "description": "LinkedIn profile URL"
+      "description": "LinkedIn profile or firm page URL"
     },
     "investor_type": {
       "type": "string",
@@ -32,7 +53,7 @@
         "Strategic/Corporate",
         "Other"
       ],
-      "description": "Type of investor"
+      "description": "Type of investor (legacy)"
     },
     "stage_focus": {
       "type": "string",

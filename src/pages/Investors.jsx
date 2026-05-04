@@ -91,13 +91,14 @@ export default function Investors() {
     let filtered = investors.filter((inv) => {
       const q = search.toLowerCase();
       const matchSearch =
-        inv.name?.toLowerCase().includes(q) ||
         inv.firm?.toLowerCase().includes(q) ||
-        inv.status?.toLowerCase().includes(q);
+        inv.name?.toLowerCase().includes(q) ||
+        inv.firm_type?.toLowerCase().includes(q) ||
+        inv.stage_focus?.toLowerCase().includes(q);
       const matchStage = filterStage === "all" || inv.funnel_stage === filterStage;
-      const matchStatus = filterStatus === "all" || inv.status === filterStatus;
+      const matchFirmType = filterStatus === "all" || inv.firm_type === filterStatus;
       const matchSentiment = filterSentiment === "all" || inv.sentiment === filterSentiment;
-      return matchSearch && matchStage && matchStatus && matchSentiment;
+      return matchSearch && matchStage && matchFirmType && matchSentiment;
     });
 
     filtered.sort((a, b) => {
@@ -125,8 +126,8 @@ export default function Investors() {
     <div className="p-6 lg:p-10 max-w-7xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
         <div>
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">Investor Tracking</h1>
-          <p className="text-muted-foreground text-sm mt-1">{investors.length} contacts</p>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">Investor Firms</h1>
+          <p className="text-muted-foreground text-sm mt-1">{investors.length} firms tracked</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="relative">
@@ -134,7 +135,7 @@ export default function Investors() {
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search investors..."
+              placeholder="Search firms..."
               className="pl-9 w-56"
             />
           </div>
@@ -164,7 +165,7 @@ export default function Investors() {
             onClick={() => setModalData({})}
             className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-medium transition-all whitespace-nowrap"
           >
-            + Add Investor
+            + Add Firm
           </button>
         </div>
       </div>
@@ -176,8 +177,8 @@ export default function Investors() {
           onChange={(e) => setFilterStage(e.target.value)}
           className="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-violet-400"
         >
-          <option value="all">All Stages</option>
-          {["Identified", "Contacted", "Intro Call", "Partner Meeting", "Due Diligence", "Term Sheet"].map(s => (
+          <option value="all">All Funnel Stages</option>
+          {["Identified", "Contacted", "Intro Call", "Partner Meeting", "Due Diligence", "Soft Commit", "Hard Commit"].map(s => (
             <option key={s} value={s}>{s}</option>
           ))}
         </select>
@@ -186,8 +187,8 @@ export default function Investors() {
           onChange={(e) => setFilterStatus(e.target.value)}
           className="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-violet-400"
         >
-          <option value="all">All Statuses</option>
-          {["Warm", "Engaged", "Passed", "Committed"].map(s => (
+          <option value="all">All Firm Types</option>
+          {["Venture Capital", "Angel", "Family Office", "Corporate / Strategic", "Accelerator", "Private Equity", "Other"].map(s => (
             <option key={s} value={s}>{s}</option>
           ))}
         </select>
@@ -218,15 +219,15 @@ export default function Investors() {
               <Users className="w-6 h-6 text-slate-400" />
             </div>
           </div>
-          <h3 className="text-base font-semibold text-slate-800 mb-2">No Investors Yet</h3>
+          <h3 className="text-base font-semibold text-slate-800 mb-2">No Investor Firms Yet</h3>
           <p className="text-sm text-slate-500 mb-6 max-w-md mx-auto">
-            Start building your investor pipeline by adding your first contact.
+            Start building your investor pipeline by adding your first firm.
           </p>
           <button
             onClick={() => setModalData({})}
             className="px-4 py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium transition-all"
           >
-            Add First Investor
+            Add First Firm
           </button>
         </div>
       ) : viewMode === "board" ? (

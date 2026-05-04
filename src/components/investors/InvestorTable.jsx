@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, ChevronUp, MoreHorizontal, Send, Pencil, Trash2, Linkedin } from "lucide-react";
+import { ChevronDown, ChevronUp, MoreHorizontal, Send, Pencil, Trash2, Globe, Linkedin } from "lucide-react";
 import { suggestNextActionLabel } from "../../lib/nextActionSuggestion";
 
 const avatarColors = [
@@ -13,15 +13,14 @@ const avatarColors = [
   "bg-orange-100 text-orange-700",
 ];
 
-function getAvatarColor(name) {
-  const str = name || "?";
-  const idx = str.charCodeAt(0) % avatarColors.length;
-  return avatarColors[idx];
+function getAvatarColor(str) {
+  const s = str || "?";
+  return avatarColors[s.charCodeAt(0) % avatarColors.length];
 }
 
-function getInitials(name, firm) {
-  if (name?.trim()) return name.trim()[0].toUpperCase();
+function getInitials(firm, name) {
   if (firm?.trim()) return firm.trim()[0].toUpperCase();
+  if (name?.trim()) return name.trim()[0].toUpperCase();
   return "?";
 }
 
@@ -30,6 +29,16 @@ const statusColors = {
   Engaged: "bg-blue-50 text-blue-700 border-blue-200",
   Passed: "bg-slate-100 text-slate-500 border-slate-200",
   Committed: "bg-emerald-50 text-emerald-700 border-emerald-200",
+};
+
+const firmTypeColors = {
+  "Venture Capital": "bg-violet-50 text-violet-700",
+  "Angel": "bg-amber-50 text-amber-700",
+  "Family Office": "bg-blue-50 text-blue-700",
+  "Corporate / Strategic": "bg-slate-100 text-slate-600",
+  "Accelerator": "bg-emerald-50 text-emerald-700",
+  "Private Equity": "bg-indigo-50 text-indigo-700",
+  "Other": "bg-slate-50 text-slate-500",
 };
 
 function getStaleness(dateStr) {
@@ -77,23 +86,20 @@ function ActionMenu({ inv, onEdit, onFollowUp, onDelete }) {
             onClick={(e) => { e.stopPropagation(); setOpen(false); onFollowUp(inv); }}
             className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors text-left"
           >
-            <Send className="w-3.5 h-3.5 text-slate-400" />
-            Log Activity
+            <Send className="w-3.5 h-3.5 text-slate-400" /> Log Activity
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); setOpen(false); onEdit(inv); }}
             className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors text-left"
           >
-            <Pencil className="w-3.5 h-3.5 text-slate-400" />
-            Edit Investor
+            <Pencil className="w-3.5 h-3.5 text-slate-400" /> Edit Firm
           </button>
           <div className="border-t border-slate-100 my-1" />
           <button
             onClick={(e) => { e.stopPropagation(); setOpen(false); onDelete(inv); }}
             className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
           >
-            <Trash2 className="w-3.5 h-3.5" />
-            Delete Investor
+            <Trash2 className="w-3.5 h-3.5" /> Delete
           </button>
         </div>
       )}
@@ -106,8 +112,8 @@ function AgingBadge({ critical }) {
   const label = critical ? "Stale" : "Aging";
   const colors = critical ? "bg-red-100 text-red-600" : "bg-orange-100 text-orange-600";
   const tip = critical
-    ? "No contact in 21+ days — this relationship is going cold. Follow up immediately."
-    : "No contact in 14+ days — this relationship may be going cold. Follow up soon.";
+    ? "No contact in 21+ days — follow up immediately."
+    : "No contact in 14+ days — follow up soon.";
 
   return (
     <div className="relative inline-block">
@@ -128,47 +134,17 @@ function AgingBadge({ critical }) {
   );
 }
 
-function LastNoteTooltip({ note }) {
-  const [show, setShow] = useState(false);
-  if (!note) return null;
-
-  return (
-    <div className="relative inline-block mt-1">
-      <span
-        className="text-[10px] text-slate-400 italic truncate max-w-[140px] block cursor-help underline decoration-dotted"
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-      >
-        "{note.length > 40 ? note.slice(0, 40) + "…" : note}"
-      </span>
-      {show && (
-        <div className="absolute z-50 bottom-full left-0 mb-1 w-64 bg-slate-900 text-white text-xs rounded-lg p-3 shadow-xl leading-relaxed">
-          {note}
-          <div className="absolute top-full left-4 border-4 border-transparent border-t-slate-900" />
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function InvestorTable({ investors, sortField, sortDir, onSort, onEdit, onFollowUp, onDelete }) {
   const [deleteTarget, setDeleteTarget] = useState(null);
 
-  const handleDeleteConfirm = () => {
-    if (deleteTarget) onDelete(deleteTarget.id);
-    setDeleteTarget(null);
-  };
-
   const SortHeader = ({ field, children }) => (
     <th
-      className="text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium py-3 px-5 cursor-pointer hover:text-foreground transition-colors select-none"
+      className="text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium py-3 px-4 cursor-pointer hover:text-foreground transition-colors select-none"
       onClick={() => onSort(field)}
     >
       <span className="flex items-center gap-1">
         {children}
-        {sortField === field && (
-          sortDir === "asc" ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
-        )}
+        {sortField === field && (sortDir === "asc" ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
       </span>
     </th>
   );
@@ -176,25 +152,17 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
   const DeleteConfirmModal = deleteTarget ? (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <div className="bg-white rounded-xl shadow-xl border border-slate-200 w-full max-w-sm mx-4 p-6">
-        <h3 className="text-sm font-semibold text-slate-900 mb-2">Delete Investor</h3>
+        <h3 className="text-sm font-semibold text-slate-900 mb-2">Delete Firm</h3>
         <p className="text-sm text-slate-500 mb-6 leading-relaxed">
           Are you sure you want to delete{" "}
-          <span className="font-medium text-slate-700">
-            {deleteTarget.name || deleteTarget.firm || "this investor"}
-          </span>
-          ? This action cannot be undone.
+          <span className="font-medium text-slate-700">{deleteTarget.firm || deleteTarget.name || "this firm"}</span>?
+          This action cannot be undone.
         </p>
         <div className="flex items-center justify-end gap-3">
-          <button
-            onClick={() => setDeleteTarget(null)}
-            className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-          >
+          <button onClick={() => setDeleteTarget(null)} className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
             Cancel
           </button>
-          <button
-            onClick={handleDeleteConfirm}
-            className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
-          >
+          <button onClick={() => { onDelete(deleteTarget.id); setDeleteTarget(null); }} className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors">
             Delete
           </button>
         </div>
@@ -205,7 +173,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
   if (investors.length === 0) {
     return (
       <div className="glass rounded-xl p-12 text-center">
-        <p className="text-muted-foreground text-sm">No investors tracked yet. Add your first investor contact.</p>
+        <p className="text-muted-foreground text-sm">No investor firms tracked yet.</p>
       </div>
     );
   }
@@ -218,12 +186,13 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50/60">
-                <SortHeader field="name">Name / Firm</SortHeader>
+                <SortHeader field="firm">Firm</SortHeader>
+                <SortHeader field="firm_type">Type</SortHeader>
+                <SortHeader field="stage_focus">Stage / Check</SortHeader>
                 <SortHeader field="status">Status</SortHeader>
-                <SortHeader field="funnel_stage">Stage</SortHeader>
-                <SortHeader field="next_action_date">Next Action</SortHeader>
+                <SortHeader field="funnel_stage">Funnel</SortHeader>
                 <SortHeader field="last_contact_date">Last Contact</SortHeader>
-                <th className="py-3 px-5" />
+                <th className="py-3 px-4" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -231,7 +200,6 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                 const staleness = getStaleness(inv.last_contact_date);
                 const isCritical = staleness.level === "critical";
                 const isHigh = staleness.level === "high";
-                const isMedium = staleness.level === "medium";
 
                 const rowBg = isCritical
                   ? "bg-red-50/50 hover:bg-red-50/80"
@@ -245,74 +213,84 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                     onClick={() => onEdit(inv)}
                     className={`cursor-pointer transition-colors ${rowBg}`}
                   >
-                    {/* Name + Firm */}
-                    <td className="py-5 px-5">
+                    {/* Firm */}
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center text-sm font-semibold ${getAvatarColor(inv.name || inv.firm)}`}>
-                          {getInitials(inv.name, inv.firm)}
+                        <div className={`w-9 h-9 rounded-lg flex-shrink-0 flex items-center justify-center text-sm font-bold ${getAvatarColor(inv.firm || inv.name)}`}>
+                          {getInitials(inv.firm, inv.name)}
                         </div>
                         <div>
                           <div className="flex items-center gap-1.5">
-                            <p className="font-medium text-foreground text-sm">{inv.name || <span className="text-slate-400 italic">No name</span>}</p>
-                            {inv.linkedin_url && (
-                              <a
-                                href={inv.linkedin_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                            <p className="font-semibold text-slate-900 text-sm">{inv.firm || <span className="text-slate-400 italic">No firm name</span>}</p>
+                            {inv.website_url && (
+                              <a href={inv.website_url} target="_blank" rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                className="flex-shrink-0 text-[#0077B5] hover:text-[#005885] transition-colors"
-                                title="View on LinkedIn"
-                              >
-                                <Linkedin className="w-3.5 h-3.5" />
+                                className="text-slate-400 hover:text-slate-600 transition-colors">
+                                <Globe className="w-3 h-3" />
+                              </a>
+                            )}
+                            {inv.linkedin_url && (
+                              <a href={inv.linkedin_url} target="_blank" rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="text-[#0077B5] hover:text-[#005885] transition-colors">
+                                <Linkedin className="w-3 h-3" />
                               </a>
                             )}
                           </div>
-                          {inv.firm && <p className="text-xs text-muted-foreground mt-0.5">{inv.firm}</p>}
+                          {inv.name && <p className="text-xs text-slate-400 mt-0.5">{inv.name}</p>}
+                          {inv.portfolio_count ? (
+                            <p className="text-[10px] text-slate-400">{inv.portfolio_count} portfolio cos</p>
+                          ) : null}
                         </div>
                       </div>
                     </td>
 
+                    {/* Type */}
+                    <td className="py-4 px-4">
+                      {inv.firm_type ? (
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${firmTypeColors[inv.firm_type] || "bg-slate-50 text-slate-500"}`}>
+                          {inv.firm_type}
+                        </span>
+                      ) : <span className="text-slate-300 text-xs">—</span>}
+                    </td>
+
+                    {/* Stage / Check */}
+                    <td className="py-4 px-4">
+                      <div>
+                        {inv.stage_focus && <p className="text-xs font-medium text-slate-700">{inv.stage_focus}</p>}
+                        {inv.check_size && <p className="text-[11px] text-slate-400 mt-0.5">{inv.check_size}</p>}
+                        {!inv.stage_focus && !inv.check_size && <span className="text-slate-300 text-xs">—</span>}
+                      </div>
+                    </td>
+
                     {/* Status */}
-                    <td className="py-5 px-5">
+                    <td className="py-4 px-4">
                       {inv.status ? (
                         <span className={`text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full border ${statusColors[inv.status] || ""}`}>
                           {inv.status}
                         </span>
-                      ) : <span className="text-slate-300">—</span>}
+                      ) : <span className="text-slate-300 text-xs">—</span>}
                     </td>
 
                     {/* Funnel Stage */}
-                    <td className="py-5 px-5">
-                      <span className="text-xs text-slate-500">{inv.funnel_stage || "—"}</span>
-                    </td>
-
-                    {/* Next Action */}
-                    <td className="py-5 px-5">
-                      {inv.next_action_date ? (
-                        <div>
-                          <p className="text-slate-900 text-xs font-semibold">
-                            {new Date(inv.next_action_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                    <td className="py-4 px-4">
+                      <div>
+                        <span className="text-xs text-slate-600">{inv.funnel_stage || "—"}</span>
+                        {inv.next_action_date && (
+                          <p className="text-[10px] text-slate-400 mt-0.5">
+                            Next: {new Date(inv.next_action_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                           </p>
-                          <p className="text-slate-500 text-[11px] mt-0.5">
-                            {suggestNextActionLabel(inv)}
-                          </p>
-                        </div>
-                      ) : (
-                        <p className="text-[11px] text-slate-500">{suggestNextActionLabel(inv)}</p>
-                      )}
-                      {inv.last_note && <LastNoteTooltip note={inv.last_note} />}
+                        )}
+                      </div>
                     </td>
 
                     {/* Last Contact */}
-                    <td className="py-5 px-5">
+                    <td className="py-4 px-4">
                       {staleness.days !== null ? (
                         <div className="flex items-center gap-2">
                           <div>
                             <p className={`text-sm font-semibold ${
-                              isCritical ? "text-red-600"
-                              : isHigh ? "text-orange-500"
-                              : isMedium ? "text-amber-600"
-                              : "text-slate-700"
+                              isCritical ? "text-red-600" : isHigh ? "text-orange-500" : "text-slate-700"
                             }`}>
                               {formatRelative(staleness.days)}
                             </p>
@@ -320,9 +298,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                               {formatShortDate(inv.last_contact_date)}
                             </p>
                           </div>
-                          {(isCritical || isHigh) && (
-                            <AgingBadge critical={isCritical} />
-                          )}
+                          {(isCritical || isHigh) && <AgingBadge critical={isCritical} />}
                         </div>
                       ) : (
                         <span className="text-xs text-slate-400 italic">Never</span>
@@ -330,7 +306,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                     </td>
 
                     {/* Actions */}
-                    <td className="py-5 px-4" onClick={(e) => e.stopPropagation()}>
+                    <td className="py-4 px-3" onClick={(e) => e.stopPropagation()}>
                       <ActionMenu
                         inv={inv}
                         onEdit={onEdit}
