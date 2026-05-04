@@ -36,21 +36,29 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
     firm_type: "",
     website_url: "",
     portfolio_count: "",
+    portfolio_companies: "",
     name: "",
     email: "",
     linkedin_url: "",
     contact_method: "",
     stage_focus: "",
+    check_size_min: "",
+    check_size_max: "",
     check_size: "",
+    investment_thesis: "",
+    preferred_sectors: "",
     relationship_strength: "",
     status: "",
     funnel_stage: "",
     sentiment: "",
     objections: [],
+    objections_notes: "",
     intro_source: "",
     intro_strength: "",
     intro_by: "",
+    warm_intro_path: "",
     last_contact_date: "",
+    last_meeting_notes: "",
     next_action_date: "",
     next_action_type: "",
     cadence_status: "",
@@ -130,16 +138,30 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Check Size Range</Label>
+              <Label>Check Size Min ($)</Label>
               <Input
-                value={form.check_size}
-                onChange={(e) => handleChange("check_size", e.target.value)}
+                type="number"
+                value={form.check_size_min || ""}
+                onChange={(e) => handleChange("check_size_min", e.target.value ? Number(e.target.value) : "")}
                 className="mt-1"
-                placeholder="$250k – $1M"
+                placeholder="e.g. 250000"
               />
             </div>
             <div>
-              <Label>Portfolio Companies</Label>
+              <Label>Check Size Max ($)</Label>
+              <Input
+                type="number"
+                value={form.check_size_max || ""}
+                onChange={(e) => handleChange("check_size_max", e.target.value ? Number(e.target.value) : "")}
+                className="mt-1"
+                placeholder="e.g. 1000000"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Portfolio Co. Count</Label>
               <Input
                 type="number"
                 value={form.portfolio_count || ""}
@@ -148,6 +170,35 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
                 placeholder="e.g. 45"
               />
             </div>
+            <div>
+              <Label>Preferred Sectors</Label>
+              <Input
+                value={form.preferred_sectors || ""}
+                onChange={(e) => handleChange("preferred_sectors", e.target.value)}
+                className="mt-1"
+                placeholder="e.g. SaaS, Fintech, AI"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label>Notable Portfolio Companies</Label>
+            <Input
+              value={form.portfolio_companies || ""}
+              onChange={(e) => handleChange("portfolio_companies", e.target.value)}
+              className="mt-1"
+              placeholder="e.g. Stripe, Airbnb, Notion"
+            />
+          </div>
+
+          <div>
+            <Label>Investment Thesis</Label>
+            <Textarea
+              value={form.investment_thesis || ""}
+              onChange={(e) => handleChange("investment_thesis", e.target.value)}
+              className="mt-1 min-h-[80px]"
+              placeholder="What does this firm focus on? What's their stated thesis?"
+            />
           </div>
 
           <div>
@@ -284,12 +335,32 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
           </div>
 
           <div>
+            <Label>Objections Detail</Label>
+            <Textarea
+              value={form.objections_notes || ""}
+              onChange={(e) => handleChange("objections_notes", e.target.value)}
+              className="mt-1 min-h-[60px]"
+              placeholder="What specific concerns did they raise? What's your plan to address them?"
+            />
+          </div>
+
+          <div>
             <Label>Last Contact Date</Label>
             <Input
               type="date"
               value={form.last_contact_date}
               onChange={(e) => handleChange("last_contact_date", e.target.value)}
               className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label>Notes from Last Meeting</Label>
+            <Textarea
+              value={form.last_meeting_notes || ""}
+              onChange={(e) => handleChange("last_meeting_notes", e.target.value)}
+              className="mt-1 min-h-[80px]"
+              placeholder="What was discussed? Key takeaways, tone, commitments made..."
             />
           </div>
 
@@ -324,6 +395,16 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
               onChange={(e) => handleChange("intro_by", e.target.value)}
               className="mt-1"
               placeholder="Name of person who made intro"
+            />
+          </div>
+
+          <div>
+            <Label>Warm Intro Path</Label>
+            <Input
+              value={form.warm_intro_path || ""}
+              onChange={(e) => handleChange("warm_intro_path", e.target.value)}
+              className="mt-1"
+              placeholder="Who in your network knows this investor? e.g. John Smith → Sarah at a16z"
             />
           </div>
 

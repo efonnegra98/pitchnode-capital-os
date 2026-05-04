@@ -31,6 +31,10 @@
       "type": "number",
       "description": "Number of portfolio companies"
     },
+    "portfolio_companies": {
+      "type": "string",
+      "description": "Notable portfolio companies (comma-separated or prose)"
+    },
     "name": {
       "type": "string",
       "description": "Primary contact name at the firm"
@@ -66,9 +70,25 @@
       ],
       "description": "Stage focus of the investor"
     },
+    "check_size_min": {
+      "type": "number",
+      "description": "Minimum typical check size in dollars"
+    },
+    "check_size_max": {
+      "type": "number",
+      "description": "Maximum typical check size in dollars"
+    },
     "check_size": {
       "type": "string",
-      "description": "Typical check size range"
+      "description": "Typical check size range (legacy text)"
+    },
+    "investment_thesis": {
+      "type": "string",
+      "description": "Investor's stated investment thesis and focus areas"
+    },
+    "preferred_sectors": {
+      "type": "string",
+      "description": "Preferred sectors or verticals (comma-separated)"
     },
     "relationship_strength": {
       "type": "string",
@@ -105,6 +125,10 @@
       },
       "description": "Key objections or concerns"
     },
+    "objections_notes": {
+      "type": "string",
+      "description": "Free-text detail on objections raised in conversation"
+    },
     "intro_source": {
       "type": "string",
       "description": "Source of introduction (e.g., LP, advisor, founder)"
@@ -122,6 +146,10 @@
       "type": "string",
       "description": "Name of person who made the introduction"
     },
+    "warm_intro_path": {
+      "type": "string",
+      "description": "Who in your network knows this investor and could make a warm intro"
+    },
     "last_contact_date": {
       "type": "string",
       "format": "date",
@@ -130,6 +158,10 @@
     "last_note": {
       "type": "string",
       "description": "Most recent follow-up note logged"
+    },
+    "last_meeting_notes": {
+      "type": "string",
+      "description": "Detailed notes from the last meeting or call"
     },
     "contact_method": {
       "type": "string",
@@ -155,7 +187,7 @@
     },
     "notes": {
       "type": "string",
-      "description": "Notes about the investor"
+      "description": "General notes about the investor"
     },
     "next_action_date": {
       "type": "string",
