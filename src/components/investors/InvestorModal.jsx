@@ -376,9 +376,9 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
           </div>
 
           <ActivityLog
-            entries={[...(form.activity_log || [])].reverse()}
-            onAdd={(text) => {
-              const newEntry = { text, timestamp: new Date().toISOString() };
+            entries={form.activity_log || []}
+            onAdd={(text, type) => {
+              const newEntry = { text, type, timestamp: new Date().toISOString() };
               handleChange("activity_log", [...(form.activity_log || []), newEntry]);
             }}
           />
