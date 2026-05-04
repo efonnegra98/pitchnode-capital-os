@@ -41,6 +41,96 @@ const firmTypeColors = {
   "Other": "bg-slate-50 text-slate-500",
 };
 
+// ── Relationship Strength Score ─────────────────────────────────────────────
+// Returns { score: 1-5, level: "strong"|"warm"|"cold"|"at_risk", label }
+function calcRelationshipScore(inv) {
+  let score = 0;
+
+  // 1. Interactions logged (activity_log length)
+  const interactions = (inv.activity_log || []).length;
+  if (interactions >= 5) score += 2;
+  else if (interactions >= 2) score += 1;
+
+  // 2. Days since last contact
+  const daysSince = inv.last_contact_date
+    ? Math.floor((new Date() - new Date(inv.last_contact_date)) / (1000 * 60 * 60 * 24))
+    : null;
+  if (daysSince === null) score += 0;
+  else if (daysSince <= 7)  score += 2;
+  else if (daysSince <= 14) score += 1;
+  // 14+ days adds 0
+
+  // 3. Pipeline stage depth
+  const stageScore = {
+    "Identified": 0, "Contacted": 0, "Intro Call": 1,
+    "Partner Meeting": 1, "Due Diligence": 2, "Soft Commit": 2, "Hard Commit": 2,
+  };
+  score += stageScore[inv.funnel_stage] ?? 0;
+
+  // 4. Positive sentiment signals
+  if (inv.sentiment === "Champion" || inv.sentiment === "Positive") score += 1;
+
+  // Cap at 5
+  const capped = Math.min(score, 5);
+
+  // Classify
+  // At Risk: had contact but gone stale despite early engagement
+  const atRisk = daysSince !== null && daysSince >= 21 && capped < 3;
+  if (atRisk) return { score: capped, level: "at_risk", label: "At Risk" };
+  if (capped >= 4) return { score: capped, level: "strong", label: "Strong" };
+  if (capped >= 2) return { score: capped, level: "warm", label: "Warm" };
+  return { score: capped, level: "cold", label: "Cold" };
+}
+
+const relColors = {
+  strong:  { dot: "bg-emerald-500", empty: "bg-emerald-100", label: "text-emerald-700 bg-emerald-50 border-emerald-200" },
+  warm:    { dot: "bg-amber-400",   empty: "bg-amber-100",   label: "text-amber-700 bg-amber-50 border-amber-200"   },
+  cold:    { dot: "bg-slate-300",   empty: "bg-slate-100",   label: "text-slate-500 bg-slate-50 border-slate-200"   },
+  at_risk: { dot: "bg-red-500",     empty: "bg-red-100",     label: "text-red-700 bg-red-50 border-red-200"         },
+};
+
+function RelStrengthIndicator({ inv }) {
+  const [show, setShow] = useState(false);
+  const { score, level, label } = calcRelationshipScore(inv);
+  const c = relColors[level];
+
+  const tips = {
+    strong:  "Strong relationship — keep the momentum going.",
+    warm:    "Warming up — consistent follow-up will deepen the bond.",
+    cold:    "Cold — limited interactions or no recent contact.",
+    at_risk: "At risk — was engaged but contact has gone stale.",
+  };
+
+  return (
+    <div className="relative inline-flex flex-col gap-1.5 items-start"
+      onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+      {/* Dot bar */}
+      <div className="flex items-center gap-1 cursor-default">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div
+            key={i}
+            className={`w-2 h-2 rounded-full transition-colors ${i <= score ? c.dot : c.empty}`}
+          />
+        ))}
+      </div>
+      {/* Label */}
+      <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${c.label}`}>
+        {label}
+      </span>
+
+      {/* Tooltip */}
+      {show && (
+        <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-52 bg-slate-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl leading-relaxed pointer-events-none whitespace-normal text-center">
+          <p className="font-semibold mb-0.5">{label} Relationship</p>
+          <p className="text-slate-300">{tips[level]}</p>
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
+        </div>
+      )}
+    </div>
+  );
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 function getStaleness(dateStr) {
   if (!dateStr) return { days: null, level: "none" };
   const days = Math.floor((new Date() - new Date(dateStr)) / (1000 * 60 * 60 * 24));
@@ -192,6 +282,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                 <SortHeader field="status">Status</SortHeader>
                 <SortHeader field="funnel_stage">Funnel</SortHeader>
                 <SortHeader field="last_contact_date">Last Contact</SortHeader>
+                <th className="text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium py-3 px-4 select-none">Rel. Strength</th>
                 <th className="py-3 px-4" />
               </tr>
             </thead>
@@ -303,6 +394,11 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                       ) : (
                         <span className="text-xs text-slate-400 italic">Never</span>
                       )}
+                    </td>
+
+                    {/* Relationship Strength */}
+                    <td className="py-4 px-4">
+                      <RelStrengthIndicator inv={inv} />
                     </td>
 
                     {/* Actions */}
