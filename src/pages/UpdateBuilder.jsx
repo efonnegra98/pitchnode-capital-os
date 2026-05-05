@@ -1,88 +1,25 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "../utils";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Send, Archive, MoreHorizontal, Pencil } from "lucide-react";
-import UpdateForm from "../components/update/UpdateForm";
-import UpdatePreview from "../components/update/UpdatePreview";
 import { useCompany } from "../components/useCompany";
-import toast, { Toaster } from "react-hot-toast";
-import DuplicateDraftModal from "../components/update/DuplicateDraftModal";
+import { Archive, Send } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import UpdatesAnalyticsBar from "../components/investorUpdates/UpdatesAnalyticsBar";
+import UpdatesList from "../components/investorUpdates/UpdatesList";
+import UpdateComposer from "../components/investorUpdates/UpdateComposer";
 
-function UpdateRow({ update, onEdit, onArchive }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const handler = (e) => { if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false); };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [menuOpen]);
-
-  return (
-    <div className="w-full glass rounded-xl p-5 flex items-center justify-between hover:bg-slate-50 transition-all group">
-      <button className="flex items-center gap-4 flex-1 text-left" onClick={onEdit}>
-        <div className={`w-2 h-2 rounded-full flex-shrink-0 ${update.status === "sent" ? "bg-emerald-500" : "bg-amber-500"}`} />
-        <div>
-          <p className="text-foreground font-medium text-sm">{update.month}</p>
-          <p className="text-muted-foreground text-xs mt-0.5">
-            {update.status === "sent"
-              ? `Sent ${update.sent_date ? new Date(update.sent_date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}`
-              : "Draft"}
-          </p>
-        </div>
-      </button>
-
-      <div className="flex items-center gap-4">
-        {update.revenue && (
-          <span className="text-muted-foreground text-xs hidden sm:block">
-            Rev: ${(update.revenue / 1000).toFixed(1)}k
-          </span>
-        )}
-        {/* Three-dot menu */}
-        <div className="relative" ref={menuRef}>
-          <button
-            onClick={(e) => { e.stopPropagation(); setMenuOpen((v) => !v); }}
-            className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors opacity-0 group-hover:opacity-100"
-          >
-            <MoreHorizontal className="w-4 h-4" />
-          </button>
-          {menuOpen && (
-            <div className="absolute right-0 top-9 z-30 bg-white border border-slate-200 rounded-xl shadow-lg py-1 w-40">
-              <button
-                onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onEdit(); }}
-                className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-              >
-                <Pencil className="w-3.5 h-3.5 text-slate-400" /> Edit
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onArchive(); }}
-                className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-amber-50 hover:text-amber-700 transition-colors"
-              >
-                <Archive className="w-3.5 h-3.5 text-slate-400" /> Archive
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function UpdateBuilder() {
-  const [editingId, setEditingId] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({});
-  const [duplicateDraft, setDuplicateDraft] = useState(null);
+export default function InvestorUpdates() {
+  const [selectedUpdate, setSelectedUpdate] = useState(null);
+  const [showComposer, setShowComposer] = useState(false);
   const queryClient = useQueryClient();
-
+  const { toast } = useToast();
   const { company, companyId, isLoading: companyLoading } = useCompany();
 
   const { data: updates = [], isLoading: updatesLoading } = useQuery({
     queryKey: ["monthly-updates", companyId],
-    queryFn: () => base44.entities.MonthlyUpdate.filter({ company_id: companyId }),
+    queryFn: () => base44.entities.MonthlyUpdate.filter({ company_id: companyId }, "-created_date", 100),
     enabled: !!companyId,
   });
 
@@ -93,92 +30,164 @@ export default function UpdateBuilder() {
   });
 
   const isLoading = companyLoading || updatesLoading;
-  const companyName = company?.name || "";
 
-  const createNewUpdateMutation = useMutation({
+  // Only show non-archived in the main list
+  const visibleUpdates = updates.filter(u => u.status !== "archived");
+
+  const createMutation = useMutation({
     mutationFn: async () => {
-      const currentMonth = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
-      const newUpdate = await base44.entities.MonthlyUpdate.create({
+      const currentMonth = new Date().toLocaleString("en-US", { month: "long", year: "numeric" });
+      return base44.entities.MonthlyUpdate.create({
         company_id: companyId,
         month: currentMonth,
+        subject_line: `Capital OS Update — ${currentMonth}`,
+        from_name: company?.founder_name || "",
         status: "draft",
       });
-      return newUpdate;
     },
     onSuccess: (newUpdate) => {
       queryClient.invalidateQueries({ queryKey: ["monthly-updates", companyId] });
-      setEditingId(newUpdate.id);
-      setShowForm(true);
+      setSelectedUpdate(newUpdate);
+      setShowComposer(true);
     },
   });
 
   const saveMutation = useMutation({
-    mutationFn: async (data) => {
-      if (!editingId) {
-        throw new Error("No update ID");
-      }
-      return base44.entities.MonthlyUpdate.update(editingId, data);
+    mutationFn: (data) => {
+      const { id, created_date, updated_date, created_by, ...rest } = data;
+      return base44.entities.MonthlyUpdate.update(selectedUpdate.id, rest);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["monthly-updates", companyId] });
-      toast.success("Draft saved successfully!");
-    },
-    onError: (error) => {
-      toast.error("Failed to save draft: " + error.message);
+      toast({ description: "Draft saved." });
     },
   });
 
   const sendMutation = useMutation({
     mutationFn: async (data) => {
-      if (!editingId) {
-        throw new Error("No update ID");
+      const { id, created_date, updated_date, created_by, ...rest } = data;
+      const recipientIds = data.recipient_ids || [];
+      const recipientInvestors = investors.filter(i => recipientIds.includes(i.id));
+
+      // Build email HTML
+      const fmtCurrency = (v) => v ? (v >= 1000000 ? `$${(v/1000000).toFixed(1)}M` : v >= 1000 ? `$${(v/1000).toFixed(0)}k` : `$${Number(v).toLocaleString()}`) : null;
+
+      const financialRows = [
+        data.revenue && `<tr><td style="padding:5px 0;color:#64748b;font-size:13px;">MRR</td><td style="padding:5px 0;text-align:right;font-weight:600;color:#1e293b;">${fmtCurrency(data.revenue)}</td></tr>`,
+        data.revenue_growth ? `<tr><td style="padding:5px 0;color:#64748b;font-size:13px;">MoM Growth</td><td style="padding:5px 0;text-align:right;font-weight:600;color:${data.revenue_growth > 0 ? '#10b981' : '#ef4444'};">${data.revenue_growth > 0 ? '+' : ''}${data.revenue_growth}%</td></tr>` : null,
+        data.burn_rate && `<tr><td style="padding:5px 0;color:#64748b;font-size:13px;">Burn Rate</td><td style="padding:5px 0;text-align:right;font-weight:600;color:#1e293b;">${fmtCurrency(data.burn_rate)}/mo</td></tr>`,
+        data.runway_months && `<tr><td style="padding:5px 0;color:#64748b;font-size:13px;">Runway</td><td style="padding:5px 0;text-align:right;font-weight:600;color:#1e293b;">${data.runway_months} months</td></tr>`,
+        data.cash_balance && `<tr><td style="padding:5px 0;color:#64748b;font-size:13px;">Cash</td><td style="padding:5px 0;text-align:right;font-weight:600;color:#1e293b;">${fmtCurrency(data.cash_balance)}</td></tr>`,
+      ].filter(Boolean).join("");
+
+      const section = (title, content) => content ? `
+        <div style="margin-bottom:20px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#7c3aed;margin-bottom:8px;">${title}</div>
+          <div style="font-size:14px;color:#334155;line-height:1.7;white-space:pre-wrap;">${content}</div>
+        </div>` : "";
+
+      const logoHtml = company?.logo_url ? `<img src="${company.logo_url}" style="height:32px;margin-bottom:12px;display:block;" />` : "";
+
+      const emailBody = `
+        <div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;">
+          <div style="background:linear-gradient(135deg,#6d5df6,#4f46e5);padding:32px 36px;">
+            ${logoHtml}
+            <div style="font-size:20px;font-weight:700;color:#fff;">${data.subject_line || `${data.month} Investor Update`}</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.75);margin-top:6px;">From ${data.from_name || company?.founder_name || "the Founder"} · ${company?.name || ""}</div>
+          </div>
+          <div style="padding:32px 36px;">
+            ${financialRows ? `<div style="margin-bottom:24px;">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#7c3aed;margin-bottom:12px;">Financial Snapshot</div>
+              <table style="width:100%;border-top:1px solid #f1f5f9;border-collapse:collapse;">${financialRows}</table>
+            </div>` : ""}
+            ${section("Headline Summary", data.highlights)}
+            ${section("Key Wins", data.key_wins)}
+            ${section("Product Updates", data.product_updates)}
+            ${section("Hiring & Team", data.hiring_updates)}
+            ${section("Challenges", data.challenges)}
+            ${section("Ask", data.asks)}
+          </div>
+          <div style="padding:20px 36px;border-top:1px solid #f1f5f9;background:#f8fafc;text-align:center;">
+            <p style="font-size:11px;color:#94a3b8;margin:0;">Sent via Capital OS · <a href="#" style="color:#7c3aed;text-decoration:none;">Unsubscribe</a></p>
+          </div>
+        </div>
+      `;
+
+      const subject = data.subject_line || `${data.month} Investor Update`;
+      const fromName = data.from_name || company?.founder_name || company?.name || "Your Investor Update";
+
+      // Send emails to each recipient
+      for (const inv of recipientInvestors) {
+        if (inv.email) {
+          await base44.integrations.Core.SendEmail({
+            to: inv.email,
+            subject,
+            body: emailBody,
+            from_name: fromName,
+          });
+        }
+
+        // Log activity on investor profile
+        const activityEntry = {
+          text: `Investor Update sent — ${data.month} Investor Update — ${new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}`,
+          timestamp: new Date().toISOString(),
+          type: "update_sent",
+        };
+        const existingLog = inv.activity_log || [];
+        await base44.entities.Investor.update(inv.id, {
+          activity_log: [...existingLog, activityEntry],
+        });
       }
-      const payload = {
-        ...data,
+
+      // Update the MonthlyUpdate record
+      return base44.entities.MonthlyUpdate.update(selectedUpdate.id, {
+        ...rest,
         status: "sent",
         sent_date: new Date().toISOString().split("T")[0],
-      };
-      return base44.entities.MonthlyUpdate.update(editingId, payload);
+        recipients_count: recipientInvestors.length,
+        opened_count: 0,
+        opened_investor_ids: [],
+      });
     },
-    onSuccess: () => {
+    onSuccess: (updated) => {
       queryClient.invalidateQueries({ queryKey: ["monthly-updates", companyId] });
-      toast.success("Update marked as sent!");
-      setShowForm(false);
-      setEditingId(null);
+      queryClient.invalidateQueries({ queryKey: ["investors", companyId] });
+      setSelectedUpdate(updated);
+      toast({ title: "Update sent!", description: `Delivered to ${updated.recipients_count} investor${updated.recipients_count !== 1 ? "s" : ""}.` });
     },
-    onError: (error) => {
-      toast.error("Failed to send update: " + error.message);
+  });
+
+  const scheduleMutation = useMutation({
+    mutationFn: ({ data, scheduledDate }) => {
+      const { id, created_date, updated_date, created_by, ...rest } = data;
+      return base44.entities.MonthlyUpdate.update(selectedUpdate.id, {
+        ...rest,
+        status: "scheduled",
+        scheduled_date: scheduledDate,
+        recipients_count: (data.recipient_ids || []).length,
+      });
+    },
+    onSuccess: (updated) => {
+      queryClient.invalidateQueries({ queryKey: ["monthly-updates", companyId] });
+      setSelectedUpdate(updated);
+      toast({ description: "Update scheduled for delivery." });
     },
   });
 
   const handleNewUpdate = () => {
-    const currentMonth = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
-    const existingDraft = updates.find(u => u.month === currentMonth && u.status === 'draft');
-    if (existingDraft) {
-      setDuplicateDraft(existingDraft);
-      return;
-    }
-    createNewUpdateMutation.mutate();
+    createMutation.mutate();
   };
 
-  const handleEdit = (update) => {
-    setEditingId(update.id);
-    setFormData(update);
-    setShowForm(true);
+  const handleSelect = (update) => {
+    setSelectedUpdate(update);
+    setShowComposer(true);
   };
 
-  const archiveMutation = useMutation({
-    mutationFn: (id) => base44.entities.MonthlyUpdate.update(id, { status: "archived" }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["monthly-updates", companyId] });
-      toast.success("Update archived.");
-    },
-  });
-
-  // Updates visible in the builder: drafts and sent — never archived
-  const visibleUpdates = updates.filter((u) => u.status !== "archived");
-
-  const editingUpdate = editingId ? updates.find((u) => u.id === editingId) : null;
+  const handleBack = () => {
+    setShowComposer(false);
+    setSelectedUpdate(null);
+    queryClient.invalidateQueries({ queryKey: ["monthly-updates", companyId] });
+  };
 
   if (isLoading) {
     return (
@@ -191,120 +200,72 @@ export default function UpdateBuilder() {
     );
   }
 
-  if (!showForm) {
-    return (
-      <div className="p-6 lg:p-10 max-w-5xl mx-auto">
-        <Toaster position="top-right" />
-
-      {duplicateDraft && (
-        <DuplicateDraftModal
-          draft={duplicateDraft}
-          onOpenExisting={() => { setDuplicateDraft(null); handleEdit(duplicateDraft); }}
-          onCreateNew={() => { setDuplicateDraft(null); createNewUpdateMutation.mutate(); }}
-          onClose={() => setDuplicateDraft(null)}
-        />
-      )}
-        
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">Update Builder</h1>
-            <p className="text-muted-foreground text-sm mt-1">Compose and send structured investor updates</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link
-              to={createPageUrl("UpdateArchive")}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium transition-all"
-            >
-              <Archive className="w-4 h-4" />
-              View Archive
-            </Link>
-            <button
-              onClick={handleNewUpdate}
-              disabled={createNewUpdateMutation.isPending}
-              className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-medium transition-all disabled:opacity-50"
-            >
-              + New Update
-            </button>
-          </div>
-        </div>
-
-        {/* Status legend */}
-        {visibleUpdates.length > 0 && (
-          <div className="flex items-center gap-4 mb-4 px-1">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Status:</span>
-            <span className="flex items-center gap-1.5 text-[11px] text-slate-500">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" /> Sent
-            </span>
-            <span className="flex items-center gap-1.5 text-[11px] text-slate-500">
-              <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" /> Draft
-            </span>
-          </div>
-        )}
-
-        {visibleUpdates.length === 0 ? (
-          <div className="glass rounded-xl p-12 text-center border border-slate-200">
-            <div className="flex justify-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
-                <Send className="w-6 h-6 text-slate-400" />
-              </div>
-            </div>
-            <h3 className="text-base font-semibold text-slate-800 mb-2">No Updates Yet</h3>
-            <p className="text-sm text-slate-500 mb-6 max-w-md mx-auto">
-              Create your first investor update to share financial metrics and company progress.
-            </p>
-            <button
-              onClick={handleNewUpdate}
-              disabled={createNewUpdateMutation.isPending}
-              className="px-4 py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium transition-all disabled:opacity-50"
-            >
-              Create First Update
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {visibleUpdates.map((update) => (
-              <UpdateRow
-                key={update.id}
-                update={update}
-                onEdit={() => handleEdit(update)}
-                onArchive={() => archiveMutation.mutate(update.id)}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-
   return (
-    <div className="p-6 lg:p-10 max-w-7xl mx-auto">
-      <Toaster position="top-right" />
-      
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">
-          {editingId ? "Edit Update" : "New Update"}
-        </h1>
-        <p className="text-muted-foreground text-sm mt-1">Compose your monthly investor update</p>
+    <div className="flex flex-col h-screen overflow-hidden">
+      {/* Top header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white flex-shrink-0">
+        <div>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Investor Updates</h1>
+          <p className="text-slate-400 text-xs mt-0.5">Compose, send, and track investor communications</p>
+        </div>
+        <Link
+          to={createPageUrl("UpdateArchive")}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium transition-all"
+        >
+          <Archive className="w-4 h-4" />
+          Archive
+        </Link>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-        <UpdateForm
-          initialData={editingUpdate}
-          onSave={(d) => saveMutation.mutate(d)}
-          onSend={(d) => sendMutation.mutate(d)}
-          onBack={() => { setShowForm(false); setEditingId(null); }}
-          isSaving={saveMutation.isPending || sendMutation.isPending}
-          onFormChange={setFormData}
-          investors={investors}
-          company={company}
-        />
-        <div className="hidden xl:block">
-          <UpdatePreview
-            data={formData}
-            companyName={companyName}
-            companyLogo={company?.logo_url}
+      <div className="flex flex-1 overflow-hidden">
+        {/* LEFT: Updates list */}
+        <div className={`
+          flex-shrink-0 border-r border-slate-200 bg-slate-50 overflow-y-auto
+          ${showComposer ? "hidden lg:flex lg:flex-col w-72 xl:w-80" : "flex flex-col w-full lg:w-72 xl:w-80"}
+          p-4
+        `}>
+          <UpdatesAnalyticsBar updates={visibleUpdates} />
+          <UpdatesList
+            updates={visibleUpdates}
+            selectedId={selectedUpdate?.id}
+            onSelect={handleSelect}
+            onNew={handleNewUpdate}
+            isCreating={createMutation.isPending}
           />
         </div>
+
+        {/* RIGHT: Composer */}
+        {showComposer ? (
+          <div className="flex-1 overflow-y-auto bg-white">
+            <UpdateComposer
+              update={selectedUpdate}
+              investors={investors}
+              company={company}
+              onSave={(data) => saveMutation.mutate(data)}
+              onSend={(data) => sendMutation.mutate(data)}
+              onSchedule={(data, dt) => scheduleMutation.mutate({ data, scheduledDate: dt })}
+              onBack={handleBack}
+              isSaving={saveMutation.isPending || sendMutation.isPending || scheduleMutation.isPending}
+            />
+          </div>
+        ) : (
+          <div className="hidden lg:flex flex-1 items-center justify-center bg-slate-50">
+            <div className="text-center">
+              <div className="w-14 h-14 rounded-full bg-violet-100 flex items-center justify-center mx-auto mb-4">
+                <Send className="w-6 h-6 text-violet-500" />
+              </div>
+              <p className="text-base font-semibold text-slate-700 mb-2">Select an update to view or edit</p>
+              <p className="text-sm text-slate-400 mb-5">Or create a new investor update</p>
+              <button
+                onClick={handleNewUpdate}
+                disabled={createMutation.isPending}
+                className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-sm font-semibold transition-all disabled:opacity-50"
+              >
+                + New Update
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

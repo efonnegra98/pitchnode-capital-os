@@ -10,6 +10,25 @@
       "type": "string",
       "description": "Month and year (e.g. January 2026)"
     },
+    "subject_line": {
+      "type": "string",
+      "description": "Email subject line"
+    },
+    "from_name": {
+      "type": "string",
+      "description": "Sender name shown in email"
+    },
+    "recipient_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of selected investor recipients"
+    },
+    "body_html": {
+      "type": "string",
+      "description": "Full rich text HTML body of the update"
+    },
     "revenue": {
       "type": "number",
       "description": "Monthly revenue in dollars"
@@ -50,11 +69,16 @@
       "type": "string",
       "description": "Asks from investors (capital, hires, intros)"
     },
+    "challenges": {
+      "type": "string",
+      "description": "Current challenges or risks"
+    },
     "status": {
       "type": "string",
       "enum": [
         "draft",
         "sent",
+        "scheduled",
         "archived"
       ],
       "default": "draft",
@@ -64,6 +88,26 @@
       "type": "string",
       "format": "date",
       "description": "Date the update was sent"
+    },
+    "scheduled_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Scheduled send datetime"
+    },
+    "recipients_count": {
+      "type": "number",
+      "description": "Number of investors this was sent to"
+    },
+    "opened_count": {
+      "type": "number",
+      "description": "Number of investors who opened the email"
+    },
+    "opened_investor_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of investors who opened the email"
     }
   },
   "required": [

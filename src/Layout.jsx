@@ -18,7 +18,7 @@ import {
 
 const navItems = [
   { name: "Dashboard", page: "Dashboard", icon: LayoutDashboard },
-  { name: "Update Builder", page: "UpdateBuilder", icon: Send },
+  { name: "Investor Updates", page: "UpdateBuilder", icon: Send },
   { name: "Investors", page: "Investors", icon: Users },
   { name: "Archive", page: "UpdateArchive", icon: Archive },
   { name: "Settings", page: "Settings", icon: Settings },

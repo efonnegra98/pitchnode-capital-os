@@ -117,7 +117,7 @@ export default function UpdateArchive() {
           </div>
           <h3 className="text-base font-semibold text-slate-800 mb-2">No sent updates yet</h3>
           <p className="text-sm text-slate-500 mb-6 max-w-sm mx-auto">
-            Updates appear here once they've been sent to investors. Drafts are only visible in the Update Builder.
+            Updates appear here once they've been sent to investors. Drafts are only visible in Investor Updates.
           </p>
           <Link
             to={createPageUrl("UpdateBuilder")}
