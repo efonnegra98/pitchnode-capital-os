@@ -44,7 +44,12 @@ export default function Investors() {
 
   const saveMutation = useMutation({
     mutationFn: async (formData) => {
-      const enriched = { ...formData, next_action_type: suggestNextActionType(formData) };
+      // Strip empty strings from number fields so the API doesn't reject them
+      const numberFields = ["portfolio_count", "check_size_min", "check_size_max"];
+      const cleaned = { ...formData };
+      numberFields.forEach(f => { if (cleaned[f] === "" || cleaned[f] === null) delete cleaned[f]; });
+
+      const enriched = { ...cleaned, next_action_type: suggestNextActionType(cleaned) };
       if (enriched.id) {
         const { id, created_date, updated_date, created_by, ...rest } = enriched;
         return base44.entities.Investor.update(id, rest);
