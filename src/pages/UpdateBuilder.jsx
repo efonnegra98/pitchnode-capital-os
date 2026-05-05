@@ -121,10 +121,15 @@ export default function InvestorUpdates() {
       // Send emails to each recipient
       for (const inv of recipientInvestors) {
         if (inv.email) {
+          // Embed a tracking pixel unique to this update + recipient
+          const trackingPixelUrl = `https://capital-engage-hub.base44.app/api/trackEmailOpen?updateId=${selectedUpdate.id}&recipientId=${inv.id}`;
+          const trackingPixel = `<img src="${trackingPixelUrl}" width="1" height="1" style="display:none;width:1px;height:1px;opacity:0;" alt="" />`;
+          const bodyWithTracking = emailBody + trackingPixel;
+
           await base44.integrations.Core.SendEmail({
             to: inv.email,
             subject,
-            body: emailBody,
+            body: bodyWithTracking,
             from_name: fromName,
           });
         }
