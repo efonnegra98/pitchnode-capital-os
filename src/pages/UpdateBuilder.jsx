@@ -31,8 +31,10 @@ export default function InvestorUpdates() {
 
   const isLoading = companyLoading || updatesLoading;
 
-  // Only show non-archived in the main list
-  const visibleUpdates = updates.filter(u => u.status !== "archived");
+  // Deduplicate by ID, then filter out archived
+  const visibleUpdates = Array.from(
+    new Map(updates.map(u => [u.id, u])).values()
+  ).filter(u => u.status !== "archived");
 
   const createMutation = useMutation({
     mutationFn: async () => {
@@ -193,8 +195,8 @@ export default function InvestorUpdates() {
     return (
       <div className="p-6 lg:p-10">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 w-48 bg-slate-200 rounded-lg" />
-          <div className="h-64 bg-slate-200 rounded-xl" />
+          <div className="h-8 w-48 bg-muted rounded-lg" />
+          <div className="h-64 bg-muted rounded-xl" />
         </div>
       </div>
     );
@@ -205,8 +207,8 @@ export default function InvestorUpdates() {
       {/* Top header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-card flex-shrink-0">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Investor Updates</h1>
-          <p className="text-slate-400 text-xs mt-0.5">Compose, send, and track investor communications</p>
+          <h1 className="text-xl font-bold text-foreground tracking-tight">Investor Updates</h1>
+          <p className="text-muted-foreground text-xs mt-0.5">Compose, send, and track investor communications</p>
         </div>
         <Link
           to={createPageUrl("UpdateArchive")}
@@ -251,7 +253,7 @@ export default function InvestorUpdates() {
         ) : (
           <div className="hidden lg:flex flex-1 items-center justify-center bg-background">
             <div className="text-center">
-              <div className="w-14 h-14 rounded-full bg-violet-100 flex items-center justify-center mx-auto mb-4">
+              <div className="w-14 h-14 rounded-full bg-violet-100 dark:bg-violet-950/40 flex items-center justify-center mx-auto mb-4">
                 <Send className="w-6 h-6 text-violet-500" />
               </div>
               <p className="text-base font-semibold text-foreground mb-2">Select an update to view or edit</p>

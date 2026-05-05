@@ -35,32 +35,32 @@ export default function UpdatesAnalyticsBar({ updates }) {
       )}
 
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-white border border-slate-200 rounded-xl p-4">
+        <div className="bg-background border border-border rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <Send className="w-4 h-4 text-violet-500" />
-            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Total Sent</p>
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Total Sent</p>
           </div>
-          <p className="text-2xl font-bold text-slate-800">{totalSent}</p>
+          <p className="text-2xl font-bold text-foreground">{totalSent}</p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-4">
+        <div className="bg-background border border-border rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <BarChart2 className="w-4 h-4 text-emerald-500" />
-            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Avg Open Rate</p>
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Avg Open Rate</p>
           </div>
-          <p className="text-2xl font-bold text-slate-800">{avgOpenRate !== null ? `${avgOpenRate}%` : "—"}</p>
+          <p className="text-2xl font-bold text-foreground">{avgOpenRate !== null ? `${avgOpenRate}%` : "—"}</p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-4">
+        <div className="bg-background border border-border rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <Clock className="w-4 h-4 text-blue-500" />
-            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Last Sent</p>
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Last Sent</p>
           </div>
-          <p className="text-2xl font-bold text-slate-800">
+          <p className="text-2xl font-bold text-foreground">
             {daysSinceLast !== null ? `${daysSinceLast}d` : "—"}
           </p>
           {lastSent?.sent_date && (
-            <p className="text-[10px] text-slate-400 mt-0.5">
+            <p className="text-[10px] text-muted-foreground mt-0.5">
               {new Date(lastSent.sent_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
             </p>
           )}

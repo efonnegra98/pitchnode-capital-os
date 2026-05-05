@@ -24,7 +24,7 @@ function OpenRateBadge({ update }) {
   const opened = update.opened_count || 0;
   const rate = Math.round((opened / update.recipients_count) * 100);
   return (
-    <span className="text-[10px] text-slate-400">
+    <span className="text-[10px] text-muted-foreground">
       {opened}/{update.recipients_count} opened ({rate}%)
     </span>
   );
@@ -57,7 +57,7 @@ function UpdateItem({ update, isSelected, onClick }) {
       <p className="text-[11px] text-muted-foreground mb-1.5">{dateLabel}</p>
       <div className="flex items-center gap-3 flex-wrap">
         {update.recipients_count > 0 && (
-          <span className="text-[10px] text-slate-400">
+          <span className="text-[10px] text-muted-foreground">
             Sent to {update.recipients_count} investor{update.recipients_count !== 1 ? "s" : ""}
           </span>
         )}
@@ -68,7 +68,8 @@ function UpdateItem({ update, isSelected, onClick }) {
 }
 
 export default function UpdatesList({ updates, selectedId, onSelect, onNew, isCreating }) {
-  const sorted = [...updates].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+  const sorted = Array.from(new Map(updates.map(u => [u.id, u])).values())
+    .sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
 
   return (
     <div className="flex flex-col h-full">
