@@ -197,7 +197,7 @@ export default function RaiseHealthScore({ company, investors, updates, readines
                 </span>
                 <button
                   onClick={() => scrollTo(ins.section)}
-                  className="text-[12px] text-muted-foreground hover:text-violet-600 dark:hover:text-violet-400 text-left leading-tight transition-colors"
+                  className="text-[12px] text-muted-foreground hover:text-violet-600 dark:hover:text-violet-400 dark:text-slate-300 text-left leading-tight transition-colors"
                 >
                   {ins.text}
                 </button>
