@@ -51,9 +51,12 @@ export default function Investors() {
       }
       return base44.entities.Investor.create({ ...enriched, company_id: companyId });
     },
-    onSuccess: () => {
+    onSuccess: (_, formData) => {
       queryClient.invalidateQueries({ queryKey: ["investors", companyId] });
       setModalData(null);
+      if (!formData?.id) {
+        toast({ description: "Firm added successfully." });
+      }
     },
   });
 
