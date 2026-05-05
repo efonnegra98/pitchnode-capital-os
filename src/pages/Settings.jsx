@@ -7,16 +7,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, Upload, AlertTriangle } from "lucide-react";
+import { Save, Upload, AlertTriangle, Sun, Moon, Monitor } from "lucide-react";
 import BillingSection from "../components/settings/BillingSection";
 import { useToast } from "@/components/ui/use-toast";
+import { useTheme } from "@/lib/ThemeContext";
 
 function SectionHeader({ title, description }) {
   return (
     <div className="mb-6">
       <h2 className="text-sm font-bold text-[#6D5DF6] uppercase tracking-wider">{title}</h2>
-      {description && <p className="text-slate-500 text-xs mt-1">{description}</p>}
-      <div className="mt-3 border-t border-slate-200" />
+      {description && <p className="text-muted-foreground text-xs mt-1">{description}</p>}
+      <div className="mt-3 border-t border-border" />
     </div>
   );
 }
@@ -25,8 +26,8 @@ function Toggle({ checked, onChange, label, description }) {
   return (
     <div className="flex items-center justify-between py-3">
       <div>
-        <p className="text-sm font-medium text-slate-800">{label}</p>
-        {description && <p className="text-xs text-slate-400 mt-0.5">{description}</p>}
+        <p className="text-sm font-medium text-foreground">{label}</p>
+        {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
       </div>
       <button
         type="button"
@@ -43,6 +44,7 @@ export default function Settings() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { company, companyId, isLoading: companyLoading, user } = useCompany();
+  const { theme, setTheme } = useTheme();
 
   const [form, setForm] = useState({
     // Company Profile
@@ -157,15 +159,43 @@ export default function Settings() {
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Page Header */}
-      <div className="px-6 lg:px-10 pt-8 pb-6 border-b border-slate-200 bg-white">
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Settings</h1>
-        <p className="text-slate-500 text-sm mt-1">Manage your company profile, round configuration, and preferences</p>
+      <div className="px-6 lg:px-10 pt-8 pb-6 border-b border-border bg-card">
+        <h1 className="text-2xl font-bold text-foreground tracking-tight">Settings</h1>
+        <p className="text-muted-foreground text-sm mt-1">Manage your company profile, round configuration, and preferences</p>
       </div>
 
       <div className="px-6 lg:px-10 py-8 max-w-3xl space-y-8">
 
+        {/* ─── 0. Appearance ─── */}
+        <section className="bg-card border border-border rounded-2xl p-7 shadow-sm">
+          <SectionHeader title="Appearance" description="Choose how Capital OS looks on your device." />
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { value: "light", icon: Sun, label: "Light Mode", desc: "Always light" },
+              { value: "dark", icon: Moon, label: "Dark Mode", desc: "Always dark" },
+              { value: "system", icon: Monitor, label: "System Default", desc: "Follows device" },
+            ].map(({ value, icon: Icon, label, desc }) => (
+              <button
+                key={value}
+                onClick={() => setTheme(value)}
+                className={`flex flex-col items-center gap-2.5 p-4 rounded-xl border-2 transition-all ${
+                  theme === value
+                    ? "border-violet-500 bg-violet-50 dark:bg-violet-950/30"
+                    : "border-border bg-background hover:border-violet-300 hover:bg-accent"
+                }`}
+              >
+                <Icon className={`w-6 h-6 ${theme === value ? "text-violet-600" : "text-muted-foreground"}`} />
+                <div className="text-center">
+                  <p className={`text-xs font-semibold ${theme === value ? "text-violet-700 dark:text-violet-400" : "text-foreground"}`}>{label}</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{desc}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+
         {/* ─── 1. Company Profile ─── */}
-        <section className="bg-white border border-slate-200 rounded-2xl p-7 shadow-sm">
+        <section className="bg-card border border-border rounded-2xl p-7 shadow-sm">
           <SectionHeader title="Company Profile" description="Basic information displayed on your investor updates and data room." />
           <div className="space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -190,7 +220,7 @@ export default function Settings() {
             </div>
 
             {/* Logo Upload */}
-            <div className="pt-4 border-t border-slate-100">
+            <div className="pt-4 border-t border-border">
               <Label className="mb-3 block">Company Logo</Label>
               <div className="flex items-center gap-5">
                 {form.logo_url ? (
@@ -215,14 +245,14 @@ export default function Settings() {
         </section>
 
         {/* ─── 2. Round Configuration ─── */}
-        <section className="bg-white border border-slate-200 rounded-2xl p-7 shadow-sm">
+        <section className="bg-card border border-border rounded-2xl p-7 shadow-sm">
           <div className="flex items-start justify-between mb-6">
             <div>
               <h2 className="text-sm font-bold text-[#6D5DF6] uppercase tracking-wider">Round Configuration</h2>
-              <p className="text-slate-500 text-xs mt-1">Track your active fundraising round and capital commitments.</p>
+              <p className="text-muted-foreground text-xs mt-1">Track your active fundraising round and capital commitments.</p>
             </div>
             <div className="flex items-center gap-2 ml-4 flex-shrink-0">
-              <span className="text-xs text-slate-500 font-medium">{form.raise_mode ? "Enabled" : "Disabled"}</span>
+            <span className="text-xs text-muted-foreground font-medium">{form.raise_mode ? "Enabled" : "Disabled"}</span>
               <button
                 type="button"
                 onClick={() => handleChange("raise_mode", !form.raise_mode)}
@@ -232,7 +262,7 @@ export default function Settings() {
               </button>
             </div>
           </div>
-          <div className="border-t border-slate-200 mb-5" />
+          <div className="border-t border-border mb-5" />
 
           {form.raise_mode ? (
             <div className="space-y-5">
@@ -281,13 +311,13 @@ export default function Settings() {
             </div>
           ) : (
             <div className="py-6 text-center">
-              <p className="text-sm text-slate-400">Enable fundraising tracking to configure your round details.</p>
+              <p className="text-sm text-muted-foreground">Enable fundraising tracking to configure your round details.</p>
             </div>
           )}
         </section>
 
         {/* ─── 3. Investor Update Preferences ─── */}
-        <section className="bg-white border border-slate-200 rounded-2xl p-7 shadow-sm">
+        <section className="bg-card border border-border rounded-2xl p-7 shadow-sm">
           <SectionHeader title="Investor Update Preferences" description="Control how your investor updates are sent and formatted." />
           <div className="space-y-5">
             <div>
@@ -321,9 +351,9 @@ export default function Settings() {
         </section>
 
         {/* ─── 4. Notifications ─── */}
-        <section className="bg-white border border-slate-200 rounded-2xl p-7 shadow-sm">
+        <section className="bg-card border border-border rounded-2xl p-7 shadow-sm">
           <SectionHeader title="Notifications" description="Choose which events trigger email notifications." />
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-border">
             <Toggle
               checked={form.notif_overdue_followup}
               onChange={(v) => handleChange("notif_overdue_followup", v)}
@@ -355,13 +385,13 @@ export default function Settings() {
         <BillingSection company={company} companyId={companyId} />
 
         {/* ─── 6. Account ─── */}
-        <section className="bg-white border border-slate-200 rounded-2xl p-7 shadow-sm">
+        <section className="bg-card border border-border rounded-2xl p-7 shadow-sm">
           <SectionHeader title="Account" />
           <div className="space-y-5">
             <div>
               <Label>Email Address</Label>
               <Input value={user?.email || "—"} readOnly className="mt-1.5 bg-slate-50 text-slate-500 cursor-default" />
-              <p className="text-xs text-slate-400 mt-1">Your login email cannot be changed here.</p>
+              <p className="text-xs text-muted-foreground mt-1">Your login email cannot be changed here.</p>
             </div>
             <div>
               <Button
@@ -374,7 +404,7 @@ export default function Settings() {
             </div>
 
             {/* Danger Zone */}
-            <div className="pt-5 border-t border-red-100">
+            <div className="pt-5 border-t border-border">
               <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
                 <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
@@ -397,7 +427,7 @@ export default function Settings() {
       </div>
 
       {/* ─── Sticky Save Bar ─── */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-6 py-4 flex justify-end">
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border px-6 py-4 flex justify-end">
         <Button
           onClick={() => saveMutation.mutate(form)}
           disabled={saveMutation.isPending}

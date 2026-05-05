@@ -12,6 +12,7 @@ import PublicDataRoom from './pages/PublicDataRoom';
 import Gateway from './pages/Gateway';
 import AccessRequest from './pages/AccessRequest';
 import { base44 } from '@/api/base44Client';
+import { ThemeProvider } from '@/lib/ThemeContext';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -81,6 +82,7 @@ const AuthenticatedApp = () => {
 function App() {
 
   return (
+    <ThemeProvider>
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <Router>
@@ -96,6 +98,7 @@ function App() {
         <Toaster />
       </QueryClientProvider>
     </AuthProvider>
+    </ThemeProvider>
   )
 }
 

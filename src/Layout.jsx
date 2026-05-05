@@ -4,6 +4,7 @@ import { createPageUrl } from "./utils";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import TrialBanner from "@/components/TrialBanner";
+import { useTheme } from "@/lib/ThemeContext";
 import {
   LayoutDashboard,
   Send,
@@ -12,8 +13,10 @@ import {
   Settings,
   Menu,
   X,
-  ChevronRight,
-  Shield
+  Shield,
+  Sun,
+  Moon,
+  Monitor
 } from "lucide-react";
 
 const navItems = [
@@ -23,6 +26,47 @@ const navItems = [
   { name: "Archive", page: "UpdateArchive", icon: Archive },
   { name: "Settings", page: "Settings", icon: Settings },
 ];
+
+function ThemeToggle({ compact = false }) {
+  const { theme, setTheme } = useTheme();
+
+  if (compact) {
+    const next = theme === "light" ? "dark" : theme === "dark" ? "system" : "light";
+    const Icon = theme === "dark" ? Moon : theme === "system" ? Monitor : Sun;
+    return (
+      <button
+        onClick={() => setTheme(next)}
+        title={`Theme: ${theme}. Click to switch.`}
+        className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+      >
+        <Icon className="w-4 h-4" />
+      </button>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-1 p-1 bg-muted rounded-lg">
+      {[
+        { value: "light", icon: Sun, label: "Light" },
+        { value: "dark", icon: Moon, label: "Dark" },
+        { value: "system", icon: Monitor, label: "System" },
+      ].map(({ value, icon: Icon, label }) => (
+        <button
+          key={value}
+          onClick={() => setTheme(value)}
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all ${
+            theme === value
+              ? "bg-card text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Icon className="w-3.5 h-3.5" />
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 function LayoutContent({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -182,7 +226,7 @@ function LayoutContent({ children, currentPageName }) {
                     transition-colors duration-150
                     ${isActive
                       ? "bg-[#6D5DF6]/10 text-[#6D5DF6]"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
                     }
                   `}
                 >
@@ -195,9 +239,15 @@ function LayoutContent({ children, currentPageName }) {
           </div>
         </nav>
 
+        {/* Theme toggle in sidebar bottom */}
+        <div className="px-4 pb-3 pt-3 border-t border-border">
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Appearance</p>
+          <ThemeToggle />
+        </div>
+
         {/* Admin link — only visible to admins, separated by divider */}
         {user?.role === "admin" && (
-          <div className="px-4 pb-2 border-t border-slate-100 pt-3 mt-2">
+          <div className="px-4 pb-2 border-t border-border pt-3 mt-0">
             <Link
               to={createPageUrl("Admin")}
               onClick={() => setSidebarOpen(false)}
@@ -224,7 +274,7 @@ function LayoutContent({ children, currentPageName }) {
       <main className="flex-1 min-h-screen flex flex-col">
         {/* Top bar mobile */}
         <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card">
-          <button onClick={() => setSidebarOpen(true)} className="text-slate-400 hover:text-slate-700">
+          <button onClick={() => setSidebarOpen(true)} className="text-muted-foreground hover:text-foreground">
             <Menu className="w-5 h-5" />
           </button>
           <img 
@@ -232,7 +282,7 @@ function LayoutContent({ children, currentPageName }) {
             alt="PitchNode" 
             className="h-[28px] w-auto"
           />
-          <div className="w-5" />
+          <ThemeToggle compact />
         </div>
 
         {/* Trial Banner */}
