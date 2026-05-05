@@ -254,7 +254,7 @@ export default function Investors() {
             className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
           >
             <option value="all">Type: All</option>
-            {["Venture Capital", "Angel", "Family Office", "Corporate / Strategic", "Accelerator", "Private Equity", "Other"].map(s => (
+            {["Venture Capital", "Angel", "Family Office", "Corporate / Strategic", "Accelerator", "Private Equity", "Operator", "Strategic Investor", "Search Fund", "Other"].map(s => (
               <option key={s} value={s}>{s}</option>
             ))}
           </select>

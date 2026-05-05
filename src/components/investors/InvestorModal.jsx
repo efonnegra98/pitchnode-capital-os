@@ -9,7 +9,7 @@ import { suggestNextActionLabel } from "../../lib/nextActionSuggestion";
 import ActivityLog from "./ActivityLog";
 import SmartNextAction from "./SmartNextAction";
 
-const FIRM_TYPES = ["Venture Capital", "Angel", "Family Office", "Corporate / Strategic", "Accelerator", "Private Equity", "Other"];
+const FIRM_TYPES = ["Venture Capital", "Angel", "Family Office", "Corporate / Strategic", "Accelerator", "Private Equity", "Operator", "Strategic Investor", "Search Fund", "Other"];
 const STAGES = ["Pre-Seed", "Seed", "Series A", "Series B+", "Growth"];
 const STATUSES = ["Warm", "Engaged", "Passed", "Committed"];
 const FUNNEL_STAGES = ["Identified", "Researching", "Outreach Sent", "Intro Call Scheduled", "Intro Call Complete", "Interest Confirmed", "Diligence", "Term Sheet", "Closed Won", "Closed Lost", "Pass"];

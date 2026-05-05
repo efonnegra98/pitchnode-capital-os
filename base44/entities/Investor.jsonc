@@ -19,6 +19,9 @@
         "Corporate / Strategic",
         "Accelerator",
         "Private Equity",
+        "Operator",
+        "Strategic Investor",
+        "Search Fund",
         "Other"
       ],
       "description": "Type of investment firm"
