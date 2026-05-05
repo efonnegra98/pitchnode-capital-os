@@ -129,14 +129,14 @@ export default function FinancialMetricsSection({ updates = [], companyId, inves
             </div>
           )}
           {lastUpdated && !isStale && (
-            <p className="text-[10px] text-slate-400 mt-1">
+            <p className="text-[10px] text-slate-400 dark:text-[#888888] mt-1">
               Last updated: {new Date(lastUpdated).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
             </p>
           )}
         </div>
         <button
           onClick={exportMetrics}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-slate-50 transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-[#888888] text-xs font-semibold hover:bg-slate-50 dark:hover:bg-[#2a2a2a] transition-all"
         >
           <Download className="w-3.5 h-3.5" /> Export CSV
         </button>
@@ -160,15 +160,15 @@ export default function FinancialMetricsSection({ updates = [], companyId, inves
 
         {/* ARR — auto-calculated */}
         <div className="flex flex-col gap-1">
-          <div className="glass rounded-xl p-5 metric-glow relative">
+          <div className="glass dark:bg-[#1a1a1a] rounded-xl p-5 metric-glow relative border-slate-200 dark:border-[#2a2a2a]">
             <div className="flex items-start justify-between mb-3">
-              <p className="text-[11px] uppercase tracking-[0.15em] text-slate-500 font-medium">ARR</p>
-              <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
+              <p className="text-[11px] uppercase tracking-[0.15em] text-slate-500 dark:text-[#888888] font-medium">ARR</p>
+              <div className="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-950/30 flex items-center justify-center">
                 <TrendingUp className="w-4 h-4 text-violet-600" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-slate-800 tracking-tight">{fmt(arr)}</p>
-            <p className="text-xs text-slate-400 mt-2">MRR × 12 (auto)</p>
+            <p className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">{fmt(arr)}</p>
+            <p className="text-xs text-slate-400 dark:text-[#888888] mt-2">MRR × 12 (auto)</p>
           </div>
           <div className="px-2"><MetricSparkline data={buildSparkline(updates, "revenue").map(d => ({ value: d.value ? d.value * 12 : null }))} /></div>
         </div>
@@ -203,18 +203,18 @@ export default function FinancialMetricsSection({ updates = [], companyId, inves
 
         {/* Runway — color-coded */}
         <div className="flex flex-col gap-1">
-          <div className="glass rounded-xl p-5 metric-glow relative group cursor-pointer hover:ring-1 hover:ring-violet-300 hover:bg-violet-50/20"
+          <div className="glass dark:bg-[#1a1a1a] rounded-xl p-5 metric-glow relative group cursor-pointer hover:ring-1 hover:ring-violet-300 hover:bg-violet-50/20 dark:hover:ring-violet-600 dark:hover:bg-violet-950/20 border-slate-200 dark:border-[#2a2a2a]"
             onClick={() => {}}>
             <div className="flex items-start justify-between mb-3">
-              <p className="text-[11px] uppercase tracking-[0.15em] text-slate-500 font-medium">Runway</p>
-              <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
+              <p className="text-[11px] uppercase tracking-[0.15em] text-slate-500 dark:text-[#888888] font-medium">Runway</p>
+              <div className="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-950/30 flex items-center justify-center">
                 <Clock className="w-4 h-4 text-violet-600" />
               </div>
             </div>
-            <p className={`text-2xl font-bold tracking-tight ${runwayColor(runwayRaw)}`}>
+            <p className={`text-2xl font-bold tracking-tight dark:text-white ${runwayColor(runwayRaw)}`}>
               {runwayRaw ? `${runwayRaw} mo` : "—"}
             </p>
-            <p className="text-xs text-slate-400 mt-2">
+            <p className="text-xs text-slate-400 dark:text-[#888888] mt-2">
               {burn && cash ? "Auto: cash ÷ burn" : "Set cash & burn to auto-calc"}
             </p>
             <RunwayAlert months={runwayRaw} />
@@ -260,7 +260,7 @@ export default function FinancialMetricsSection({ updates = [], companyId, inves
 
       {/* ── Last Updated footer ── */}
       {lastUpdated && (
-        <p className="text-[10px] text-slate-400 mt-3 text-right">
+        <p className="text-[10px] text-slate-400 dark:text-[#888888] mt-3 text-right">
           Last updated: {new Date(lastUpdated).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
         </p>
       )}
