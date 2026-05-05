@@ -47,9 +47,9 @@ export default function CapitalFunnel({ investors, onFollowUp }) {
 
   if (!investors || investors.length === 0) {
     return (
-      <div className="glass rounded-xl p-6 border border-border flex flex-col items-center justify-center min-h-[180px] text-center">
-        <p className="text-sm font-semibold text-slate-700 mb-1">No investor data yet</p>
-        <p className="text-xs text-slate-400 mb-4">Add investors to see funnel analytics</p>
+      <div className="glass dark:bg-[#1a1a1a] rounded-xl p-6 border border-border dark:border-[#2a2a2a] flex flex-col items-center justify-center min-h-[180px] text-center">
+        <p className="text-sm font-semibold text-slate-700 dark:text-white mb-1">No investor data yet</p>
+        <p className="text-xs text-slate-400 dark:text-[#888888] mb-4">Add investors to see funnel analytics</p>
         <a href="/Investors" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs font-semibold hover:opacity-90 transition-all">
           + Add Investor
         </a>
@@ -119,21 +119,21 @@ export default function CapitalFunnel({ investors, onFollowUp }) {
       {/* ── 1. KEY METRICS ROW ── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "Total Tracked", value: total, color: "text-slate-800" },
-          { label: "Active in Pipeline", value: activeCount, color: "text-blue-700" },
-          { label: "Overdue Follow-up", value: overdueInvestors.length, color: overdueInvestors.length > 0 ? "text-red-600" : "text-slate-800" },
-          { label: "ID → Interest Conv.", value: `${topConversion}%`, color: "text-violet-700" },
+          { label: "Total Tracked", value: total, color: "text-slate-800 dark:text-white" },
+          { label: "Active in Pipeline", value: activeCount, color: "text-blue-700 dark:text-white" },
+          { label: "Overdue Follow-up", value: overdueInvestors.length, color: overdueInvestors.length > 0 ? "text-red-600 dark:text-white" : "text-slate-800 dark:text-white" },
+          { label: "ID → Interest Conv.", value: `${topConversion}%`, color: "text-violet-700 dark:text-white" },
         ].map(({ label, value, color }) => (
-          <div key={label} className="glass rounded-xl p-4 border border-slate-200">
-            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1">{label}</p>
+          <div key={label} className="glass dark:bg-[#1a1a1a] rounded-xl p-4 border border-slate-200 dark:border-[#2a2a2a]">
+            <p className="text-[10px] font-semibold text-slate-400 dark:text-[#888888] uppercase tracking-widest mb-1">{label}</p>
             <p className={`text-2xl font-bold ${color}`}>{value}</p>
           </div>
         ))}
       </div>
 
       {/* ── 2. FUNNEL VISUALIZATION ── */}
-      <div className="glass rounded-xl p-5 border border-slate-200">
-        <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-4">Pipeline Funnel</p>
+      <div className="glass dark:bg-[#1a1a1a] rounded-xl p-5 border border-slate-200 dark:border-[#2a2a2a]">
+        <p className="text-[11px] font-semibold text-slate-400 dark:text-[#888888] uppercase tracking-widest mb-4">Pipeline Funnel</p>
         <div className="space-y-1.5">
           {PIPELINE_STAGES.map((stage, idx) => {
             const count = stageCounts[stage] || 0;
@@ -157,30 +157,30 @@ export default function CapitalFunnel({ investors, onFollowUp }) {
                 {/* Divider before closed stages */}
                 {stage === "Closed Won" && (
                   <div className="flex items-center gap-2 my-2">
-                    <div className="flex-1 h-px bg-slate-200" />
-                    <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Closed</span>
-                    <div className="flex-1 h-px bg-slate-200" />
+                    <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
+                    <span className="text-[9px] font-semibold text-slate-400 dark:text-[#888888] uppercase tracking-wider">Closed</span>
+                    <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
                   </div>
                 )}
                 <div className="flex items-center gap-3">
                   <div className="w-[148px] flex-shrink-0">
-                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded ${style.label}`}>
+                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded text-white dark:text-white bg-slate-700 dark:bg-slate-600`}>
                       {stage}
                     </span>
                   </div>
-                  <div className="flex-1 h-5 bg-slate-100 rounded-md overflow-hidden relative">
+                  <div className="flex-1 h-5 bg-slate-100 dark:bg-[#2a2a2a] rounded-md overflow-hidden relative">
                     <div
                       className={`h-full ${style.bar} rounded-md transition-all duration-500`}
                       style={{ width: `${Math.max(barWidth, count > 0 ? 2 : 0)}%` }}
                     />
                   </div>
-                  <div className="w-6 text-right text-sm font-bold text-slate-700 flex-shrink-0">{count}</div>
+                  <div className="w-6 text-right text-sm font-bold text-slate-700 dark:text-white flex-shrink-0">{count}</div>
                 </div>
                 {/* Conversion rate between stages */}
                 {convRate !== null && count > 0 && (
                   <div className="flex items-center gap-1 pl-[164px] py-0.5">
-                    <div className="w-px h-3 bg-slate-200 ml-1" />
-                    <span className={`text-[10px] font-medium ${convRate >= 50 ? "text-emerald-600" : convRate >= 25 ? "text-amber-500" : "text-red-500"}`}>
+                    <div className="w-px h-3 bg-slate-200 dark:bg-slate-700 ml-1" />
+                    <span className={`text-[10px] font-medium ${convRate >= 50 ? "text-emerald-600" : convRate >= 25 ? "text-amber-500" : "text-red-500"} dark:text-[#888888]`}>
                       {convRate}% → {nextStage}
                     </span>
                   </div>
@@ -193,8 +193,8 @@ export default function CapitalFunnel({ investors, onFollowUp }) {
 
       {/* ── 3. SENTIMENT BREAKDOWN ── */}
       {totalSentiment > 0 && (
-        <div className="glass rounded-xl p-5 border border-slate-200">
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-3">Sentiment Breakdown</p>
+        <div className="glass dark:bg-[#1a1a1a] rounded-xl p-5 border border-slate-200 dark:border-[#2a2a2a]">
+          <p className="text-[11px] font-semibold text-slate-400 dark:text-[#888888] uppercase tracking-widest mb-3">Sentiment Breakdown</p>
           <div className="flex h-4 rounded-full overflow-hidden gap-px">
             {sentimentCounts.map(({ s, count }) => {
               const pct = totalSentiment > 0 ? (count / totalSentiment) * 100 : 0;
@@ -213,8 +213,8 @@ export default function CapitalFunnel({ investors, onFollowUp }) {
             {sentimentCounts.map(({ s, count }) => count > 0 && (
               <div key={s} className="flex items-center gap-1.5">
                 <div className={`w-2 h-2 rounded-full ${SENTIMENT_STYLE[s].bar}`} />
-                <span className={`text-[11px] font-medium ${SENTIMENT_STYLE[s].text}`}>{s}</span>
-                <span className="text-[11px] text-slate-400">{count}</span>
+                <span className={`text-[11px] font-medium text-white dark:text-white`}>{s}</span>
+                <span className="text-[11px] text-slate-400 dark:text-[#888888]">{count}</span>
               </div>
             ))}
           </div>
@@ -223,14 +223,14 @@ export default function CapitalFunnel({ investors, onFollowUp }) {
 
       {/* ── 4. VELOCITY INSIGHT ── */}
       {stageVelocity.length > 0 && (
-        <div className="glass rounded-xl p-5 border border-slate-200">
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-3">Pipeline Velocity</p>
+        <div className="glass dark:bg-[#1a1a1a] rounded-xl p-5 border border-slate-200 dark:border-[#2a2a2a]">
+          <p className="text-[11px] font-semibold text-slate-400 dark:text-[#888888] uppercase tracking-widest mb-3">Pipeline Velocity</p>
           <div className="flex flex-wrap gap-2 mb-3">
             {stageVelocity.map(({ stage, avg }) => (
               <div key={stage} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px] font-medium ${
                 stage === stalledStage?.stage
-                  ? "bg-amber-50 border-amber-200 text-amber-700"
-                  : "bg-slate-50 border-slate-200 text-slate-600"
+                  ? "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400"
+                  : "bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-[#888888]"
               }`}>
                 <Clock className="w-3 h-3" />
                 <span>{stage}</span>
@@ -239,9 +239,9 @@ export default function CapitalFunnel({ investors, onFollowUp }) {
             ))}
           </div>
           {stalledStage && (
-            <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5">
-              <AlertTriangle className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
-              <p className="text-[12px] text-amber-700">
+            <div className="flex items-start gap-2 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700 rounded-lg px-3 py-2.5">
+              <AlertTriangle className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+              <p className="text-[12px] text-amber-700 dark:text-amber-400">
                 <span className="font-semibold">Investors are stalling at {stalledStage.stage}</span> — avg {stalledStage.avg} days. Consider sending follow-up materials or scheduling a check-in.
               </p>
             </div>
@@ -251,13 +251,13 @@ export default function CapitalFunnel({ investors, onFollowUp }) {
 
       {/* ── 5. OVERDUE ALERTS ── */}
       {overdueInvestors.length > 0 && (
-        <div className="glass rounded-xl p-5 border border-red-100">
+        <div className="glass dark:bg-[#1a1a1a] rounded-xl p-5 border border-red-100 dark:border-red-950/50">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-red-500" />
-              <p className="text-[11px] font-semibold text-red-600 uppercase tracking-widest">Overdue — No Activity 21+ Days</p>
+              <p className="text-[11px] font-semibold text-red-600 dark:text-red-400 uppercase tracking-widest">Overdue — No Activity 21+ Days</p>
             </div>
-            <span className="text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-full px-2 py-0.5">
+            <span className="text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-full px-2 py-0.5">
               {overdueInvestors.length}
             </span>
           </div>
@@ -272,22 +272,22 @@ export default function CapitalFunnel({ investors, onFollowUp }) {
                 actDays ?? 999
               );
               return (
-                <div key={inv.id} className="flex items-center justify-between bg-white border border-red-100 rounded-lg px-3 py-2.5">
+                <div key={inv.id} className="flex items-center justify-between bg-white dark:bg-slate-900/40 border border-red-100 dark:border-red-950/50 rounded-lg px-3 py-2.5">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-semibold text-slate-800 truncate">{inv.firm || inv.name || "Unnamed"}</span>
-                      {inv.name && inv.firm && <span className="text-xs text-slate-400">{inv.name}</span>}
+                      <span className="text-sm font-semibold text-slate-800 dark:text-white truncate">{inv.firm || inv.name || "Unnamed"}</span>
+                      {inv.name && inv.firm && <span className="text-xs text-slate-400 dark:text-[#888888]">{inv.name}</span>}
                       <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${STAGE_STYLE[inv.funnel_stage]?.label || "bg-slate-100 text-slate-500"}`}>
                         {inv.funnel_stage || "—"}
                       </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0 ml-2">
-                    <span className="text-[11px] font-bold text-red-600">{staleDays === 999 ? "Never" : `${staleDays}d`}</span>
+                    <span className="text-[11px] font-bold text-red-600 dark:text-red-400">{staleDays === 999 ? "Never" : `${staleDays}d`}</span>
                     {onFollowUp && (
                       <button
                         onClick={() => onFollowUp(inv)}
-                        className="flex items-center gap-1 text-[11px] font-semibold text-violet-600 hover:text-violet-800 bg-violet-50 hover:bg-violet-100 border border-violet-200 rounded-md px-2.5 py-1 transition-colors"
+                        className="flex items-center gap-1 text-[11px] font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 bg-violet-50 dark:bg-violet-950/30 hover:bg-violet-100 dark:hover:bg-violet-950/50 border border-violet-200 dark:border-violet-900 rounded-md px-2.5 py-1 transition-colors"
                       >
                         <Send className="w-3 h-3" /> Log
                       </button>
@@ -300,7 +300,7 @@ export default function CapitalFunnel({ investors, onFollowUp }) {
           {overdueInvestors.length > 3 && (
             <button
               onClick={() => setShowAllOverdue(v => !v)}
-              className="mt-2 text-xs text-violet-600 hover:text-violet-800 font-medium transition-colors"
+              className="mt-2 text-xs text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 font-medium transition-colors"
             >
               {showAllOverdue ? "Show less" : `Show ${overdueInvestors.length - 3} more`}
             </button>
