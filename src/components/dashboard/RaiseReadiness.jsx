@@ -2,13 +2,17 @@ import React, { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { CheckCircle2, Circle, Clock, FileText, Upload, File, X, Link2, Send, Share2 } from "lucide-react";
+import {
+  CheckCircle2, Circle, Clock, FileText, Upload, File, X,
+  Send, Share2, Info, CheckCircle, AlertTriangle, Zap, Plus
+} from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCompany } from "../useCompany";
-import ShareDataRoomModal from "../dataroom/ShareDataRoomModal";
 import SendToInvestorModal from "../dataroom/SendToInvestorModal";
-import DataRoomActivity from "../dataroom/DataRoomActivity";
+import InvestorViewFeed from "../dataroom/InvestorViewFeed";
+import DocumentInsights from "../dataroom/DocumentInsights";
+import MultiShareLinksModal from "../dataroom/MultiShareLinksModal";
 
 const DEFAULT_ITEMS = [
   { item_name: "Pitch Deck", order: 1 },
@@ -32,8 +36,85 @@ const statusColors = {
   "Complete": "text-emerald-600",
 };
 
-function generateShareId() {
-  return Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+// Smart readiness hints per document (feature 3)
+const READINESS_HINTS = {
+  "Pitch Deck": "Required by 95% of investors before taking a meeting.",
+  "Financial Model": "73% of investors request this during diligence.",
+  "Capitalization Table": "Investors need this before issuing a term sheet.",
+  "Key Metrics & KPIs": "Demonstrates traction — top signal for institutional investors.",
+  "Corporate & Legal Documents": "Required for legal due diligence before closing.",
+  "Customer References & Testimonials": "Builds credibility and de-risks the investment decision.",
+  "Use of Funds": "Every investor wants to know how their capital will be deployed.",
+};
+
+// Feature 6: staleness warning threshold
+const STALE_DAYS = 90;
+
+function daysSince(dateStr) {
+  if (!dateStr) return null;
+  return Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
+}
+
+function fmtDate(dateStr) {
+  if (!dateStr) return null;
+  return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+// Feature 4: Investor-Ready Badge
+function ReadinessBadge({ score }) {
+  if (score >= 90) {
+    return (
+      <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-emerald-50 border-2 border-emerald-300 mb-5">
+        <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+        <div>
+          <p className="text-sm font-bold text-emerald-700">Investor Ready</p>
+          <p className="text-[11px] text-emerald-600">Your data room is ready to share with investors.</p>
+        </div>
+      </div>
+    );
+  }
+  if (score >= 50) {
+    return (
+      <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-amber-50 border-2 border-amber-200 mb-5">
+        <AlertTriangle className="w-4.5 h-4.5 text-amber-500 flex-shrink-0 w-5 h-5" />
+        <div>
+          <p className="text-sm font-bold text-amber-700">Getting There</p>
+          <p className="text-[11px] text-amber-600">Complete more items to make your data room investor-ready.</p>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-red-50 border-2 border-red-200 mb-5">
+      <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
+      <div>
+        <p className="text-sm font-bold text-red-700">Not Ready for Investors</p>
+        <p className="text-[11px] text-red-600">Build out your data room before sharing with investors.</p>
+      </div>
+    </div>
+  );
+}
+
+// Feature 3: hint tooltip
+function HintTooltip({ text }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="relative inline-flex items-center">
+      <button
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        className="text-slate-300 hover:text-violet-400 transition-colors"
+      >
+        <Info className="w-3.5 h-3.5" />
+      </button>
+      {show && (
+        <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-slate-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl leading-relaxed pointer-events-none whitespace-normal text-center">
+          {text}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function RaiseReadiness() {
@@ -42,31 +123,19 @@ export default function RaiseReadiness() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showSendModal, setShowSendModal] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const [docShareUrl, setDocShareUrl] = useState(null); // for per-document share modal
   const { companyId, company } = useCompany();
   const { toast } = useToast();
 
-  // Persistent share ID per company (stored in localStorage)
-  const shareIdKey = `dataroom_share_id_${companyId}`;
-  const getOrCreateShareId = () => {
-    let id = localStorage.getItem(shareIdKey);
-    if (!id) {
-      id = generateShareId();
-      localStorage.setItem(shareIdKey, id);
-    }
-    return id;
-  };
-
-  const shareId = companyId ? getOrCreateShareId() : null;
-  const fullShareUrl = shareId ? `${window.location.origin}/dataroom/${shareId}` : "";
+  // Feature 7: quick upload state (item id being uploaded inline)
+  const [quickUploadId, setQuickUploadId] = useState(null);
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["raise-readiness", companyId],
     queryFn: async () => {
       const existing = await base44.entities.RaiseReadinessItem.filter({ company_id: companyId });
       if (existing.length === 0) {
-        const itemsWithCompanyId = DEFAULT_ITEMS.map(item => ({ ...item, company_id: companyId }));
-        await base44.entities.RaiseReadinessItem.bulkCreate(itemsWithCompanyId);
+        const toCreate = DEFAULT_ITEMS.map(item => ({ ...item, company_id: companyId }));
+        await base44.entities.RaiseReadinessItem.bulkCreate(toCreate);
         return await base44.entities.RaiseReadinessItem.filter({ company_id: companyId });
       }
       return existing;
@@ -97,7 +166,7 @@ export default function RaiseReadiness() {
   });
 
   const sortedItems = [...items].sort((a, b) => (a.order || 0) - (b.order || 0));
-  const completeCount = items.filter((i) => i.status === "Complete").length;
+  const completeCount = items.filter(i => i.status === "Complete").length;
   const readinessScore = items.length > 0 ? Math.round((completeCount / items.length) * 100) : 0;
 
   const handleStatusChange = (item, newStatus) => {
@@ -110,30 +179,17 @@ export default function RaiseReadiness() {
 
   const handleFileUpload = async (item, file) => {
     if (!file) return;
+    setQuickUploadId(item.id);
     const { file_url } = await base44.integrations.Core.UploadFile({ file });
     updateMutation.mutate({
       id: item.id,
       data: { file_url, file_name: file.name, file_uploaded_date: new Date().toISOString(), status: "Complete" },
     });
+    setQuickUploadId(null);
   };
 
   const handleFileRemove = (item) => {
     updateMutation.mutate({ id: item.id, data: { file_url: null, file_name: null, file_uploaded_date: null } });
-  };
-
-  const handleDocumentShare = (item) => {
-    const docShareId = `${shareId}-doc-${item.id.slice(-6)}`;
-    const url = `${window.location.origin}/dataroom/${docShareId}`;
-    setDocShareUrl(url);
-    // Log document share
-    createShareMutation.mutate({
-      company_id: companyId,
-      share_id: docShareId,
-      share_type: "document",
-      document_item_id: item.id,
-      document_name: item.item_name,
-      sent_date: new Date().toISOString(),
-    });
   };
 
   const handleSendToInvestors = async (selectedInvestors, message) => {
@@ -141,38 +197,32 @@ export default function RaiseReadiness() {
     const companyName = company?.name || "Us";
     const subject = `Data Room Access — ${companyName}`;
     const now = new Date().toISOString();
+    // Use the first active full_room share or create a new one
+    const existingShare = shares.find(s => s.share_type === "full_room" && s.is_active !== false && !s.investor_id);
+    const shareId = existingShare?.share_id || (() => { const id = Math.random().toString(36).substring(2, 10) + Date.now().toString(36); return id; })();
+    const fullShareUrl = `${window.location.origin}/dataroom/${shareId}`;
 
     for (const investor of selectedInvestors) {
       const investorLabel = investor.name || investor.firm || "Investor";
       const personalizedMessage = message.replace("[Investor Name]", investor.name || investor.firm || "there");
-
       if (investor.email) {
-        await base44.integrations.Core.SendEmail({
-          to: investor.email,
-          subject,
-          body: personalizedMessage,
-        });
+        await base44.integrations.Core.SendEmail({ to: investor.email, subject, body: personalizedMessage });
       }
-
       await createShareMutation.mutateAsync({
         company_id: companyId,
         share_id: shareId,
         investor_id: investor.id,
         investor_name: investorLabel,
         investor_email: investor.email || "",
+        firm_name: investor.firm || "",
         share_type: "full_room",
         sent_date: now,
-        opened: !!investor.email,
-        opened_date: investor.email ? now : null,
+        opened: false,
         message_sent: !!investor.email,
+        label: `Sent to ${investorLabel}`,
       });
-
-      toast({
-        title: `Data room sent to ${investorLabel}`,
-        description: investor.email ? `Email delivered to ${investor.email}` : "Logged (no email on file)",
-      });
+      toast({ title: `Data room sent to ${investorLabel}`, description: investor.email ? `Email delivered to ${investor.email}` : "Logged (no email on file)" });
     }
-
     setIsSending(false);
     setShowSendModal(false);
     queryClient.invalidateQueries({ queryKey: ["dataroom-shares", companyId] });
@@ -192,15 +242,12 @@ export default function RaiseReadiness() {
   return (
     <>
       {showShareModal && (
-        <ShareDataRoomModal shareUrl={fullShareUrl} onClose={() => setShowShareModal(false)} />
-      )}
-      {docShareUrl && (
-        <ShareDataRoomModal shareUrl={docShareUrl} onClose={() => setDocShareUrl(null)} />
+        <MultiShareLinksModal companyId={companyId} shares={shares} onClose={() => setShowShareModal(false)} />
       )}
       {showSendModal && (
         <SendToInvestorModal
           investors={investors}
-          shareUrl={fullShareUrl}
+          shareUrl={`${window.location.origin}/dataroom/general`}
           onSend={handleSendToInvestors}
           onClose={() => setShowSendModal(false)}
           isSending={isSending}
@@ -208,23 +255,21 @@ export default function RaiseReadiness() {
       )}
 
       <div className="glass rounded-xl p-6 border border-slate-200">
+        {/* ── Feature 4: Readiness Badge ── */}
+        <ReadinessBadge score={readinessScore} />
+
         {/* Header */}
         <div className="flex items-start justify-between mb-5">
           <div>
-            <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">
-              Raise Readiness & Data Room
-            </h2>
+            <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">Raise Readiness & Data Room</h2>
             <p className="text-slate-400 text-xs mt-1">Institutional preparedness checklist</p>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="text-right mr-4">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            <div className="text-right mr-2">
               <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Readiness Score</p>
               <div className="flex items-center gap-2">
                 <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-violet-600 to-emerald-500 transition-all duration-500"
-                    style={{ width: `${readinessScore}%` }}
-                  />
+                  <div className="h-full bg-gradient-to-r from-violet-600 to-emerald-500 transition-all duration-500" style={{ width: `${readinessScore}%` }} />
                 </div>
                 <span className="text-2xl font-bold text-violet-600">{readinessScore}%</span>
               </div>
@@ -239,60 +284,87 @@ export default function RaiseReadiness() {
               onClick={() => setShowShareModal(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-violet-700 border border-violet-300 bg-violet-50 hover:bg-violet-100 transition-all"
             >
-              <Link2 className="w-3.5 h-3.5" /> Share Data Room
+              <Share2 className="w-3.5 h-3.5" /> Share Links
             </button>
           </div>
         </div>
 
-        {/* Checklist */}
+        {/* ── Checklist ── */}
         <div className="space-y-2">
           {sortedItems.map((item) => {
             const StatusIcon = statusIcons[item.status || "Not Started"];
             const isExpanded = expandedId === item.id;
+            const isComplete = item.status === "Complete";
+            const isMissing = !isComplete;
+            const hint = READINESS_HINTS[item.item_name];
+
+            // Feature 6: last updated / stale
+            const uploadDate = item.file_uploaded_date || item.updated_date;
+            const daysOld = daysSince(uploadDate);
+            const isStale = daysOld !== null && daysOld >= STALE_DAYS;
+            const isUploading = quickUploadId === item.id;
 
             return (
               <div key={item.id} className="rounded-lg border border-slate-200 bg-white overflow-hidden">
                 <div className="flex items-center gap-3 p-3">
+                  {/* Status toggle */}
                   <button
-                    onClick={() =>
-                      handleStatusChange(
-                        item,
-                        item.status === "Not Started" ? "In Progress" : item.status === "In Progress" ? "Complete" : "Not Started"
-                      )
-                    }
+                    onClick={() => handleStatusChange(item,
+                      item.status === "Not Started" ? "In Progress" : item.status === "In Progress" ? "Complete" : "Not Started"
+                    )}
                     className="flex-shrink-0 transition-colors"
                   >
                     <StatusIcon className={`w-5 h-5 ${statusColors[item.status || "Not Started"]}`} />
                   </button>
 
-                  <div className="flex-1">
-                    <p className="text-sm text-slate-800 font-medium">{item.item_name}</p>
-                    <div className="flex items-center gap-3 mt-1">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <p className="text-sm text-slate-800 font-medium">{item.item_name}</p>
+                      {/* Feature 3: hint icon for missing items */}
+                      {isMissing && hint && <HintTooltip text={hint} />}
+                    </div>
+                    <div className="flex items-center gap-2.5 mt-1 flex-wrap">
                       <span className={`text-[10px] uppercase tracking-wider font-medium ${statusColors[item.status || "Not Started"]}`}>
                         {item.status || "Not Started"}
                       </span>
                       {item.file_name && (
                         <span className="text-[10px] text-violet-600 flex items-center gap-1">
-                          <File className="w-3 h-3" />
-                          {item.file_name}
+                          <File className="w-3 h-3" />{item.file_name}
                         </span>
                       )}
-                      {item.updated_date && (
-                        <span className="text-[10px] text-slate-400">
-                          Updated {new Date(item.updated_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                      {/* Feature 6: last updated timestamp */}
+                      {uploadDate && !isStale && (
+                        <span className="text-[10px] text-slate-400">Updated {fmtDate(uploadDate)}</span>
+                      )}
+                      {isStale && (
+                        <span className="flex items-center gap-1 text-[10px] text-amber-600 font-medium">
+                          <AlertTriangle className="w-3 h-3" />
+                          Consider updating — uploaded {Math.floor(daysOld / 30)} months ago
                         </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Per-document share icon */}
-                  <button
-                    onClick={() => handleDocumentShare(item)}
-                    title="Share this document"
-                    className="flex-shrink-0 text-slate-300 hover:text-violet-500 transition-colors"
-                  >
-                    <Share2 className="w-4 h-4" />
-                  </button>
+                  {/* Feature 7: Quick upload button (inline) */}
+                  {!item.file_url && (
+                    <label className="flex-shrink-0 cursor-pointer" title="Quick upload">
+                      {isUploading ? (
+                        <div className="w-7 h-7 rounded-md border border-violet-200 bg-violet-50 flex items-center justify-center">
+                          <div className="w-3 h-3 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
+                        </div>
+                      ) : (
+                        <div className="w-7 h-7 rounded-md border border-slate-200 hover:border-violet-400 hover:bg-violet-50 flex items-center justify-center transition-colors text-slate-400 hover:text-violet-600">
+                          <Plus className="w-4 h-4" />
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept=".pdf,.xlsx,.xls,.csv,.doc,.docx,.zip"
+                        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileUpload(item, f); e.target.value = ""; }}
+                      />
+                    </label>
+                  )}
 
                   <button
                     onClick={() => setExpandedId(isExpanded ? null : item.id)}
@@ -304,21 +376,13 @@ export default function RaiseReadiness() {
 
                 {isExpanded && (
                   <div className="px-3 pb-3 space-y-3 border-t border-slate-100 pt-3 bg-slate-50/50">
-                    {/* File Upload Section */}
                     <div>
-                      <label className="text-[10px] uppercase tracking-wider text-slate-500 mb-2 block">
-                        Document Upload
-                      </label>
+                      <label className="text-[10px] uppercase tracking-wider text-slate-500 mb-2 block">Document Upload</label>
                       {item.file_url ? (
                         <div className="flex items-center gap-2 p-2.5 bg-white border border-slate-200 rounded-lg">
                           <File className="w-4 h-4 text-violet-600 flex-shrink-0" />
                           <div className="flex-1 min-w-0">
-                            <a
-                              href={item.file_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-sm text-slate-800 hover:text-violet-600 font-medium block truncate"
-                            >
+                            <a href={item.file_url} target="_blank" rel="noopener noreferrer" className="text-sm text-slate-800 hover:text-violet-600 font-medium block truncate">
                               {item.file_name}
                             </a>
                             {item.file_uploaded_date && (
@@ -339,11 +403,7 @@ export default function RaiseReadiness() {
                             type="file"
                             className="hidden"
                             accept=".pdf,.xlsx,.xls,.csv,.doc,.docx,.zip"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) handleFileUpload(item, file);
-                              e.target.value = "";
-                            }}
+                            onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileUpload(item, f); e.target.value = ""; }}
                           />
                         </label>
                       )}
@@ -353,13 +413,9 @@ export default function RaiseReadiness() {
                     <div>
                       <label className="text-[10px] uppercase tracking-wider text-slate-500 mb-1.5 block">Status</label>
                       <Select value={item.status || "Not Started"} onValueChange={(v) => handleStatusChange(item, v)}>
-                        <SelectTrigger className="bg-white border-slate-200 text-slate-800 text-sm">
-                          <SelectValue />
-                        </SelectTrigger>
+                        <SelectTrigger className="bg-white border-slate-200 text-slate-800 text-sm"><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          {["Not Started", "In Progress", "Complete"].map((s) => (
-                            <SelectItem key={s} value={s}>{s}</SelectItem>
-                          ))}
+                          {["Not Started", "In Progress", "Complete"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                         </SelectContent>
                       </Select>
                     </div>
@@ -368,8 +424,8 @@ export default function RaiseReadiness() {
                       <label className="text-[10px] uppercase tracking-wider text-slate-500 mb-1.5 block">Notes</label>
                       <Textarea
                         value={item.notes || ""}
-                        onChange={(e) => handleNotesChange(item, e.target.value)}
-                        onBlur={(e) => handleNotesChange(item, e.target.value)}
+                        onChange={e => handleNotesChange(item, e.target.value)}
+                        onBlur={e => handleNotesChange(item, e.target.value)}
                         className="bg-white border-slate-200 text-slate-800 text-sm min-h-[60px]"
                         placeholder="Add notes..."
                       />
@@ -381,8 +437,11 @@ export default function RaiseReadiness() {
           })}
         </div>
 
-        {/* Activity Log */}
-        <DataRoomActivity shares={[...shares].sort((a, b) => new Date(b.sent_date) - new Date(a.sent_date))} />
+        {/* ── Feature 2: Document Insights ── */}
+        <DocumentInsights items={sortedItems} shares={shares} />
+
+        {/* ── Feature 1: Live Investor View Feed ── */}
+        <InvestorViewFeed shares={shares} />
       </div>
     </>
   );

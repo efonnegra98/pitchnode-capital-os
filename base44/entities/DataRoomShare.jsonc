@@ -10,9 +10,13 @@
       "type": "string",
       "description": "Unique share identifier for the URL"
     },
+    "label": {
+      "type": "string",
+      "description": "Founder-defined label for this link, e.g. 'Link for a16z'"
+    },
     "investor_id": {
       "type": "string",
-      "description": "ID of the investor this was sent to (null if just a link share)"
+      "description": "ID of the investor this was sent to"
     },
     "investor_name": {
       "type": "string",
@@ -24,7 +28,7 @@
     },
     "document_item_id": {
       "type": "string",
-      "description": "If set, this is a share for a specific document; otherwise it's the full data room"
+      "description": "If set, this is a share for a specific document"
     },
     "document_name": {
       "type": "string",
@@ -33,7 +37,7 @@
     "sent_date": {
       "type": "string",
       "format": "date-time",
-      "description": "When the link was sent"
+      "description": "When the link was sent/created"
     },
     "opened": {
       "type": "boolean",
@@ -56,8 +60,33 @@
         "full_room",
         "document"
       ],
-      "default": "full_room",
-      "description": "Whether this is a full data room or individual document share"
+      "default": "full_room"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this link is currently active"
+    },
+    "expiry_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Optional expiry date for this link"
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of times this link was opened"
+    },
+    "documents_opened": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of document names that were opened via this link"
+    },
+    "firm_name": {
+      "type": "string",
+      "description": "Firm name of the investor who viewed"
     }
   },
   "required": [
