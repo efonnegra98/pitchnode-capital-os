@@ -22,7 +22,7 @@ import {
 const navItems = [
   { name: "Dashboard", page: "Dashboard", icon: LayoutDashboard },
   { name: "Investor Updates", page: "UpdateBuilder", icon: Send },
-  { name: "Investors", page: "Investors", icon: Users },
+  { name: "Investor CRM", page: "Investors", icon: Users },
   { name: "Archive", page: "UpdateArchive", icon: Archive },
   { name: "Settings", page: "Settings", icon: Settings },
 ];
