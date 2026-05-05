@@ -1,20 +1,13 @@
 import React, { useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useCompany } from "../components/useCompany";
-import {
-  DollarSign,
-  TrendingUp,
-  Flame,
-  Clock,
-  Wallet,
-  Users,
-  Send
-} from "lucide-react";
+import { DollarSign, TrendingUp, Users, Send } from "lucide-react";
 import MetricCard from "../components/dashboard/MetricCard";
 import KPIChart from "../components/dashboard/KPIChart";
 import SnapshotSummary from "../components/dashboard/SnapshotSummary";
 import RaiseOverview from "../components/dashboard/RaiseOverview";
+import FinancialMetricsSection from "../components/dashboard/FinancialMetricsSection";
 import ActionRequired from "../components/dashboard/ActionRequired";
 import CapitalFunnel from "../components/dashboard/CapitalFunnel";
 import RaiseReadiness from "../components/dashboard/RaiseReadiness";
@@ -64,57 +57,6 @@ export default function Dashboard() {
   });
 
   const isLoading = companyLoading || updatesLoading || investorsLoading;
-
-  const sortedUpdates = [...updates].sort((a, b) => {
-    return new Date(a.created_date) - new Date(b.created_date);
-  });
-
-  const latestUpdate = updates.length > 0 ? updates[0] : null;
-  const prevUpdate = updates.length > 1 ? updates[1] : null;
-
-  const formatCurrency = (val) => {
-    if (!val && val !== 0) return "—";
-    if (val >= 1000000) return `$${(val / 1000000).toFixed(1)}M`;
-    if (val >= 1000) return `$${(val / 1000).toFixed(1)}k`;
-    return `$${val.toLocaleString()}`;
-  };
-
-  const calcTrend = (current, previous) => {
-    if (!current || !previous) return null;
-    const diff = ((current - previous) / previous * 100).toFixed(1);
-    return { value: `${Math.abs(diff)}%`, direction: diff >= 0 ? 'up' : 'down' };
-  };
-
-  const revTrend = calcTrend(latestUpdate?.revenue, prevUpdate?.revenue);
-  const burnTrend = calcTrend(latestUpdate?.burn_rate, prevUpdate?.burn_rate);
-
-  const lastSent = updates.find(u => u.status === 'sent');
-
-  const chartData = sortedUpdates
-    .filter(u => u.revenue)
-    .map(u => ({
-      month: u.month?.substring(0, 3) || "",
-      revenue: u.revenue,
-    }));
-
-  const activeInvestors = investors.filter(i => i.status === 'Engaged' || i.status === 'Committed' || i.status === 'Warm');
-
-  const queryClient = useQueryClient();
-
-  const updateMetricMutation = useMutation({
-    mutationFn: ({ field, value }) => {
-      if (latestUpdate?.id) {
-        return base44.entities.MonthlyUpdate.update(latestUpdate.id, { [field]: value });
-      }
-      // Create a new update record if none exists yet
-      const now = new Date();
-      const month = now.toLocaleString("en-US", { month: "long", year: "numeric" });
-      return base44.entities.MonthlyUpdate.create({ company_id: companyId, month, [field]: value });
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["monthly-updates", companyId] }),
-  });
-
-  const saveMetric = (field) => (value) => updateMetricMutation.mutateAsync({ field, value });
 
   const raiseSignals = computeRaiseSignals({ company, investors, updates, readinessItems });
 
@@ -211,68 +153,11 @@ export default function Dashboard() {
           {hasUpdates ? (
             <CollapsibleSection title="Financial Metrics" defaultOpen={false} id="financial-metrics">
               <ModuleSignals signals={getModuleSignals(raiseSignals, "Financial Metrics")} />
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-                <MetricCard
-                  label="Monthly Revenue"
-                  value={formatCurrency(latestUpdate?.revenue)}
-                  icon={DollarSign}
-                  trend={revTrend?.value}
-                  trendDirection={revTrend?.direction}
-                  subtext="vs last month"
-                  onSave={saveMetric("revenue")}
-                />
-                <MetricCard
-                  label="Revenue Growth"
-                  value={latestUpdate?.revenue_growth ? `${latestUpdate.revenue_growth}%` : "—"}
-                  icon={TrendingUp}
-                  trendDirection={latestUpdate?.revenue_growth > 0 ? 'up' : latestUpdate?.revenue_growth < 0 ? 'down' : null}
-                  onSave={saveMetric("revenue_growth")}
-                />
-                <MetricCard
-                  label="Burn Rate"
-                  value={formatCurrency(latestUpdate?.burn_rate)}
-                  icon={Flame}
-                  trend={burnTrend?.value}
-                  trendDirection={burnTrend?.direction === 'up' ? 'down' : burnTrend?.direction === 'down' ? 'up' : null}
-                  subtext="vs last month"
-                  onSave={saveMetric("burn_rate")}
-                />
-                <MetricCard
-                  label="Runway"
-                  value={latestUpdate?.runway_months ? `${latestUpdate.runway_months} mo` : "—"}
-                  icon={Clock}
-                  onSave={saveMetric("runway_months")}
-                />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-                <MetricCard
-                  label="Cash Balance"
-                  value={formatCurrency(latestUpdate?.cash_balance)}
-                  icon={Wallet}
-                  onSave={saveMetric("cash_balance")}
-                />
-                <MetricCard
-                  label="Active Investors"
-                  value={activeInvestors.length}
-                  icon={Users}
-                  subtext={`of ${investors.length} total`}
-                />
-                <MetricCard
-                  label="Last Update Sent"
-                  value={lastSent?.sent_date
-                    ? new Date(lastSent.sent_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                    : "—"
-                  }
-                  icon={Send}
-                  subtext={lastSent?.month}
-                />
-              </div>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
-                  <KPIChart data={chartData} />
-                </div>
-                <SnapshotSummary latestUpdate={latestUpdate} investorCount={activeInvestors.length} />
-              </div>
+              <FinancialMetricsSection
+                updates={updates}
+                companyId={companyId}
+                investors={investors}
+              />
             </CollapsibleSection>
           ) : (
             <div className="mb-6">
