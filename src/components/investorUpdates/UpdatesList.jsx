@@ -46,15 +46,15 @@ function UpdateItem({ update, isSelected, onClick }) {
       onClick={onClick}
       className={`w-full text-left p-4 rounded-xl border transition-all ${
         isSelected
-          ? "bg-violet-50 border-violet-300 shadow-sm"
-          : "bg-white border-slate-200 hover:border-violet-200 hover:bg-slate-50"
+          ? "bg-violet-50 dark:bg-violet-950/30 border-violet-300 shadow-sm"
+          : "bg-card border-border hover:border-violet-300 hover:bg-accent"
       }`}
     >
       <div className="flex items-start justify-between gap-2 mb-1.5">
-        <p className="text-sm font-semibold text-slate-800 truncate">{title}</p>
+        <p className="text-sm font-semibold text-foreground truncate">{title}</p>
         <StatusBadge status={update.status} />
       </div>
-      <p className="text-[11px] text-slate-400 mb-1.5">{dateLabel}</p>
+      <p className="text-[11px] text-muted-foreground mb-1.5">{dateLabel}</p>
       <div className="flex items-center gap-3 flex-wrap">
         {update.recipients_count > 0 && (
           <span className="text-[10px] text-slate-400">
@@ -73,7 +73,7 @@ export default function UpdatesList({ updates, selectedId, onSelect, onNew, isCr
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-slate-700">All Updates</h2>
+        <h2 className="text-sm font-semibold text-foreground">All Updates</h2>
         <button
           onClick={onNew}
           disabled={isCreating}
@@ -86,11 +86,11 @@ export default function UpdatesList({ updates, selectedId, onSelect, onNew, isCr
 
       {sorted.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
-          <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mb-3">
+          <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-3">
             <Send className="w-5 h-5 text-slate-400" />
           </div>
-          <p className="text-sm font-medium text-slate-600 mb-1">No updates yet</p>
-          <p className="text-xs text-slate-400">Create your first investor update</p>
+          <p className="text-sm font-medium text-foreground mb-1">No updates yet</p>
+          <p className="text-xs text-muted-foreground">Create your first investor update</p>
         </div>
       ) : (
         <div className="space-y-2 overflow-y-auto flex-1">

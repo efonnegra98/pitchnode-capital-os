@@ -166,25 +166,25 @@ function ActionMenu({ inv, onEdit, onFollowUp, onDelete }) {
     <div className="relative" ref={ref}>
       <button
         onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
-        className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+        className="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
       >
         <MoreHorizontal className="w-4 h-4" />
       </button>
       {open && (
-        <div className="absolute right-0 top-8 z-50 w-44 bg-white border border-slate-200 rounded-lg shadow-lg py-1 overflow-hidden">
+        <div className="absolute right-0 top-8 z-50 w-44 bg-card border border-border rounded-lg shadow-lg py-1 overflow-hidden">
           <button
             onClick={(e) => { e.stopPropagation(); setOpen(false); onFollowUp(inv); }}
-            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors text-left"
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors text-left"
           >
-            <Send className="w-3.5 h-3.5 text-slate-400" /> Log Activity
+            <Send className="w-3.5 h-3.5 text-muted-foreground" /> Log Activity
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); setOpen(false); onEdit(inv); }}
-            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors text-left"
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors text-left"
           >
-            <Pencil className="w-3.5 h-3.5 text-slate-400" /> Edit Firm
+            <Pencil className="w-3.5 h-3.5 text-muted-foreground" /> Edit Firm
           </button>
-          <div className="border-t border-slate-100 my-1" />
+          <div className="border-t border-border my-1" />
           <button
             onClick={(e) => { e.stopPropagation(); setOpen(false); onDelete(inv); }}
             className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
@@ -241,15 +241,15 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
 
   const DeleteConfirmModal = deleteTarget ? (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <div className="bg-white rounded-xl shadow-xl border border-slate-200 w-full max-w-sm mx-4 p-6">
-        <h3 className="text-sm font-semibold text-slate-900 mb-2">Delete Firm</h3>
-        <p className="text-sm text-slate-500 mb-6 leading-relaxed">
-          Are you sure you want to delete{" "}
-          <span className="font-medium text-slate-700">{deleteTarget.firm || deleteTarget.name || "this firm"}</span>?
-          This action cannot be undone.
-        </p>
-        <div className="flex items-center justify-end gap-3">
-          <button onClick={() => setDeleteTarget(null)} className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+      <div className="bg-card rounded-xl shadow-xl border border-border w-full max-w-sm mx-4 p-6">
+      <h3 className="text-sm font-semibold text-foreground mb-2">Delete Firm</h3>
+      <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+        Are you sure you want to delete{" "}
+        <span className="font-medium text-foreground">{deleteTarget.firm || deleteTarget.name || "this firm"}</span>?
+        This action cannot be undone.
+      </p>
+      <div className="flex items-center justify-end gap-3">
+        <button onClick={() => setDeleteTarget(null)} className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-accent transition-colors">
             Cancel
           </button>
           <button onClick={() => { onDelete(deleteTarget.id); setDeleteTarget(null); }} className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors">
@@ -275,7 +275,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50/60">
+              <tr className="border-b border-border bg-muted/40">
                 <SortHeader field="firm">Firm</SortHeader>
                 <SortHeader field="firm_type">Type</SortHeader>
                 <SortHeader field="stage_focus">Stage / Check</SortHeader>
@@ -286,17 +286,17 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                 <th className="py-3 px-4" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-border">
               {investors.map((inv) => {
                 const staleness = getStaleness(inv.last_contact_date);
                 const isCritical = staleness.level === "critical";
                 const isHigh = staleness.level === "high";
 
                 const rowBg = isCritical
-                  ? "bg-red-50/50 hover:bg-red-50/80"
+                  ? "bg-red-50/40 dark:bg-[#2d1515]/60 hover:bg-red-50/70 dark:hover:bg-[#2d1515]"
                   : isHigh
-                  ? "bg-orange-50/30 hover:bg-orange-50/60"
-                  : "hover:bg-slate-50";
+                  ? "bg-orange-50/30 dark:bg-[#2d1f0a]/40 hover:bg-orange-50/60 dark:hover:bg-[#2d1f0a]/70"
+                  : "hover:bg-accent";
 
                 return (
                   <tr
@@ -312,7 +312,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                         </div>
                         <div>
                           <div className="flex items-center gap-1.5">
-                            <p className="font-semibold text-slate-900 text-sm">{inv.firm || <span className="text-slate-400 italic">No firm name</span>}</p>
+                            <p className="font-semibold text-foreground text-sm">{inv.firm || <span className="text-muted-foreground italic">No firm name</span>}</p>
                             {inv.website_url && (
                               <a href={inv.website_url} target="_blank" rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
@@ -328,9 +328,9 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                               </a>
                             )}
                           </div>
-                          {inv.name && <p className="text-xs text-slate-400 mt-0.5">{inv.name}</p>}
+                          {inv.name && <p className="text-xs text-muted-foreground mt-0.5">{inv.name}</p>}
                           {inv.portfolio_count ? (
-                            <p className="text-[10px] text-slate-400">{inv.portfolio_count} portfolio cos</p>
+                            <p className="text-[10px] text-muted-foreground">{inv.portfolio_count} portfolio cos</p>
                           ) : null}
                           <div className="mt-1.5">
                             <SmartNextAction investor={inv} variant="inline" />
@@ -351,9 +351,9 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                     {/* Stage / Check */}
                     <td className="py-4 px-4">
                       <div>
-                        {inv.stage_focus && <p className="text-xs font-medium text-slate-700">{inv.stage_focus}</p>}
-                        {inv.check_size && <p className="text-[11px] text-slate-400 mt-0.5">{inv.check_size}</p>}
-                        {!inv.stage_focus && !inv.check_size && <span className="text-slate-300 text-xs">—</span>}
+                        {inv.stage_focus && <p className="text-xs font-medium text-foreground">{inv.stage_focus}</p>}
+                        {inv.check_size && <p className="text-[11px] text-muted-foreground mt-0.5">{inv.check_size}</p>}
+                        {!inv.stage_focus && !inv.check_size && <span className="text-muted-foreground text-xs">—</span>}
                       </div>
                     </td>
 
@@ -369,9 +369,9 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                     {/* Funnel Stage */}
                     <td className="py-4 px-4">
                       <div>
-                        <span className="text-xs text-slate-600">{inv.funnel_stage || "—"}</span>
+                        <span className="text-xs text-foreground">{inv.funnel_stage || "—"}</span>
                         {inv.next_action_date && (
-                          <p className="text-[10px] text-slate-400 mt-0.5">
+                          <p className="text-[10px] text-muted-foreground mt-0.5">
                             Next: {new Date(inv.next_action_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                           </p>
                         )}
@@ -395,7 +395,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                           {(isCritical || isHigh) && <AgingBadge critical={isCritical} />}
                         </div>
                       ) : (
-                        <span className="text-xs text-slate-400 italic">Never</span>
+                        <span className="text-xs text-muted-foreground italic">Never</span>
                       )}
                     </td>
 

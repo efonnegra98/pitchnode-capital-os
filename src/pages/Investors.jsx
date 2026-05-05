@@ -233,7 +233,7 @@ export default function Investors() {
           <select
             value={filterStage}
             onChange={(e) => setFilterStage(e.target.value)}
-            className="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-violet-400"
+            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
           >
             <option value="all">Stage: All</option>
             {["Identified", "Researching", "Outreach Sent", "Intro Call Scheduled", "Intro Call Complete", "Interest Confirmed", "Diligence", "Term Sheet", "Closed Won", "Closed Lost", "Pass"].map(s => (
@@ -243,7 +243,7 @@ export default function Investors() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-violet-400"
+            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
           >
             <option value="all">Type: All</option>
             {["Venture Capital", "Angel", "Family Office", "Corporate / Strategic", "Accelerator", "Private Equity", "Other"].map(s => (
@@ -253,7 +253,7 @@ export default function Investors() {
           <select
             value={filterSentiment}
             onChange={(e) => setFilterSentiment(e.target.value)}
-            className="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-violet-400"
+            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
           >
             <option value="all">Sentiment: All</option>
             {["Champion", "Positive", "Curious", "Neutral", "Skeptical"].map(s => (
@@ -279,8 +279,8 @@ export default function Investors() {
               <Users className="w-6 h-6 text-slate-400" />
             </div>
           </div>
-          <h3 className="text-base font-semibold text-slate-800 mb-2">No Investor Firms Yet</h3>
-          <p className="text-sm text-slate-500 mb-6 max-w-md mx-auto">
+          <h3 className="text-base font-semibold text-foreground mb-2">No Investor Firms Yet</h3>
+          <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
             Start building your investor pipeline by adding your first firm.
           </p>
           <button

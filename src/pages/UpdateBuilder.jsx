@@ -203,14 +203,14 @@ export default function InvestorUpdates() {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       {/* Top header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white flex-shrink-0">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-card flex-shrink-0">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight">Investor Updates</h1>
           <p className="text-slate-400 text-xs mt-0.5">Compose, send, and track investor communications</p>
         </div>
         <Link
           to={createPageUrl("UpdateArchive")}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-medium transition-all"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-muted-foreground hover:bg-accent text-sm font-medium transition-all"
         >
           <Archive className="w-4 h-4" />
           Archive
@@ -220,7 +220,7 @@ export default function InvestorUpdates() {
       <div className="flex flex-1 overflow-hidden">
         {/* LEFT: Updates list */}
         <div className={`
-          flex-shrink-0 border-r border-slate-200 bg-slate-50 overflow-y-auto
+          flex-shrink-0 border-r border-border bg-card overflow-y-auto
           ${showComposer ? "hidden lg:flex lg:flex-col w-72 xl:w-80" : "flex flex-col w-full lg:w-72 xl:w-80"}
           p-4
         `}>
@@ -236,7 +236,7 @@ export default function InvestorUpdates() {
 
         {/* RIGHT: Composer */}
         {showComposer ? (
-          <div className="flex-1 overflow-y-auto bg-white">
+          <div className="flex-1 overflow-y-auto bg-card">
             <UpdateComposer
               update={selectedUpdate}
               investors={investors}
@@ -249,13 +249,13 @@ export default function InvestorUpdates() {
             />
           </div>
         ) : (
-          <div className="hidden lg:flex flex-1 items-center justify-center bg-slate-50">
+          <div className="hidden lg:flex flex-1 items-center justify-center bg-background">
             <div className="text-center">
               <div className="w-14 h-14 rounded-full bg-violet-100 flex items-center justify-center mx-auto mb-4">
                 <Send className="w-6 h-6 text-violet-500" />
               </div>
-              <p className="text-base font-semibold text-slate-700 mb-2">Select an update to view or edit</p>
-              <p className="text-sm text-slate-400 mb-5">Or create a new investor update</p>
+              <p className="text-base font-semibold text-foreground mb-2">Select an update to view or edit</p>
+              <p className="text-sm text-muted-foreground mb-5">Or create a new investor update</p>
               <button
                 onClick={handleNewUpdate}
                 disabled={createMutation.isPending}
