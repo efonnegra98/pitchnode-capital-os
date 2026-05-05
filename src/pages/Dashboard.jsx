@@ -19,8 +19,7 @@ import ActionRequired from "../components/dashboard/ActionRequired";
 import CapitalFunnel from "../components/dashboard/CapitalFunnel";
 import RaiseReadiness from "../components/dashboard/RaiseReadiness";
 import RaiseMomentum from "../components/dashboard/RaiseMomentum";
-import SentimentOverview from "../components/dashboard/SentimentOverview";
-import IntroConversion from "../components/dashboard/IntroConversion";
+
 import EmptyState from "../components/dashboard/EmptyState";
 import CollapsibleSection from "../components/dashboard/CollapsibleSection";
 import RaiseSignals from "../components/dashboard/RaiseSignals";
@@ -298,19 +297,12 @@ export default function Dashboard() {
           {/* 5. Secondary analytics — collapsed by default */}
           {company?.raise_mode && hasInvestors && (
             <>
-              <CollapsibleSection title="Funnel Analytics" defaultOpen={false}>
+              <CollapsibleSection title="Funnel Analytics" defaultOpen={false} id="funnel-analytics">
                 <ModuleSignals signals={getModuleSignals(raiseSignals, "Funnel Analytics")} />
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2">
-                      <CapitalFunnel investors={investors} />
-                    </div>
-                    <SentimentOverview investors={investors} />
-                  </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <IntroConversion investors={investors} />
-                  </div>
-                </div>
+                <CapitalFunnel
+                  investors={investors}
+                  onFollowUp={(inv) => { /* open follow-up modal via ref would require lifting state — just navigate */ window.location.href = "/Investors"; }}
+                />
               </CollapsibleSection>
               <CollapsibleSection title="Raise Readiness & Data Room" defaultOpen={false} id="raise-readiness">
                 <ModuleSignals signals={[...getModuleSignals(raiseSignals, "Raise Readiness"), ...getModuleSignals(raiseSignals, "Data Room")]} />
