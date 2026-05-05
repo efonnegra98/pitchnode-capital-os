@@ -80,11 +80,11 @@ function computeScore({ company, investors, updates, readinessItems }) {
 }
 
 function getStatus(score) {
-  if (score >= 90) return { label: "On Track", color: "#10b981", bg: "bg-emerald-50", text: "text-emerald-700", ring: "#10b981" };
-  if (score >= 70) return { label: "Good Progress", color: "#3b82f6", bg: "bg-blue-50", text: "text-blue-700", ring: "#3b82f6" };
-  if (score >= 50) return { label: "Needs Attention", color: "#f59e0b", bg: "bg-amber-50", text: "text-amber-700", ring: "#f59e0b" };
-  if (score >= 30) return { label: "At Risk", color: "#f97316", bg: "bg-orange-50", text: "text-orange-700", ring: "#f97316" };
-  return { label: "Critical", color: "#ef4444", bg: "bg-red-50", text: "text-red-700", ring: "#ef4444" };
+  if (score >= 90) return { label: "On Track", color: "#10b981", bg: "bg-emerald-50 dark:bg-emerald-950/40", text: "text-emerald-700 dark:text-emerald-400", ring: "#10b981" };
+  if (score >= 70) return { label: "Good Progress", color: "#3b82f6", bg: "bg-blue-50 dark:bg-blue-950/40", text: "text-blue-700 dark:text-blue-400", ring: "#3b82f6" };
+  if (score >= 50) return { label: "Needs Attention", color: "#f59e0b", bg: "bg-amber-50 dark:bg-amber-950/40", text: "text-amber-700 dark:text-amber-400", ring: "#f59e0b" };
+  if (score >= 30) return { label: "At Risk", color: "#f97316", bg: "bg-red-100 dark:bg-red-950/50", text: "text-red-700 dark:text-red-400", ring: "#f97316" };
+  return { label: "Critical", color: "#ef4444", bg: "bg-red-100 dark:bg-red-950/60", text: "text-red-700 dark:text-red-400", ring: "#ef4444" };
 }
 
 // SVG arc gauge
@@ -157,7 +157,7 @@ export default function RaiseHealthScore({ company, investors, updates, readines
   };
 
   return (
-    <div className="relative bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-6">
+    <div className="relative bg-card border border-border rounded-2xl shadow-sm overflow-hidden mb-6">
       {/* Subtle gradient strip at top */}
       <div
         className="absolute top-0 left-0 right-0 h-[3px] rounded-t-2xl"
@@ -169,14 +169,14 @@ export default function RaiseHealthScore({ company, investors, updates, readines
         <div className="relative flex-shrink-0 flex items-center justify-center" style={{ width: 80, height: 80 }}>
           <ArcGauge score={score} color={status.color} />
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-[22px] font-bold text-slate-900 leading-none">{score}</span>
+            <span className="text-[22px] font-bold text-foreground leading-none">{score}</span>
           </div>
         </div>
 
         {/* Label + status */}
         <div className="flex-shrink-0 min-w-[120px]">
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-1">Raise Health</p>
-          <p className="text-2xl font-bold text-slate-900 leading-none mb-2">{score}<span className="text-sm font-normal text-slate-400">/100</span></p>
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-1">Raise Health</p>
+          <p className="text-2xl font-bold text-foreground leading-none mb-2">{score}<span className="text-sm font-normal text-muted-foreground">/100</span></p>
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${status.bg} ${status.text}`}
             style={{ borderColor: `${status.color}33` }}>
             {status.label}
@@ -184,11 +184,11 @@ export default function RaiseHealthScore({ company, investors, updates, readines
         </div>
 
         {/* Divider */}
-        <div className="hidden sm:block w-px h-14 bg-slate-100 flex-shrink-0" />
+        <div className="hidden sm:block w-px h-14 bg-border flex-shrink-0" />
 
         {/* Insights */}
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-2">Top Signals</p>
+          <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Top Signals</p>
           <div className="space-y-1.5">
             {insights.map((ins, i) => (
               <div key={i} className="flex items-start gap-2">
@@ -197,7 +197,7 @@ export default function RaiseHealthScore({ company, investors, updates, readines
                 </span>
                 <button
                   onClick={() => scrollTo(ins.section)}
-                  className="text-[12px] text-slate-600 hover:text-violet-600 text-left leading-tight transition-colors"
+                  className="text-[12px] text-muted-foreground hover:text-violet-600 dark:hover:text-violet-400 text-left leading-tight transition-colors"
                 >
                   {ins.text}
                 </button>
