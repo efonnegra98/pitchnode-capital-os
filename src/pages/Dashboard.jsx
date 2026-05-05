@@ -203,7 +203,7 @@ export default function Dashboard() {
           {company?.raise_mode && (
             <CollapsibleSection title="Round Overview" defaultOpen={true} id="round-overview">
               <ModuleSignals signals={getModuleSignals(raiseSignals, "Round Overview")} />
-              <RaiseOverview settings={company} />
+              <RaiseOverview settings={company} investors={investors} />
             </CollapsibleSection>
           )}
 

@@ -1,0 +1,102 @@
+{
+  "name": "Company",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Company name"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "URL to company logo"
+    },
+    "founder_name": {
+      "type": "string",
+      "description": "Founder name"
+    },
+    "founder_title": {
+      "type": "string",
+      "description": "Founder title"
+    },
+    "capital_type": {
+      "type": "string",
+      "enum": [
+        "Angel",
+        "Family Office",
+        "Venture Capital",
+        "Private Equity",
+        "Strategic/Corporate",
+        "Mixed"
+      ],
+      "description": "Primary type of capital being raised"
+    },
+    "raise_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "Enable raise tracking mode"
+    },
+    "target_raise_amount": {
+      "type": "number",
+      "description": "Target raise amount in dollars"
+    },
+    "capital_committed": {
+      "type": "number",
+      "description": "Capital committed in dollars"
+    },
+    "soft_commitments": {
+      "type": "number",
+      "description": "Soft commitments in dollars"
+    },
+    "round_type": {
+      "type": "string",
+      "enum": [
+        "Pre-Seed",
+        "Seed",
+        "Series A",
+        "Series B",
+        "Series C+"
+      ],
+      "description": "Type of funding round"
+    },
+    "target_close_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Target closing date for the round"
+    },
+    "pre_money_valuation": {
+      "type": "number",
+      "description": "Pre-money valuation in dollars"
+    },
+    "trial_start_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Trial start timestamp"
+    },
+    "trial_end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Trial end timestamp"
+    },
+    "subscription_status": {
+      "type": "string",
+      "enum": [
+        "trialing",
+        "active",
+        "expired"
+      ],
+      "default": "trialing",
+      "description": "Subscription status"
+    },
+    "stripe_customer_id": {
+      "type": "string",
+      "description": "Stripe customer ID"
+    },
+    "stripe_subscription_id": {
+      "type": "string",
+      "description": "Stripe subscription ID"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
