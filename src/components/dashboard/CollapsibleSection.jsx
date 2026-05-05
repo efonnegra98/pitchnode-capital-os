@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
-export default function CollapsibleSection({ title, children, defaultOpen = true, badge = null }) {
+export default function CollapsibleSection({ title, children, defaultOpen = true, badge = null, id }) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="mb-6">
+    <div className="mb-6" id={id}>
       <button
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-2 mb-3 group w-full text-left"

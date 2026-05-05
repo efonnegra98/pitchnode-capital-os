@@ -24,6 +24,7 @@ import IntroConversion from "../components/dashboard/IntroConversion";
 import EmptyState from "../components/dashboard/EmptyState";
 import CollapsibleSection from "../components/dashboard/CollapsibleSection";
 import RaiseSignals from "../components/dashboard/RaiseSignals";
+import RaiseHealthScore from "../components/dashboard/RaiseHealthScore";
 import ModuleSignals from "../components/dashboard/ModuleSignals";
 import { computeRaiseSignals, getModuleSignals } from "../lib/raiseSignals";
 import { useToast } from "@/components/ui/use-toast";
@@ -176,14 +177,22 @@ export default function Dashboard() {
         </div>
       ) : (
         <>
-          {/* 0. Raise Signals — always first */}
+          {/* 0. Raise Health Score — hero card */}
+          <RaiseHealthScore
+            company={company}
+            investors={investors}
+            updates={updates}
+            readinessItems={readinessItems}
+          />
+
+          {/* 0b. Raise Signals */}
           <div className="mb-6">
             <RaiseSignals signals={raiseSignals} />
           </div>
 
           {/* 1. Action Required + Momentum — always first */}
           {hasInvestors && (
-            <CollapsibleSection title="Action Required" defaultOpen={true}>
+            <CollapsibleSection title="Action Required" defaultOpen={true} id="action-required">
               <div className="space-y-3">
                 <RaiseMomentum investors={investors} />
                 <ActionRequired investors={investors} />
@@ -193,7 +202,7 @@ export default function Dashboard() {
 
           {/* 2. Raise Overview — prominent when raise mode on */}
           {company?.raise_mode && (
-            <CollapsibleSection title="Round Overview" defaultOpen={true}>
+            <CollapsibleSection title="Round Overview" defaultOpen={true} id="round-overview">
               <ModuleSignals signals={getModuleSignals(raiseSignals, "Round Overview")} />
               <RaiseOverview settings={company} />
             </CollapsibleSection>
@@ -201,7 +210,7 @@ export default function Dashboard() {
 
           {/* 3. Financial Metrics — collapsible */}
           {hasUpdates ? (
-            <CollapsibleSection title="Financial Metrics" defaultOpen={false}>
+            <CollapsibleSection title="Financial Metrics" defaultOpen={false} id="financial-metrics">
               <ModuleSignals signals={getModuleSignals(raiseSignals, "Financial Metrics")} />
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
                 <MetricCard
