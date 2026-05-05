@@ -39,15 +39,15 @@ function InvestorRow({ inv, badge, badgeColor }) {
   return (
     <Link
       to={createPageUrl("Investors")}
-      className="flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 border border-slate-100 hover:border-violet-200 hover:bg-violet-50/30 bg-white transition-all group"
+      className="flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 border border-slate-100 hover:border-violet-200 hover:bg-violet-50/30 bg-white dark:bg-[#2a2a2a] dark:border-slate-700 dark:hover:border-violet-500 dark:hover:bg-violet-950/30 transition-all group"
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2">
-          <span className="text-sm font-medium text-slate-800 truncate">{inv.name || inv.firm || "Unnamed"}</span>
-          {inv.firm && inv.name && <span className="text-xs text-slate-400 truncate">{inv.firm}</span>}
+          <span className="text-sm font-medium text-slate-800 dark:text-white truncate">{inv.name || inv.firm || "Unnamed"}</span>
+          {inv.firm && inv.name && <span className="text-xs text-slate-400 dark:text-[#888888] truncate">{inv.firm}</span>}
         </div>
         {inv.next_action_type && (
-          <p className="text-[11px] text-slate-400 mt-0.5 truncate">{inv.next_action_type}</p>
+          <p className="text-[11px] text-slate-400 dark:text-[#888888] mt-0.5 truncate">{inv.next_action_type}</p>
         )}
       </div>
       <span className={`text-[10px] font-semibold whitespace-nowrap px-2 py-0.5 rounded-full border ${badgeColor}`}>
@@ -94,9 +94,9 @@ export default function ActionRequired({ investors }) {
   // No scheduled actions, but investors exist in pipeline
   if (totalItems === 0 && hasInvestors) {
     return (
-      <div className="glass rounded-xl p-5 border border-slate-100 bg-slate-50/50 text-center">
-        <p className="text-sm font-semibold text-slate-700 mb-1">Pipeline Ready</p>
-        <p className="text-xs text-slate-400 mb-3 max-w-xs mx-auto">
+      <div className="glass rounded-xl p-5 border border-slate-100 bg-slate-50/50 dark:bg-[#1e1e1e] dark:border-slate-800 text-center">
+        <p className="text-sm font-semibold text-slate-700 dark:text-white mb-1">Pipeline Ready</p>
+        <p className="text-xs text-slate-400 dark:text-[#888888] mb-3 max-w-xs mx-auto">
           Your investor list has been imported. Begin outreach to activate your pipeline.
         </p>
         <Link
@@ -120,11 +120,11 @@ export default function ActionRequired({ investors }) {
   }
 
   return (
-    <div className="glass rounded-xl p-5 border border-slate-200">
+    <div className="glass rounded-xl p-5 border border-slate-200 dark:bg-[#1e1e1e] dark:border-slate-800">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <AlertCircle className={`w-4 h-4 ${overdue.length > 0 ? "text-red-500" : "text-amber-500"}`} />
-          <span className="text-sm font-semibold text-slate-700">
+          <span className="text-sm font-semibold text-slate-700 dark:text-white">
             {overdue.length > 0 ? `${overdue.length} overdue` : `${totalItems} upcoming follow-up${totalItems !== 1 ? "s" : ""}`}
           </span>
         </div>

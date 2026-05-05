@@ -80,21 +80,25 @@ export default function RaiseMomentum({ investors }) {
     border = "border-emerald-200";
   }
 
+  const darkBg = status === "neutral" ? "dark:bg-[#1e1e1e]" : "dark:bg-[#1e1e1e]";
+  const darkBorder = "dark:border-slate-800";
+  const darkText = status === "neutral" ? "dark:text-[#888888]" : `dark:text-${status === "red" ? "[#ff6b6b]" : status === "yellow" ? "[#ffa94d]" : "[#51cf66]"}`;
+
   return (
-    <div className={`rounded-xl border ${border} ${bg} px-4 py-3 flex items-center justify-between gap-4`}>
+    <div className={`rounded-xl border ${border} ${bg} ${darkBg} ${darkBorder} px-4 py-3 flex items-center justify-between gap-4`}>
       <div className="flex items-center gap-3">
         <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${dot}`} />
         <div>
-          <p className={`text-sm font-semibold ${text}`}>
+          <p className={`text-sm font-semibold ${text} ${darkText}`}>
             Momentum: {label}
           </p>
-          <p className={`text-xs mt-0.5 ${text} opacity-80`}>{sub}</p>
+          <p className={`text-xs mt-0.5 ${text} ${darkText} opacity-80`}>{sub}</p>
         </div>
       </div>
       {status !== "neutral" && (
         <Link
           to={createPageUrl("Investors")}
-          className={`text-[11px] font-medium ${text} opacity-80 hover:opacity-100 whitespace-nowrap transition-opacity`}
+          className={`text-[11px] font-medium ${text} ${darkText} opacity-80 hover:opacity-100 whitespace-nowrap transition-opacity`}
         >
           View →
         </Link>
