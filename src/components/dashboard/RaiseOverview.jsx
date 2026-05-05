@@ -123,52 +123,52 @@ function RoundBadgeRow({ settings, daysLeft }) {
 }
 
 function WeeklyMomentum({ investors }) {
-  const weekStart = startOfWeek();
+   const weekStart = startOfWeek();
 
-  // New investors moved to active stages this week (any activity_log entry this week)
-  const activeStages = ["Outreach Sent","Intro Call Scheduled","Intro Call Complete","Interest Confirmed","Diligence","Term Sheet"];
-  const newActiveThisWeek = investors.filter(inv => {
-    if (!activeStages.includes(inv.funnel_stage)) return false;
-    const log = inv.activity_log || [];
-    return log.some(e => new Date(e.timestamp) >= weekStart);
-  }).length;
+   // New investors moved to active stages this week (any activity_log entry this week)
+   const activeStages = ["Outreach Sent","Intro Call Scheduled","Intro Call Complete","Interest Confirmed","Diligence","Term Sheet"];
+   const newActiveThisWeek = investors.filter(inv => {
+     if (!activeStages.includes(inv.funnel_stage)) return false;
+     const log = inv.activity_log || [];
+     return log.some(e => new Date(e.timestamp) >= weekStart);
+   }).length;
 
-  // Capital committed this week — we track by updated_date if committed changed (best proxy)
-  // We use investors updated this week that are Committed with capital data as a signal
-  // Since we don't have timestamped capital fields, we approximate from activity_log entries this week
-  const committedThisWeek = investors.filter(inv =>
-    inv.funnel_stage === "Closed Won" &&
-    (inv.activity_log || []).some(e => new Date(e.timestamp) >= weekStart)
-  ).length;
+   // Capital committed this week — we track by updated_date if committed changed (best proxy)
+   // We use investors updated this week that are Committed with capital data as a signal
+   // Since we don't have timestamped capital fields, we approximate from activity_log entries this week
+   const committedThisWeek = investors.filter(inv =>
+     inv.funnel_stage === "Closed Won" &&
+     (inv.activity_log || []).some(e => new Date(e.timestamp) >= weekStart)
+   ).length;
 
-  const noActivity = committedThisWeek === 0 && newActiveThisWeek === 0;
+   const noActivity = committedThisWeek === 0 && newActiveThisWeek === 0;
 
-  return (
-    <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 mb-4">
-      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-2">This Week</p>
-      {noActivity ? (
-        <p className="text-xs text-slate-400 italic">No activity logged this week — time to reach out.</p>
-      ) : (
-        <div className="flex flex-wrap gap-4">
-          {newActiveThisWeek > 0 && (
-            <div className="flex items-center gap-1.5">
-              <ArrowUp className="w-3.5 h-3.5 text-violet-600" />
-              <span className="text-sm font-bold text-violet-700">{newActiveThisWeek}</span>
-              <span className="text-xs text-slate-500">investor{newActiveThisWeek !== 1 ? "s" : ""} moved to active stages</span>
-            </div>
-          )}
-          {committedThisWeek > 0 && (
-            <div className="flex items-center gap-1.5">
-              <ArrowUp className="w-3.5 h-3.5 text-emerald-600" />
-              <span className="text-sm font-bold text-emerald-700">{committedThisWeek}</span>
-              <span className="text-xs text-slate-500">new close{committedThisWeek !== 1 ? "s" : ""} logged</span>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
+   return (
+     <div className="bg-slate-50 dark:bg-[#1a1a1a] border border-slate-200 dark:border-[#2a2a2a] rounded-xl px-4 py-3 mb-4">
+       <p className="text-[10px] font-semibold text-slate-400 dark:text-[#888888] uppercase tracking-widest mb-2">This Week</p>
+       {noActivity ? (
+         <p className="text-xs text-slate-400 dark:text-[#888888] italic">No activity logged this week — time to reach out.</p>
+       ) : (
+         <div className="flex flex-wrap gap-4">
+           {newActiveThisWeek > 0 && (
+             <div className="flex items-center gap-1.5">
+               <ArrowUp className="w-3.5 h-3.5 text-violet-600" />
+               <span className="text-sm font-bold text-violet-700 dark:text-white">{newActiveThisWeek}</span>
+               <span className="text-xs text-slate-500 dark:text-[#888888]">investor{newActiveThisWeek !== 1 ? "s" : ""} moved to active stages</span>
+             </div>
+           )}
+           {committedThisWeek > 0 && (
+             <div className="flex items-center gap-1.5">
+               <ArrowUp className="w-3.5 h-3.5 text-emerald-600" />
+               <span className="text-sm font-bold text-emerald-700 dark:text-white">{committedThisWeek}</span>
+               <span className="text-xs text-slate-500 dark:text-[#888888]">new close{committedThisWeek !== 1 ? "s" : ""} logged</span>
+             </div>
+           )}
+         </div>
+       )}
+     </div>
+   );
+ }
 
 function PaceIndicator({ committed, target, daysLeft }) {
   if (!target || !daysLeft || daysLeft < 0) return null;
@@ -252,24 +252,24 @@ function ValuationRow({ settings, companyId, queryClient }) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-4 pt-3 mt-1 border-t border-slate-100">
-      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">Valuation</p>
-      <div className="flex items-center gap-1 text-sm text-slate-700">
-        <span className="text-xs text-slate-400 mr-1">Pre-Money:</span>
+    <div className="flex flex-wrap items-center gap-4 pt-3 mt-1 border-t border-slate-100 dark:border-slate-700">
+      <p className="text-[10px] font-semibold text-slate-400 dark:text-[#888888] uppercase tracking-widest">Valuation</p>
+      <div className="flex items-center gap-1 text-sm text-slate-700 dark:text-white">
+        <span className="text-xs text-slate-400 dark:text-[#888888] mr-1">Pre-Money:</span>
         <EditableNumber
           value={pre || null}
           onSave={save}
           placeholder="Set pre-money"
-          className="font-semibold text-slate-800"
+          className="font-semibold text-slate-800 dark:text-white"
         />
       </div>
       {pre > 0 && target > 0 && (
         <>
-          <span className="text-slate-300">·</span>
+          <span className="text-slate-300 dark:text-slate-600">·</span>
           <div className="flex items-center gap-1 text-sm">
-            <span className="text-xs text-slate-400 mr-1">Post-Money:</span>
-            <span className="font-semibold text-violet-700">{fmt(post)}</span>
-            <span className="text-[10px] text-slate-400">(pre + raise target)</span>
+            <span className="text-xs text-slate-400 dark:text-[#888888] mr-1">Post-Money:</span>
+            <span className="font-semibold text-violet-700 dark:text-white">{fmt(post)}</span>
+            <span className="text-[10px] text-slate-400 dark:text-[#888888]">(pre + raise target)</span>
           </div>
         </>
       )}
@@ -310,48 +310,48 @@ export default function RaiseOverview({ settings, investors = [] }) {
         {/* ── 3. Weekly Momentum ── */}
         <WeeklyMomentum investors={investors} />
 
-        {/* Metrics Grid — unchanged */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-xl p-5 border border-slate-200 metric-glow">
-            <div className="flex items-start justify-between mb-3">
-              <p className="text-[11px] uppercase tracking-[0.15em] text-slate-500 font-medium">Target</p>
-              <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
-                <Target className="w-4 h-4 text-violet-600" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-slate-800 tracking-tight">{fmt(target)}</p>
-          </div>
+        {/* Metrics Grid — dark mode */}
+         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+           <div className="bg-white dark:bg-[#1a1a1a] rounded-xl p-5 border border-slate-200 dark:border-[#2a2a2a] metric-glow">
+             <div className="flex items-start justify-between mb-3">
+               <p className="text-[11px] uppercase tracking-[0.15em] text-slate-500 dark:text-[#888888] font-medium">Target</p>
+               <div className="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-950/30 flex items-center justify-center">
+                 <Target className="w-4 h-4 text-violet-600" />
+               </div>
+             </div>
+             <p className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">{fmt(target)}</p>
+           </div>
 
-          <div className="bg-white rounded-xl p-5 border border-emerald-200 metric-glow">
-            <div className="flex items-start justify-between mb-3">
-              <p className="text-[11px] uppercase tracking-[0.15em] text-emerald-600 font-medium">Committed</p>
-              <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-                <CheckCircle className="w-4 h-4 text-emerald-600" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-emerald-700 tracking-tight">{fmt(committed)}</p>
-          </div>
+           <div className="bg-white dark:bg-[#1a1a1a] rounded-xl p-5 border border-emerald-200 dark:border-[#2a2a2a] metric-glow">
+             <div className="flex items-start justify-between mb-3">
+               <p className="text-[11px] uppercase tracking-[0.15em] text-emerald-600 dark:text-emerald-400 font-medium">Committed</p>
+               <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center">
+                 <CheckCircle className="w-4 h-4 text-emerald-600" />
+               </div>
+             </div>
+             <p className="text-2xl font-bold text-emerald-700 dark:text-white tracking-tight">{fmt(committed)}</p>
+           </div>
 
-          <div className="bg-white rounded-xl p-5 border border-amber-200 metric-glow">
-            <div className="flex items-start justify-between mb-3">
-              <p className="text-[11px] uppercase tracking-[0.15em] text-amber-600 font-medium">Soft Commits</p>
-              <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
-                <TrendingUp className="w-4 h-4 text-amber-600" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-amber-700 tracking-tight">{fmt(soft)}</p>
-          </div>
+           <div className="bg-white dark:bg-[#1a1a1a] rounded-xl p-5 border border-amber-200 dark:border-[#2a2a2a] metric-glow">
+             <div className="flex items-start justify-between mb-3">
+               <p className="text-[11px] uppercase tracking-[0.15em] text-amber-600 dark:text-amber-400 font-medium">Soft Commits</p>
+               <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center">
+                 <TrendingUp className="w-4 h-4 text-amber-600" />
+               </div>
+             </div>
+             <p className="text-2xl font-bold text-amber-700 dark:text-white tracking-tight">{fmt(soft)}</p>
+           </div>
 
-          <div className="bg-white rounded-xl p-5 border border-slate-200 metric-glow">
-            <div className="flex items-start justify-between mb-3">
-              <p className="text-[11px] uppercase tracking-[0.15em] text-slate-500 font-medium">Remaining</p>
-              <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center">
-                <div className="w-4 h-4 rounded border-2 border-slate-300" />
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-slate-800 tracking-tight">{fmt(remaining)}</p>
-          </div>
-        </div>
+           <div className="bg-white dark:bg-[#1a1a1a] rounded-xl p-5 border border-slate-200 dark:border-[#2a2a2a] metric-glow">
+             <div className="flex items-start justify-between mb-3">
+               <p className="text-[11px] uppercase tracking-[0.15em] text-slate-500 dark:text-[#888888] font-medium">Remaining</p>
+               <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-900/30 flex items-center justify-center">
+                 <div className="w-4 h-4 rounded border-2 border-slate-300 dark:border-slate-600" />
+               </div>
+             </div>
+             <p className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">{fmt(remaining)}</p>
+           </div>
+         </div>
 
         {/* Progress Bar */}
         <div className="space-y-2">
