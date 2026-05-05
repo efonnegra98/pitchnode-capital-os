@@ -5,22 +5,25 @@ const SEVERITY_CONFIG = {
   priority: {
     label: "Priority",
     icon: AlertTriangle,
-    containerClass: "bg-red-50 border-red-200",
-    badgeClass: "bg-red-100 text-red-700 border-red-200",
-    iconClass: "text-red-500",
-    textClass: "text-red-900",
-    detailClass: "text-red-700/70",
+    containerClass: "bg-red-50 border-red-200 dark:border-[#4a1f1f]",
+    containerStyle: { "--light-bg": "", "--dark-bg": "#2d1515" },
+    badgeClass: "bg-red-100 text-red-700 border-red-200 dark:bg-[#3d1a1a] dark:text-[#ff6b6b] dark:border-[#4a1f1f]",
+    iconClass: "text-red-500 dark:[color:#ff6b6b]",
+    textClass: "text-red-900 dark:[color:#ff6b6b]",
+    detailClass: "text-red-700/70 dark:[color:#ff6b6b]/70",
     dotClass: "bg-red-500",
+    darkBg: "#2d1515",
   },
   attention: {
     label: "Attention",
     icon: AlertCircle,
-    containerClass: "bg-amber-50 border-amber-200",
-    badgeClass: "bg-amber-100 text-amber-700 border-amber-200",
-    iconClass: "text-amber-500",
-    textClass: "text-amber-900",
-    detailClass: "text-amber-700/70",
+    containerClass: "bg-amber-50 border-amber-200 dark:border-[#4a3a0f]",
+    badgeClass: "bg-amber-100 text-amber-700 border-amber-200 dark:bg-[#3d2e0a] dark:text-[#ffa94d] dark:border-[#4a3a0f]",
+    iconClass: "text-amber-500 dark:[color:#ffa94d]",
+    textClass: "text-amber-900 dark:[color:#ffa94d]",
+    detailClass: "text-amber-700/70 dark:[color:#ffa94d]/70",
     dotClass: "bg-amber-400",
+    darkBg: "#2d2510",
   },
   info: {
     label: "Info",
@@ -31,6 +34,7 @@ const SEVERITY_CONFIG = {
     textClass: "text-blue-900",
     detailClass: "text-blue-700/70",
     dotClass: "bg-blue-400",
+    darkBg: null,
   },
 };
 
@@ -38,8 +42,13 @@ function SignalRow({ signal }) {
   const cfg = SEVERITY_CONFIG[signal.severity];
   const Icon = cfg.icon;
 
+  const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+
   return (
-    <div className={`rounded-lg border px-4 py-3 ${cfg.containerClass}`}>
+    <div
+      className={`rounded-lg border px-4 py-3 ${cfg.containerClass}`}
+      style={isDark && cfg.darkBg ? { backgroundColor: cfg.darkBg } : undefined}
+    >
       <div className="flex items-start gap-3">
         <Icon className={`w-4 h-4 mt-0.5 flex-shrink-0 ${cfg.iconClass}`} />
         <div className="flex-1 min-w-0">
