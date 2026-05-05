@@ -31,14 +31,39 @@ export default function InvestorUpdates() {
 
   const isLoading = companyLoading || updatesLoading;
 
-  // Deduplicate by ID, then filter out archived
+  // Deduplicate: keep only the latest draft per month, and filter out archived
   const visibleUpdates = Array.from(
     new Map(updates.map(u => [u.id, u])).values()
-  ).filter(u => u.status !== "archived");
+  )
+    .filter(u => u.status !== "archived")
+    .reduce((acc, update) => {
+      // For drafts, keep only the most recent one per month
+      if (update.status === "draft") {
+        const existingDraft = acc.find(u => u.month === update.month && u.status === "draft");
+        if (!existingDraft) {
+          acc.push(update);
+        } else if (new Date(update.created_date) > new Date(existingDraft.created_date)) {
+          // Replace with newer draft
+          acc = acc.filter(u => u.id !== existingDraft.id);
+          acc.push(update);
+        }
+      } else {
+        acc.push(update);
+      }
+      return acc;
+    }, []);
 
   const createMutation = useMutation({
     mutationFn: async () => {
       const currentMonth = new Date().toLocaleString("en-US", { month: "long", year: "numeric" });
+      
+      // Check if a draft for this month already exists
+      const existingDrafts = updates.filter(u => u.month === currentMonth && u.status === "draft");
+      if (existingDrafts.length > 0) {
+        // Return the first existing draft instead of creating a duplicate
+        return existingDrafts[0];
+      }
+      
       return base44.entities.MonthlyUpdate.create({
         company_id: companyId,
         month: currentMonth,
