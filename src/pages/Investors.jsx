@@ -207,7 +207,7 @@ export default function Investors() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search firm, contact, notes..."
-            className="pl-9"
+            className="pl-9 dark:bg-[#1a1a1a] dark:border-[#2a2a2a] dark:text-white dark:placeholder-[#888888]"
           />
         </div>
 
