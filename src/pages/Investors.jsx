@@ -159,7 +159,7 @@ export default function Investors() {
   }
 
   return (
-    <div className="p-6 lg:p-10 max-w-7xl mx-auto">
+    <div className="p-6 lg:p-10 max-w-7xl mx-auto bg-background min-h-screen">
       {/* Header row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <div>
