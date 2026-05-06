@@ -241,7 +241,7 @@ export default function Investors() {
           <select
             value={filterStage}
             onChange={(e) => setFilterStage(e.target.value)}
-            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
+            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card dark:bg-[#1a1a1a] dark:border-[#2a2a2a] dark:text-white text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
           >
             <option value="all">Stage: All</option>
             {["Identified", "Researching", "Outreach Sent", "Intro Call Scheduled", "Intro Call Complete", "Interest Confirmed", "Diligence", "Term Sheet", "Closed Won", "Closed Lost", "Pass"].map(s => (
@@ -251,7 +251,7 @@ export default function Investors() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
+            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card dark:bg-[#1a1a1a] dark:border-[#2a2a2a] dark:text-white text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
           >
             <option value="all">Type: All</option>
             {["Venture Capital", "Angel", "Family Office", "Corporate / Strategic", "Accelerator", "Private Equity", "Operator", "Strategic Investor", "Search Fund", "Other"].map(s => (
@@ -261,7 +261,7 @@ export default function Investors() {
           <select
             value={filterSentiment}
             onChange={(e) => setFilterSentiment(e.target.value)}
-            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
+            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card dark:bg-[#1a1a1a] dark:border-[#2a2a2a] dark:text-white text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
           >
             <option value="all">Sentiment: All</option>
             {["Champion", "Positive", "Curious", "Neutral", "Skeptical"].map(s => (
