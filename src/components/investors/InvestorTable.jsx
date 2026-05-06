@@ -25,20 +25,20 @@ function getInitials(firm, name) {
 }
 
 const statusColors = {
-  Warm: "bg-amber-50 text-amber-700 border-amber-200",
-  Engaged: "bg-blue-50 text-blue-700 border-blue-200",
-  Passed: "bg-slate-100 text-slate-500 border-slate-200",
-  Committed: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  Warm: "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
+  Engaged: "bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800",
+  Passed: "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700",
+  Committed: "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800",
 };
 
 const firmTypeColors = {
-  "Venture Capital": "bg-violet-50 text-violet-700",
-  "Angel": "bg-amber-50 text-amber-700",
-  "Family Office": "bg-blue-50 text-blue-700",
-  "Corporate / Strategic": "bg-slate-100 text-slate-600",
-  "Accelerator": "bg-emerald-50 text-emerald-700",
-  "Private Equity": "bg-indigo-50 text-indigo-700",
-  "Other": "bg-slate-50 text-slate-500",
+  "Venture Capital": "bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-400",
+  "Angel": "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400",
+  "Family Office": "bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400",
+  "Corporate / Strategic": "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400",
+  "Accelerator": "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400",
+  "Private Equity": "bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400",
+  "Other": "bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400",
 };
 
 // ── Relationship Strength Score ─────────────────────────────────────────────
@@ -83,10 +83,10 @@ function calcRelationshipScore(inv) {
 }
 
 const relColors = {
-  strong:  { dot: "bg-emerald-500", empty: "bg-emerald-100", label: "text-emerald-700 bg-emerald-50 border-emerald-200" },
-  warm:    { dot: "bg-amber-400",   empty: "bg-amber-100",   label: "text-amber-700 bg-amber-50 border-amber-200"   },
-  cold:    { dot: "bg-slate-300",   empty: "bg-slate-100",   label: "text-slate-500 bg-slate-50 border-slate-200"   },
-  at_risk: { dot: "bg-red-500",     empty: "bg-red-100",     label: "text-red-700 bg-red-50 border-red-200"         },
+  strong:  { dot: "bg-emerald-500", empty: "bg-emerald-100 dark:bg-emerald-900/30", label: "text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800" },
+  warm:    { dot: "bg-amber-400",   empty: "bg-amber-100 dark:bg-amber-900/30",   label: "text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800"   },
+  cold:    { dot: "bg-slate-300",   empty: "bg-slate-100 dark:bg-slate-800",   label: "text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"   },
+  at_risk: { dot: "bg-red-500",     empty: "bg-red-100 dark:bg-red-900/30",     label: "text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800"         },
 };
 
 function RelStrengthIndicator({ inv }) {
@@ -200,7 +200,7 @@ function ActionMenu({ inv, onEdit, onFollowUp, onDelete }) {
 function AgingBadge({ critical }) {
   const [show, setShow] = useState(false);
   const label = critical ? "Stale" : "Aging";
-  const colors = critical ? "bg-red-100 text-red-600" : "bg-orange-100 text-orange-600";
+  const colors = critical ? "bg-red-100 dark:bg-red-950/30 text-red-600 dark:text-red-400" : "bg-orange-100 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400";
   const tip = critical
     ? "No contact in 21+ days — follow up immediately."
     : "No contact in 14+ days — follow up soon.";
@@ -314,12 +314,12 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                           <div className="flex items-center gap-1.5">
                             <p className="font-semibold text-foreground text-sm">{inv.firm || <span className="text-muted-foreground italic">No firm name</span>}</p>
                             {inv.website_url && (
-                              <a href={inv.website_url} target="_blank" rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="text-slate-400 hover:text-slate-600 transition-colors">
-                                <Globe className="w-3 h-3" />
-                              </a>
-                            )}
+                                          <a href={inv.website_url} target="_blank" rel="noopener noreferrer"
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="text-slate-400 dark:text-[#888888] hover:text-slate-600 dark:hover:text-white transition-colors">
+                                            <Globe className="w-3 h-3" />
+                                          </a>
+                                        )}
                             {inv.linkedin_url && (
                               <a href={inv.linkedin_url} target="_blank" rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
@@ -342,10 +342,10 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                     {/* Type */}
                     <td className="py-4 px-4">
                       {inv.firm_type ? (
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${firmTypeColors[inv.firm_type] || "bg-slate-50 text-slate-500"}`}>
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${firmTypeColors[inv.firm_type] || "bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400"}`}>
                           {inv.firm_type}
                         </span>
-                      ) : <span className="text-slate-300 text-xs">—</span>}
+                      ) : <span className="text-slate-300 dark:text-slate-600 text-xs">—</span>}
                     </td>
 
                     {/* Stage / Check */}
@@ -360,10 +360,10 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                     {/* Status */}
                     <td className="py-4 px-4">
                       {inv.status ? (
-                        <span className={`text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full border ${statusColors[inv.status] || ""}`}>
-                          {inv.status}
-                        </span>
-                      ) : <span className="text-slate-300 text-xs">—</span>}
+                          <span className={`text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full border ${statusColors[inv.status] || ""}`}>
+                            {inv.status}
+                          </span>
+                        ) : <span className="text-slate-300 dark:text-slate-600 text-xs">—</span>}
                     </td>
 
                     {/* Funnel Stage */}
@@ -384,7 +384,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                         <div className="flex items-center gap-2">
                           <div>
                             <p className={`text-sm font-semibold ${
-                              isCritical ? "text-red-600" : isHigh ? "text-orange-500" : "text-slate-700"
+                              isCritical ? "text-red-600 dark:text-red-400" : isHigh ? "text-orange-500 dark:text-orange-400" : "text-slate-700 dark:text-white"
                             }`}>
                               {formatRelative(staleness.days)}
                             </p>

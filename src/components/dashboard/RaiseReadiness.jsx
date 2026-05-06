@@ -64,32 +64,32 @@ function fmtDate(dateStr) {
 function ReadinessBadge({ score }) {
   if (score >= 90) {
     return (
-      <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-emerald-50 border-2 border-emerald-300 mb-5">
-        <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+      <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border-2 border-emerald-300 dark:border-emerald-700 mb-5">
+        <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
         <div>
-          <p className="text-sm font-bold text-emerald-700">Investor Ready</p>
-          <p className="text-[11px] text-emerald-600">Your data room is ready to share with investors.</p>
+          <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400">Investor Ready</p>
+          <p className="text-[11px] text-emerald-600 dark:text-emerald-500">Your data room is ready to share with investors.</p>
         </div>
       </div>
     );
   }
   if (score >= 50) {
     return (
-      <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-amber-50 border-2 border-amber-200 mb-5">
-        <AlertTriangle className="w-4.5 h-4.5 text-amber-500 flex-shrink-0 w-5 h-5" />
+      <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-200 dark:border-amber-700 mb-5">
+        <AlertTriangle className="w-5 h-5 text-amber-500 dark:text-amber-400 flex-shrink-0" />
         <div>
-          <p className="text-sm font-bold text-amber-700">Getting There</p>
-          <p className="text-[11px] text-amber-600">Complete more items to make your data room investor-ready.</p>
+          <p className="text-sm font-bold text-amber-700 dark:text-amber-400">Getting There</p>
+          <p className="text-[11px] text-amber-600 dark:text-amber-500">Complete more items to make your data room investor-ready.</p>
         </div>
       </div>
     );
   }
   return (
-    <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-red-50 border-2 border-red-200 mb-5">
-      <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
+    <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 border-2 border-red-200 dark:border-red-800 mb-5">
+      <AlertTriangle className="w-5 h-5 text-red-500 dark:text-red-400 flex-shrink-0" />
       <div>
-        <p className="text-sm font-bold text-red-700">Not Ready for Investors</p>
-        <p className="text-[11px] text-red-600">Build out your data room before sharing with investors.</p>
+        <p className="text-sm font-bold text-red-700 dark:text-red-400">Not Ready for Investors</p>
+        <p className="text-[11px] text-red-600 dark:text-red-500">Build out your data room before sharing with investors.</p>
       </div>
     </div>
   );
@@ -254,24 +254,24 @@ export default function RaiseReadiness() {
         />
       )}
 
-      <div className="glass rounded-xl p-6 border border-slate-200">
+      <div className="glass dark:bg-[#1a1a1a] rounded-xl p-6 border border-slate-200 dark:border-[#2a2a2a]">
         {/* ── Feature 4: Readiness Badge ── */}
         <ReadinessBadge score={readinessScore} />
 
         {/* Header */}
         <div className="flex items-start justify-between mb-5">
           <div>
-            <h2 className="text-sm font-semibold text-slate-600 uppercase tracking-wider">Raise Readiness & Data Room</h2>
-            <p className="text-slate-400 text-xs mt-1">Institutional preparedness checklist</p>
+            <h2 className="text-sm font-semibold text-slate-600 dark:text-[#888888] uppercase tracking-wider">Raise Readiness & Data Room</h2>
+            <p className="text-slate-400 dark:text-[#888888] text-xs mt-1">Institutional preparedness checklist</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap justify-end">
             <div className="text-right mr-2">
-              <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Readiness Score</p>
+              <p className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-[#888888] mb-1">Readiness Score</p>
               <div className="flex items-center gap-2">
-                <div className="w-20 h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="w-20 h-2 bg-slate-100 dark:bg-[#2a2a2a] rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-violet-600 to-emerald-500 transition-all duration-500" style={{ width: `${readinessScore}%` }} />
                 </div>
-                <span className="text-2xl font-bold text-violet-600">{readinessScore}%</span>
+                <span className="text-2xl font-bold text-violet-600 dark:text-white">{readinessScore}%</span>
               </div>
             </div>
             <button
@@ -282,7 +282,7 @@ export default function RaiseReadiness() {
             </button>
             <button
               onClick={() => setShowShareModal(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-violet-700 border border-violet-300 bg-violet-50 hover:bg-violet-100 transition-all"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-violet-700 dark:text-violet-400 border border-violet-300 dark:border-violet-700 bg-violet-50 dark:bg-violet-950/20 hover:bg-violet-100 dark:hover:bg-violet-950/40 transition-all"
             >
               <Share2 className="w-3.5 h-3.5" /> Share Links
             </button>
@@ -305,7 +305,7 @@ export default function RaiseReadiness() {
             const isUploading = quickUploadId === item.id;
 
             return (
-              <div key={item.id} className="rounded-lg border border-slate-200 bg-white overflow-hidden">
+              <div key={item.id} className="rounded-lg border border-slate-200 dark:border-[#2a2a2a] bg-white dark:bg-[#1a1a1a] overflow-hidden">
                 <div className="flex items-center gap-3 p-3">
                   {/* Status toggle */}
                   <button
@@ -319,8 +319,7 @@ export default function RaiseReadiness() {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <p className="text-sm text-slate-800 font-medium">{item.item_name}</p>
-                      {/* Feature 3: hint icon for missing items */}
+                      <p className="text-sm text-slate-800 dark:text-white font-medium">{item.item_name}</p>
                       {isMissing && hint && <HintTooltip text={hint} />}
                     </div>
                     <div className="flex items-center gap-2.5 mt-1 flex-wrap">
@@ -328,16 +327,15 @@ export default function RaiseReadiness() {
                         {item.status || "Not Started"}
                       </span>
                       {item.file_name && (
-                        <span className="text-[10px] text-violet-600 flex items-center gap-1">
+                        <span className="text-[10px] text-violet-600 dark:text-violet-400 flex items-center gap-1">
                           <File className="w-3 h-3" />{item.file_name}
                         </span>
                       )}
-                      {/* Feature 6: last updated timestamp */}
                       {uploadDate && !isStale && (
-                        <span className="text-[10px] text-slate-400">Updated {fmtDate(uploadDate)}</span>
+                        <span className="text-[10px] text-slate-400 dark:text-[#888888]">Updated {fmtDate(uploadDate)}</span>
                       )}
                       {isStale && (
-                        <span className="flex items-center gap-1 text-[10px] text-amber-600 font-medium">
+                        <span className="flex items-center gap-1 text-[10px] text-amber-600 dark:text-amber-400 font-medium">
                           <AlertTriangle className="w-3 h-3" />
                           Consider updating — uploaded {Math.floor(daysOld / 30)} months ago
                         </span>
@@ -345,15 +343,15 @@ export default function RaiseReadiness() {
                     </div>
                   </div>
 
-                  {/* Feature 7: Quick upload button (inline) */}
+                  {/* Quick upload button */}
                   {!item.file_url && (
                     <label className="flex-shrink-0 cursor-pointer" title="Quick upload">
                       {isUploading ? (
-                        <div className="w-7 h-7 rounded-md border border-violet-200 bg-violet-50 flex items-center justify-center">
+                        <div className="w-7 h-7 rounded-md border border-violet-200 dark:border-violet-700 bg-violet-50 dark:bg-violet-950/30 flex items-center justify-center">
                           <div className="w-3 h-3 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
                         </div>
                       ) : (
-                        <div className="w-7 h-7 rounded-md border border-slate-200 hover:border-violet-400 hover:bg-violet-50 flex items-center justify-center transition-colors text-slate-400 hover:text-violet-600">
+                        <div className="w-7 h-7 rounded-md border border-slate-200 dark:border-[#2a2a2a] hover:border-violet-400 hover:bg-violet-50 dark:hover:bg-violet-950/20 flex items-center justify-center transition-colors text-slate-400 dark:text-[#888888] hover:text-violet-600">
                           <Plus className="w-4 h-4" />
                         </div>
                       )}
@@ -368,37 +366,37 @@ export default function RaiseReadiness() {
 
                   <button
                     onClick={() => setExpandedId(isExpanded ? null : item.id)}
-                    className="flex-shrink-0 text-slate-400 hover:text-slate-600 transition-colors"
+                    className="flex-shrink-0 text-slate-400 dark:text-[#888888] hover:text-slate-600 dark:hover:text-white transition-colors"
                   >
                     <FileText className="w-4 h-4" />
                   </button>
                 </div>
 
                 {isExpanded && (
-                  <div className="px-3 pb-3 space-y-3 border-t border-slate-100 pt-3 bg-slate-50/50">
+                  <div className="px-3 pb-3 space-y-3 border-t border-slate-100 dark:border-[#2a2a2a] pt-3 bg-slate-50/50 dark:bg-[#111111]">
                     <div>
-                      <label className="text-[10px] uppercase tracking-wider text-slate-500 mb-2 block">Document Upload</label>
+                      <label className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-[#888888] mb-2 block">Document Upload</label>
                       {item.file_url ? (
-                        <div className="flex items-center gap-2 p-2.5 bg-white border border-slate-200 rounded-lg">
+                        <div className="flex items-center gap-2 p-2.5 bg-white dark:bg-[#1a1a1a] border border-slate-200 dark:border-[#2a2a2a] rounded-lg">
                           <File className="w-4 h-4 text-violet-600 flex-shrink-0" />
                           <div className="flex-1 min-w-0">
-                            <a href={item.file_url} target="_blank" rel="noopener noreferrer" className="text-sm text-slate-800 hover:text-violet-600 font-medium block truncate">
+                            <a href={item.file_url} target="_blank" rel="noopener noreferrer" className="text-sm text-slate-800 dark:text-white hover:text-violet-600 dark:hover:text-violet-400 font-medium block truncate">
                               {item.file_name}
                             </a>
                             {item.file_uploaded_date && (
-                              <p className="text-[10px] text-slate-400">
+                              <p className="text-[10px] text-slate-400 dark:text-[#888888]">
                                 Uploaded {new Date(item.file_uploaded_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                               </p>
                             )}
                           </div>
-                          <button onClick={() => handleFileRemove(item)} className="text-slate-400 hover:text-red-600 transition-colors flex-shrink-0">
+                          <button onClick={() => handleFileRemove(item)} className="text-slate-400 dark:text-[#888888] hover:text-red-600 dark:hover:text-red-400 transition-colors flex-shrink-0">
                             <X className="w-4 h-4" />
                           </button>
                         </div>
                       ) : (
-                        <label className="flex items-center justify-center gap-2 p-3 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:border-violet-400 hover:bg-violet-50/50 transition-all">
-                          <Upload className="w-4 h-4 text-slate-400" />
-                          <span className="text-sm text-slate-600">Upload file</span>
+                        <label className="flex items-center justify-center gap-2 p-3 border-2 border-dashed border-slate-300 dark:border-[#2a2a2a] rounded-lg cursor-pointer hover:border-violet-400 hover:bg-violet-50/50 dark:hover:bg-violet-950/20 transition-all">
+                          <Upload className="w-4 h-4 text-slate-400 dark:text-[#888888]" />
+                          <span className="text-sm text-slate-600 dark:text-[#888888]">Upload file</span>
                           <input
                             type="file"
                             className="hidden"
@@ -407,13 +405,13 @@ export default function RaiseReadiness() {
                           />
                         </label>
                       )}
-                      <p className="text-[9px] text-slate-400 mt-1.5">Accepted: PDF, Excel, CSV, Word, ZIP</p>
+                      <p className="text-[9px] text-slate-400 dark:text-[#888888] mt-1.5">Accepted: PDF, Excel, CSV, Word, ZIP</p>
                     </div>
 
                     <div>
-                      <label className="text-[10px] uppercase tracking-wider text-slate-500 mb-1.5 block">Status</label>
+                      <label className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-[#888888] mb-1.5 block">Status</label>
                       <Select value={item.status || "Not Started"} onValueChange={(v) => handleStatusChange(item, v)}>
-                        <SelectTrigger className="bg-white border-slate-200 text-slate-800 text-sm"><SelectValue /></SelectTrigger>
+                        <SelectTrigger className="text-sm"><SelectValue /></SelectTrigger>
                         <SelectContent>
                           {["Not Started", "In Progress", "Complete"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                         </SelectContent>
@@ -421,12 +419,12 @@ export default function RaiseReadiness() {
                     </div>
 
                     <div>
-                      <label className="text-[10px] uppercase tracking-wider text-slate-500 mb-1.5 block">Notes</label>
+                      <label className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-[#888888] mb-1.5 block">Notes</label>
                       <Textarea
                         value={item.notes || ""}
                         onChange={e => handleNotesChange(item, e.target.value)}
                         onBlur={e => handleNotesChange(item, e.target.value)}
-                        className="bg-white border-slate-200 text-slate-800 text-sm min-h-[60px]"
+                        className="text-sm min-h-[60px]"
                         placeholder="Add notes..."
                       />
                     </div>
