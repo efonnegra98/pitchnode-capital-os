@@ -1,0 +1,55 @@
+{
+  "name": "InvestorActivity",
+  "type": "object",
+  "properties": {
+    "investor_id": {
+      "type": "string",
+      "description": "ID of the investor this activity belongs to"
+    },
+    "activity_type": {
+      "type": "string",
+      "enum": [
+        "call",
+        "email",
+        "meeting",
+        "note",
+        "introduction"
+      ],
+      "description": "Type of activity"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the activity"
+    },
+    "summary": {
+      "type": "string",
+      "description": "What happened \u2014 key takeaways"
+    },
+    "next_step": {
+      "type": "string",
+      "description": "Agreed next action"
+    },
+    "next_step_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When the next action is due"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "Positive",
+        "Neutral",
+        "Negative",
+        "No Response"
+      ],
+      "description": "Outcome of the activity"
+    }
+  },
+  "required": [
+    "investor_id",
+    "activity_type",
+    "date",
+    "summary"
+  ]
+}

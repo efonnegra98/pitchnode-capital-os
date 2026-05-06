@@ -11,6 +11,7 @@ import InvestorBoard from "../components/investors/InvestorBoard";
 import InvestorModal from "../components/investors/InvestorModal";
 import FollowUpModal from "../components/investors/FollowUpModal";
 import BulkUploadModal from "../components/investors/BulkUploadModal";
+import LogActivityModal from "../components/investors/LogActivityModal";
 
 export default function Investors() {
   const [search, setSearch] = useState("");
@@ -24,6 +25,7 @@ export default function Investors() {
   const [followUpInvestor, setFollowUpInvestor] = useState(null);
   const [showUpload, setShowUpload] = useState(false);
   const [viewMode, setViewMode] = useState("list"); // "list" | "board"
+  const [logActivityInvestor, setLogActivityInvestor] = useState(null);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -38,6 +40,18 @@ export default function Investors() {
     queryKey: ["investors", companyId],
     queryFn: () => base44.entities.Investor.filter({ company_id: companyId }),
     enabled: !!companyId,
+  });
+
+  const { data: allActivities = [] } = useQuery({
+    queryKey: ["investor-activities", companyId],
+    queryFn: async () => {
+      if (!investors.length) return [];
+      const ids = investors.map(i => i.id);
+      // Fetch all activities for this company's investors
+      const acts = await base44.entities.InvestorActivity.list("-date", 500);
+      return acts.filter(a => ids.includes(a.investor_id));
+    },
+    enabled: !!companyId && investors.length > 0,
   });
 
   const isLoading = companyLoading || investorsLoading;
@@ -62,6 +76,30 @@ export default function Investors() {
       if (!formData?.id) {
         toast({ description: "Firm added successfully." });
       }
+    },
+  });
+
+  const logActivityMutation = useMutation({
+    mutationFn: async ({ investorId, activityData }) => {
+      await base44.entities.InvestorActivity.create({
+        ...activityData,
+        investor_id: investorId,
+      });
+      // Auto-update last_contact_date
+      await base44.entities.Investor.update(investorId, {
+        last_contact_date: activityData.date,
+      });
+    },
+    onSuccess: (_, { investorId }) => {
+      queryClient.invalidateQueries({ queryKey: ["investors", companyId] });
+      queryClient.invalidateQueries({ queryKey: ["investor-activities", companyId] });
+      // If opened from modal, reopen that investor's modal
+      if (modalData === null) {
+        const inv = investors.find(i => i.id === investorId);
+        if (inv) setModalData(inv);
+      }
+      setLogActivityInvestor(null);
+      toast({ description: "Activity logged successfully." });
     },
   });
 
@@ -313,6 +351,10 @@ export default function Investors() {
           onEdit={(inv) => setModalData(inv)}
           onFollowUp={(inv) => setFollowUpInvestor(inv)}
           onDelete={(id) => deleteMutation.mutate(id)}
+          onLogActivity={(inv) => setLogActivityInvestor(inv)}
+          activitiesByInvestor={Object.fromEntries(
+            investors.map(inv => [inv.id, allActivities.filter(a => a.investor_id === inv.id)])
+          )}
         />
       )}
 
@@ -323,6 +365,17 @@ export default function Investors() {
           onDelete={(id) => deleteMutation.mutate(id)}
           onClose={() => setModalData(null)}
           isSaving={saveMutation.isPending}
+          activities={allActivities.filter(a => a.investor_id === modalData?.id)}
+          onLogActivity={modalData?.id ? () => setLogActivityInvestor(modalData) : undefined}
+        />
+      )}
+
+      {logActivityInvestor && (
+        <LogActivityModal
+          investor={logActivityInvestor}
+          onSave={(data) => logActivityMutation.mutate({ investorId: logActivityInvestor.id, activityData: data })}
+          onClose={() => setLogActivityInvestor(null)}
+          isSaving={logActivityMutation.isPending}
         />
       )}
 

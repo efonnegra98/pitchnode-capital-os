@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, ChevronUp, MoreHorizontal, Send, Pencil, Trash2, Globe, Linkedin } from "lucide-react";
+import { ChevronDown, ChevronUp, MoreHorizontal, Send, Pencil, Trash2, Globe, Linkedin, Clock } from "lucide-react";
 import SmartNextAction from "./SmartNextAction";
 
 const avatarColors = [
@@ -224,7 +224,23 @@ function AgingBadge({ critical }) {
   );
 }
 
-export default function InvestorTable({ investors, sortField, sortDir, onSort, onEdit, onFollowUp, onDelete }) {
+function OverdueNextStepBadge({ inv, activities }) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  // Find the last activity's next_step_date
+  const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const last = sorted[0];
+  if (!last?.next_step_date) return null;
+  const due = new Date(last.next_step_date);
+  if (due >= today) return null;
+  return (
+    <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-red-100 text-red-600">
+      Overdue
+    </span>
+  );
+}
+
+export default function InvestorTable({ investors, sortField, sortDir, onSort, onEdit, onFollowUp, onDelete, onLogActivity, activitiesByInvestor = {} }) {
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   const SortHeader = ({ field, children }) => (
@@ -408,12 +424,30 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
 
                     {/* Actions */}
                     <td className="py-4 px-3" onClick={(e) => e.stopPropagation()}>
-                      <ActionMenu
-                        inv={inv}
-                        onEdit={onEdit}
-                        onFollowUp={onFollowUp}
-                        onDelete={(inv) => setDeleteTarget(inv)}
-                      />
+                      <div className="flex items-center gap-1">
+                        {/* Activity count badge */}
+                        {(activitiesByInvestor[inv.id]?.length || 0) > 0 && (
+                          <span className="text-[10px] font-semibold text-muted-foreground bg-muted rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+                            {activitiesByInvestor[inv.id].length}
+                          </span>
+                        )}
+                        {/* Overdue badge */}
+                        <OverdueNextStepBadge inv={inv} activities={activitiesByInvestor[inv.id] || []} />
+                        {/* Quick log button */}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onLogActivity && onLogActivity(inv); }}
+                          className="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-violet-600 hover:bg-violet-50 transition-colors"
+                          title="Log Activity"
+                        >
+                          <Clock className="w-3.5 h-3.5" />
+                        </button>
+                        <ActionMenu
+                          inv={inv}
+                          onEdit={onEdit}
+                          onFollowUp={onFollowUp}
+                          onDelete={(inv) => setDeleteTarget(inv)}
+                        />
+                      </div>
                     </td>
                   </tr>
                 );

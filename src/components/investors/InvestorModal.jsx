@@ -4,10 +4,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X, Trash2, Sparkles, Linkedin, Globe, ChevronDown, ChevronRight } from "lucide-react";
+import { X, Trash2, Sparkles, Linkedin, Globe, ChevronDown, ChevronRight, Plus } from "lucide-react";
 import { suggestNextActionLabel } from "../../lib/nextActionSuggestion";
 import ActivityLog from "./ActivityLog";
 import SmartNextAction from "./SmartNextAction";
+import ActivityTimeline from "./ActivityTimeline";
 
 const FIRM_TYPES = ["Venture Capital", "Angel", "Family Office", "Corporate / Strategic", "Accelerator", "Private Equity", "Operator", "Strategic Investor", "Search Fund", "Other"];
 const STAGES = ["Pre-Seed", "Seed", "Series A", "Series B+", "Growth"];
@@ -83,7 +84,7 @@ const EMPTY_FORM = {
   notes: "",
 };
 
-export default function InvestorModal({ investor, onSave, onDelete, onClose, isSaving }) {
+export default function InvestorModal({ investor, onSave, onDelete, onClose, isSaving, activities = [], onLogActivity }) {
   const [validationError, setValidationError] = useState("");
   const isEditing = !!investor?.id;
 
@@ -130,8 +131,21 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
         {/* ── Scrollable Body ── */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 min-h-0">
 
-          {/* Smart next action — edit mode only */}
-          {isEditing && <SmartNextAction investor={form} variant="card" />}
+          {/* Smart next action + Log Activity button — edit mode only */}
+          {isEditing && (
+            <div className="space-y-3">
+              <SmartNextAction investor={form} variant="card" />
+              {onLogActivity && (
+                <button
+                  type="button"
+                  onClick={onLogActivity}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-violet-300 text-violet-700 hover:bg-violet-50 text-sm font-medium transition-colors"
+                >
+                  <Plus className="w-4 h-4" /> Log Activity
+                </button>
+              )}
+            </div>
+          )}
 
           {/* ── PRIMARY FIELDS ── */}
           <div>
@@ -490,13 +504,10 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
             />
 
             {isEditing && (
-              <ActivityLog
-                entries={form.activity_log || []}
-                onAdd={(text, type) => {
-                  const newEntry = { text, type, timestamp: new Date().toISOString() };
-                  handleChange("activity_log", [...(form.activity_log || []), newEntry]);
-                }}
-              />
+              <div className="pt-2">
+                <h3 className="text-[10px] font-bold text-violet-600 uppercase tracking-widest mb-3">Activity Timeline</h3>
+                <ActivityTimeline activities={activities} />
+              </div>
             )}
           </CollapsibleSection>
         </div>
