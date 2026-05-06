@@ -229,7 +229,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
 
   const SortHeader = ({ field, children }) => (
     <th
-      className="text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium py-3 px-4 cursor-pointer hover:text-foreground transition-colors select-none"
+      className="text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground dark:text-[#888888] font-medium py-3 px-4 cursor-pointer hover:text-foreground dark:hover:text-white transition-colors select-none"
       onClick={() => onSort(field)}
     >
       <span className="flex items-center gap-1">
@@ -275,14 +275,14 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border bg-muted/40">
+              <tr className="border-b border-border bg-muted/40 dark:bg-[#111111]">
                 <SortHeader field="firm">Firm</SortHeader>
                 <SortHeader field="firm_type">Type</SortHeader>
                 <SortHeader field="stage_focus">Stage / Check</SortHeader>
                 <SortHeader field="status">Status</SortHeader>
                 <SortHeader field="funnel_stage">Funnel</SortHeader>
                 <SortHeader field="last_contact_date">Last Contact</SortHeader>
-                <th className="text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium py-3 px-4 select-none">Rel. Strength</th>
+                <th className="text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground dark:text-[#888888] font-medium py-3 px-4 select-none">Rel. Strength</th>
                 <th className="py-3 px-4" />
               </tr>
             </thead>
