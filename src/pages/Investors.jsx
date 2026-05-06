@@ -228,7 +228,7 @@ export default function Investors() {
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                 quickFilter === key
                   ? "bg-violet-600 text-white border-violet-600 shadow-sm"
-                  : "bg-white text-slate-600 border-slate-200 hover:border-violet-300 hover:text-violet-700"
+                  : "bg-white dark:bg-[#1a1a1a] text-slate-600 dark:text-[#888888] border-slate-200 dark:border-[#2a2a2a] hover:border-violet-300 dark:hover:border-violet-700 hover:text-violet-700 dark:hover:text-violet-400"
               }`}
             >
               {label}
