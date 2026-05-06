@@ -287,16 +287,18 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {investors.map((inv) => {
-                const staleness = getStaleness(inv.last_contact_date);
-                const isCritical = staleness.level === "critical";
-                const isHigh = staleness.level === "high";
+             {investors.map((inv, rowIndex) => {
+               const staleness = getStaleness(inv.last_contact_date);
+               const isCritical = staleness.level === "critical";
+               const isHigh = staleness.level === "high";
 
-                const rowBg = isCritical
-                  ? "bg-red-50/40 dark:bg-[#2d1515]/60 hover:bg-red-50/70 dark:hover:bg-[#2d1515]"
-                  : isHigh
-                  ? "bg-orange-50/30 dark:bg-[#2d1f0a]/40 hover:bg-orange-50/60 dark:hover:bg-[#2d1f0a]/70"
-                  : "hover:bg-accent";
+               const rowBg = isCritical
+                 ? "bg-red-50/40 dark:bg-[#2d1515]/60 hover:bg-red-50/70 dark:hover:bg-[#2d1515]"
+                 : isHigh
+                 ? "bg-orange-50/30 dark:bg-[#2d1f0a]/40 hover:bg-orange-50/60 dark:hover:bg-[#2d1f0a]/70"
+                 : rowIndex % 2 === 0
+                 ? "hover:bg-accent dark:bg-[#1a1a1a] dark:hover:bg-[#252525]"
+                 : "hover:bg-accent dark:bg-[#1e1e1e] dark:hover:bg-[#252525]";
 
                 return (
                   <tr
@@ -312,7 +314,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                         </div>
                         <div>
                           <div className="flex items-center gap-1.5">
-                            <p className="font-semibold text-foreground text-sm">{inv.firm || <span className="text-muted-foreground italic">No firm name</span>}</p>
+                            <p className="font-semibold text-foreground dark:text-white text-sm">{inv.firm || <span className="text-muted-foreground dark:text-[#888888] italic">No firm name</span>}</p>
                             {inv.website_url && (
                                           <a href={inv.website_url} target="_blank" rel="noopener noreferrer"
                                             onClick={(e) => e.stopPropagation()}
@@ -328,9 +330,9 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                               </a>
                             )}
                           </div>
-                          {inv.name && <p className="text-xs text-muted-foreground mt-0.5">{inv.name}</p>}
+                          {inv.name && <p className="text-xs text-muted-foreground dark:text-[#cccccc] mt-0.5">{inv.name}</p>}
                           {inv.portfolio_count ? (
-                            <p className="text-[10px] text-muted-foreground">{inv.portfolio_count} portfolio cos</p>
+                            <p className="text-[10px] text-muted-foreground dark:text-[#888888]">{inv.portfolio_count} portfolio cos</p>
                           ) : null}
                           <div className="mt-1.5">
                             <SmartNextAction investor={inv} variant="inline" />
@@ -351,9 +353,9 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                     {/* Stage / Check */}
                     <td className="py-4 px-4">
                       <div>
-                        {inv.stage_focus && <p className="text-xs font-medium text-foreground">{inv.stage_focus}</p>}
-                        {inv.check_size && <p className="text-[11px] text-muted-foreground mt-0.5">{inv.check_size}</p>}
-                        {!inv.stage_focus && !inv.check_size && <span className="text-muted-foreground text-xs">—</span>}
+                        {inv.stage_focus && <p className="text-xs font-medium text-foreground dark:text-white">{inv.stage_focus}</p>}
+                        {inv.check_size && <p className="text-[11px] text-muted-foreground dark:text-[#cccccc] mt-0.5">{inv.check_size}</p>}
+                        {!inv.stage_focus && !inv.check_size && <span className="text-muted-foreground dark:text-[#888888] text-xs">—</span>}
                       </div>
                     </td>
 
@@ -369,9 +371,9 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                     {/* Funnel Stage */}
                     <td className="py-4 px-4">
                       <div>
-                        <span className="text-xs text-foreground">{inv.funnel_stage || "—"}</span>
+                        <span className="text-xs text-foreground dark:text-[#cccccc]">{inv.funnel_stage || "—"}</span>
                         {inv.next_action_date && (
-                          <p className="text-[10px] text-muted-foreground mt-0.5">
+                          <p className="text-[10px] text-muted-foreground dark:text-[#888888] mt-0.5">
                             Next: {new Date(inv.next_action_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                           </p>
                         )}
@@ -388,14 +390,14 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                             }`}>
                               {formatRelative(staleness.days)}
                             </p>
-                            <p className="text-[10px] text-muted-foreground mt-0.5">
+                            <p className="text-[10px] text-muted-foreground dark:text-[#888888] mt-0.5">
                               {formatShortDate(inv.last_contact_date)}
                             </p>
                           </div>
                           {(isCritical || isHigh) && <AgingBadge critical={isCritical} />}
                         </div>
                       ) : (
-                        <span className="text-xs text-muted-foreground italic">Never</span>
+                        <span className="text-xs text-muted-foreground dark:text-[#888888] italic">Never</span>
                       )}
                     </td>
 
