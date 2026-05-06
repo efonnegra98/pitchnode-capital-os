@@ -171,7 +171,7 @@ function ActionMenu({ inv, onEdit, onFollowUp, onDelete }) {
         <MoreHorizontal className="w-4 h-4" />
       </button>
       {open && (
-        <div className="absolute right-0 top-8 z-50 w-44 bg-card border border-border rounded-lg shadow-lg py-1 overflow-hidden">
+        <div className="absolute right-0 top-8 z-50 w-44 bg-card border border-border rounded-lg shadow-xl py-1 overflow-hidden">
           <button
             onClick={(e) => { e.stopPropagation(); setOpen(false); onFollowUp(inv); }}
             className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors text-left"
@@ -187,7 +187,7 @@ function ActionMenu({ inv, onEdit, onFollowUp, onDelete }) {
           <div className="border-t border-border my-1" />
           <button
             onClick={(e) => { e.stopPropagation(); setOpen(false); onDelete(inv); }}
-            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors text-left"
           >
             <Trash2 className="w-3.5 h-3.5" /> Delete
           </button>
@@ -229,7 +229,7 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
 
   const SortHeader = ({ field, children }) => (
     <th
-      className="text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground dark:text-[#888888] font-medium py-3 px-4 cursor-pointer hover:text-foreground dark:hover:text-white transition-colors select-none"
+      className="text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium py-3 px-4 cursor-pointer hover:text-foreground transition-colors select-none"
       onClick={() => onSort(field)}
     >
       <span className="flex items-center gap-1">
@@ -275,14 +275,14 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border bg-muted/40 dark:bg-[#111111]">
+              <tr className="border-b border-border bg-muted/50">
                 <SortHeader field="firm">Firm</SortHeader>
                 <SortHeader field="firm_type">Type</SortHeader>
                 <SortHeader field="stage_focus">Stage / Check</SortHeader>
                 <SortHeader field="status">Status</SortHeader>
                 <SortHeader field="funnel_stage">Funnel</SortHeader>
                 <SortHeader field="last_contact_date">Last Contact</SortHeader>
-                <th className="text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground dark:text-[#888888] font-medium py-3 px-4 select-none">Rel. Strength</th>
+                <th className="text-left text-[10px] uppercase tracking-[0.15em] text-muted-foreground font-medium py-3 px-4 select-none">Rel. Strength</th>
                 <th className="py-3 px-4" />
               </tr>
             </thead>
@@ -293,12 +293,12 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                const isHigh = staleness.level === "high";
 
                const rowBg = isCritical
-                 ? "bg-red-50/40 dark:bg-[#2d1515]/60 hover:bg-red-50/70 dark:hover:bg-[#2d1515]"
+                 ? "bg-red-50/50 dark:bg-red-950/20 hover:bg-red-50 dark:hover:bg-red-950/30"
                  : isHigh
-                 ? "bg-orange-50/30 dark:bg-[#2d1f0a]/40 hover:bg-orange-50/60 dark:hover:bg-[#2d1f0a]/70"
+                 ? "bg-orange-50/40 dark:bg-orange-950/20 hover:bg-orange-50/70 dark:hover:bg-orange-950/30"
                  : rowIndex % 2 === 0
-                 ? "hover:bg-accent dark:bg-[#1a1a1a] dark:hover:bg-[#252525]"
-                 : "hover:bg-accent dark:bg-[#1e1e1e] dark:hover:bg-[#252525]";
+                 ? "bg-card hover:bg-accent"
+                 : "bg-muted/30 hover:bg-accent";
 
                 return (
                   <tr
@@ -314,11 +314,11 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                         </div>
                         <div>
                           <div className="flex items-center gap-1.5">
-                            <p className="font-semibold text-foreground dark:text-white text-sm">{inv.firm || <span className="text-muted-foreground dark:text-[#888888] italic">No firm name</span>}</p>
+                            <p className="font-semibold text-foreground text-sm">{inv.firm || <span className="text-muted-foreground italic">No firm name</span>}</p>
                             {inv.website_url && (
                                           <a href={inv.website_url} target="_blank" rel="noopener noreferrer"
                                             onClick={(e) => e.stopPropagation()}
-                                            className="text-slate-400 dark:text-[#888888] hover:text-slate-600 dark:hover:text-white transition-colors">
+                                            className="text-muted-foreground hover:text-foreground transition-colors">
                                             <Globe className="w-3 h-3" />
                                           </a>
                                         )}
@@ -330,9 +330,9 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                               </a>
                             )}
                           </div>
-                          {inv.name && <p className="text-xs text-muted-foreground dark:text-[#cccccc] mt-0.5">{inv.name}</p>}
+                          {inv.name && <p className="text-xs text-muted-foreground mt-0.5">{inv.name}</p>}
                           {inv.portfolio_count ? (
-                            <p className="text-[10px] text-muted-foreground dark:text-[#888888]">{inv.portfolio_count} portfolio cos</p>
+                            <p className="text-[10px] text-muted-foreground">{inv.portfolio_count} portfolio cos</p>
                           ) : null}
                           <div className="mt-1.5">
                             <SmartNextAction investor={inv} variant="inline" />
@@ -344,18 +344,18 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                     {/* Type */}
                     <td className="py-4 px-4">
                       {inv.firm_type ? (
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${firmTypeColors[inv.firm_type] || "bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400"}`}>
-                          {inv.firm_type}
-                        </span>
-                      ) : <span className="text-slate-300 dark:text-slate-600 text-xs">—</span>}
+                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${firmTypeColors[inv.firm_type] || "bg-muted text-muted-foreground"}`}>
+                        {inv.firm_type}
+                      </span>
+                      ) : <span className="text-muted-foreground/40 text-xs">—</span>}
                     </td>
 
                     {/* Stage / Check */}
                     <td className="py-4 px-4">
                       <div>
-                        {inv.stage_focus && <p className="text-xs font-medium text-foreground dark:text-white">{inv.stage_focus}</p>}
-                        {inv.check_size && <p className="text-[11px] text-muted-foreground dark:text-[#cccccc] mt-0.5">{inv.check_size}</p>}
-                        {!inv.stage_focus && !inv.check_size && <span className="text-muted-foreground dark:text-[#888888] text-xs">—</span>}
+                        {inv.stage_focus && <p className="text-xs font-medium text-foreground">{inv.stage_focus}</p>}
+                        {inv.check_size && <p className="text-[11px] text-muted-foreground mt-0.5">{inv.check_size}</p>}
+                        {!inv.stage_focus && !inv.check_size && <span className="text-muted-foreground text-xs">—</span>}
                       </div>
                     </td>
 
@@ -365,15 +365,15 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                           <span className={`text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full border ${statusColors[inv.status] || ""}`}>
                             {inv.status}
                           </span>
-                        ) : <span className="text-slate-300 dark:text-slate-600 text-xs">—</span>}
+                        ) : <span className="text-muted-foreground/40 text-xs">—</span>}
                     </td>
 
                     {/* Funnel Stage */}
                     <td className="py-4 px-4">
                       <div>
-                        <span className="text-xs text-foreground dark:text-[#cccccc]">{inv.funnel_stage || "—"}</span>
+                        <span className="text-xs text-foreground">{inv.funnel_stage || "—"}</span>
                         {inv.next_action_date && (
-                          <p className="text-[10px] text-muted-foreground dark:text-[#888888] mt-0.5">
+                          <p className="text-[10px] text-muted-foreground mt-0.5">
                             Next: {new Date(inv.next_action_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                           </p>
                         )}
@@ -386,18 +386,18 @@ export default function InvestorTable({ investors, sortField, sortDir, onSort, o
                         <div className="flex items-center gap-2">
                           <div>
                             <p className={`text-sm font-semibold ${
-                              isCritical ? "text-red-600 dark:text-red-400" : isHigh ? "text-orange-500 dark:text-orange-400" : "text-slate-700 dark:text-white"
+                              isCritical ? "text-red-600" : isHigh ? "text-orange-500" : "text-foreground"
                             }`}>
                               {formatRelative(staleness.days)}
                             </p>
-                            <p className="text-[10px] text-muted-foreground dark:text-[#888888] mt-0.5">
+                            <p className="text-[10px] text-muted-foreground mt-0.5">
                               {formatShortDate(inv.last_contact_date)}
                             </p>
                           </div>
                           {(isCritical || isHigh) && <AgingBadge critical={isCritical} />}
                         </div>
                       ) : (
-                        <span className="text-xs text-muted-foreground dark:text-[#888888] italic">Never</span>
+                        <span className="text-xs text-muted-foreground italic">Never</span>
                       )}
                     </td>
 

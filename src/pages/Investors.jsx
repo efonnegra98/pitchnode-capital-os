@@ -168,23 +168,23 @@ export default function Investors() {
         </div>
         <div className="flex items-center gap-3 flex-wrap">
           {/* List / Board toggle */}
-          <div className="flex items-center bg-slate-100 rounded-lg p-1 gap-0.5">
+          <div className="flex items-center bg-muted rounded-lg p-1 gap-0.5">
             <button
               onClick={() => setViewMode("list")}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${viewMode === "list" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${viewMode === "list" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
             >
               List
             </button>
             <button
               onClick={() => setViewMode("board")}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${viewMode === "board" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${viewMode === "board" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
             >
               Board
             </button>
           </div>
           <button
             onClick={() => setShowUpload(true)}
-            className="px-4 py-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium transition-all whitespace-nowrap flex items-center gap-1.5"
+            className="px-4 py-2.5 rounded-lg border border-border hover:bg-accent text-foreground text-sm font-medium transition-all whitespace-nowrap flex items-center gap-1.5"
           >
             <Upload className="w-4 h-4" />
             Upload List
@@ -207,7 +207,7 @@ export default function Investors() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search firm, contact, notes..."
-            className="pl-9 dark:bg-[#1a1a1a] dark:border-[#2a2a2a] dark:text-white dark:placeholder-[#888888]"
+            className="pl-9"
           />
         </div>
 
@@ -228,20 +228,20 @@ export default function Investors() {
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                 quickFilter === key
                   ? "bg-violet-600 text-white border-violet-600 shadow-sm"
-                  : "bg-white dark:bg-[#1a1a1a] text-slate-600 dark:text-[#888888] border-slate-200 dark:border-[#2a2a2a] hover:border-violet-300 dark:hover:border-violet-700 hover:text-violet-700 dark:hover:text-violet-400"
+                  : "bg-card text-muted-foreground border-border hover:border-violet-400 hover:text-violet-600 dark:hover:border-violet-600 dark:hover:text-violet-400"
               }`}
             >
               {label}
             </button>
           ))}
 
-          <div className="w-px h-5 bg-slate-200 mx-1" />
+          <div className="w-px h-5 bg-border mx-1" />
 
           {/* Secondary dropdowns */}
           <select
             value={filterStage}
             onChange={(e) => setFilterStage(e.target.value)}
-            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card dark:bg-[#1a1a1a] dark:border-[#2a2a2a] dark:text-white text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
+            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
           >
             <option value="all">Stage: All</option>
             {["Identified", "Researching", "Outreach Sent", "Intro Call Scheduled", "Intro Call Complete", "Interest Confirmed", "Diligence", "Term Sheet", "Closed Won", "Closed Lost", "Pass"].map(s => (
@@ -251,7 +251,7 @@ export default function Investors() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card dark:bg-[#1a1a1a] dark:border-[#2a2a2a] dark:text-white text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
+            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
           >
             <option value="all">Type: All</option>
             {["Venture Capital", "Angel", "Family Office", "Corporate / Strategic", "Accelerator", "Private Equity", "Operator", "Strategic Investor", "Search Fund", "Other"].map(s => (
@@ -261,7 +261,7 @@ export default function Investors() {
           <select
             value={filterSentiment}
             onChange={(e) => setFilterSentiment(e.target.value)}
-            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card dark:bg-[#1a1a1a] dark:border-[#2a2a2a] dark:text-white text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
+            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
           >
             <option value="all">Sentiment: All</option>
             {["Champion", "Positive", "Curious", "Neutral", "Skeptical"].map(s => (
@@ -272,7 +272,7 @@ export default function Investors() {
           {(filterStage !== "all" || filterStatus !== "all" || filterSentiment !== "all") && (
             <button
               onClick={() => { setFilterStage("all"); setFilterStatus("all"); setFilterSentiment("all"); }}
-              className="text-xs text-violet-600 hover:text-violet-800 font-medium px-2 py-1 rounded-md hover:bg-violet-50 transition-colors"
+              className="text-xs text-violet-600 hover:text-violet-500 font-medium px-2 py-1 rounded-md hover:bg-violet-500/10 transition-colors"
             >
               Clear
             </button>
