@@ -1,7 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCompany } from "../components/useCompany";
+import OnboardingWelcomeFlow from "../components/onboarding/OnboardingWelcomeFlow";
+import OnboardingProgressBanner from "../components/onboarding/OnboardingProgressBanner";
 import { DollarSign, TrendingUp, Users, Send } from "lucide-react";
 import MetricCard from "../components/dashboard/MetricCard";
 import KPIChart from "../components/dashboard/KPIChart";
@@ -22,8 +25,31 @@ import { computeRaiseSignals, getModuleSignals } from "../lib/raiseSignals";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function Dashboard() {
-  const { company, companyId, isLoading: companyLoading } = useCompany();
+  const { user, profile, company, companyId, isLoading: companyLoading } = useCompany();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Determine if we should show the welcome flow
+  useEffect(() => {
+    if (!profile) return;
+    // Show if onboarding_shown is false (never seen it) and onboarding not already completed
+    if (!profile.onboarding_shown && !profile.onboarding_completed) {
+      setShowOnboarding(true);
+    }
+  }, [profile?.id]);
+
+  const dismissBannerMutation = useMutation({
+    mutationFn: () => base44.entities.UserProfile.update(profile.id, { onboarding_banner_dismissed: true }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userProfile", user?.email] }),
+  });
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    queryClient.invalidateQueries({ queryKey: ["userProfile", user?.email] });
+    queryClient.invalidateQueries({ queryKey: ["company", profile?.company_id] });
+    queryClient.invalidateQueries({ queryKey: ["investors", companyId] });
+  };
 
   // Show success toast after Stripe checkout redirect
   useEffect(() => {
@@ -79,6 +105,25 @@ export default function Dashboard() {
   const hasAnyData = hasUpdates || hasInvestors;
 
   return (
+    <>
+      {/* Onboarding welcome flow modal */}
+      {showOnboarding && (
+        <OnboardingWelcomeFlow
+          profile={profile}
+          user={user}
+          companyId={companyId}
+          onComplete={handleOnboardingComplete}
+        />
+      )}
+
+      {/* Onboarding progress banner */}
+      {!showOnboarding && profile && (
+        <OnboardingProgressBanner
+          profile={profile}
+          onDismiss={() => dismissBannerMutation.mutate()}
+        />
+      )}
+
     <div className="p-6 lg:p-10 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
@@ -211,5 +256,6 @@ export default function Dashboard() {
         </>
       )}
     </div>
+    </>
   );
 }

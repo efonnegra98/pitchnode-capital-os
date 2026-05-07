@@ -1,0 +1,76 @@
+{
+  "name": "UserProfile",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user"
+    },
+    "company_id": {
+      "type": "string",
+      "description": "ID of the company this user belongs to"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "Founder",
+        "Advisor",
+        "Limited Partner"
+      ],
+      "description": "User role in the platform"
+    },
+    "client_status": {
+      "type": "string",
+      "enum": [
+        "Prospective",
+        "Active Client",
+        "Alumni"
+      ],
+      "description": "Client relationship status"
+    },
+    "approved": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user has been approved for access"
+    },
+    "onboarding_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user has completed onboarding"
+    },
+    "onboarding_shown": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the welcome modal has been shown to the user"
+    },
+    "onboarding_profile_complete": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user completed the company profile setup step"
+    },
+    "onboarding_investor_added": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user added their first investor"
+    },
+    "onboarding_deck_uploaded": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user uploaded their pitch deck"
+    },
+    "onboarding_started_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the user first saw the onboarding modal"
+    },
+    "onboarding_banner_dismissed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user dismissed the onboarding progress banner"
+    }
+  },
+  "required": [
+    "user_email",
+    "approved"
+  ]
+}
