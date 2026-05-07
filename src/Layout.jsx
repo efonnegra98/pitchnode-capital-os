@@ -116,8 +116,9 @@ function LayoutContent({ children, currentPageName }) {
           return;
         }
 
-        // Admins bypass all checks
-        if (user.role === "admin" || user.role === "owner" || user.email === "eduardo@pitchnode.com") {
+        // Admins and internal accounts bypass all checks
+        const internalEmails = ["eduardo@pitchnode.com", "noreply@pitchnode.com"];
+        if (user.role === "admin" || user.role === "owner" || internalEmails.includes(user.email)) {
           setCheckingAccess(false);
           return;
         }
