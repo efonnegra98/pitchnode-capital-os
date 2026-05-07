@@ -12,6 +12,7 @@ import PublicDataRoom from './pages/PublicDataRoom';
 import Gateway from './pages/Gateway';
 import AccessRequest from './pages/AccessRequest';
 import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
 import { base44 } from '@/api/base44Client';
 import { ThemeProvider } from '@/lib/ThemeContext';
 
@@ -93,6 +94,7 @@ function App() {
             <Route path="/dataroom/:shareId" element={<PublicDataRoom />} />
             <Route path="/AccessRequest" element={<AccessRequest />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
             {/* All other routes go through auth */}
             <Route path="/*" element={<AuthenticatedApp />} />
           </Routes>

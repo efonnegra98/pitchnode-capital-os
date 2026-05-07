@@ -253,9 +253,13 @@ function LayoutContent({ children, currentPageName }) {
         </div>
 
         {/* Footer links */}
-        <div className="px-6 pb-3 pt-1">
+        <div className="px-6 pb-3 pt-1 flex items-center gap-3">
           <Link to="/terms" className="text-[10px] text-muted-foreground hover:text-foreground transition-colors">
             Terms of Service
+          </Link>
+          <span className="text-[10px] text-muted-foreground">·</span>
+          <Link to="/privacy" className="text-[10px] text-muted-foreground hover:text-foreground transition-colors">
+            Privacy Policy
           </Link>
         </div>
 
