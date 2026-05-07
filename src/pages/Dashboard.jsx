@@ -82,6 +82,17 @@ export default function Dashboard() {
     enabled: !!companyId,
   });
 
+  const { data: activities = [] } = useQuery({
+    queryKey: ["investor-activities-dashboard", companyId],
+    queryFn: async () => {
+      if (!investors.length) return [];
+      const ids = investors.map(i => i.id);
+      const acts = await base44.entities.InvestorActivity.list("-date", 200);
+      return acts.filter(a => ids.includes(a.investor_id));
+    },
+    enabled: !!companyId && investors.length > 0,
+  });
+
   const isLoading = companyLoading || updatesLoading || investorsLoading;
 
   const raiseSignals = computeRaiseSignals({ company, investors, updates, readinessItems });
@@ -169,6 +180,7 @@ export default function Dashboard() {
             investors={investors}
             updates={updates}
             readinessItems={readinessItems}
+            activities={activities}
           />
 
           {/* 0b. Raise Signals */}
