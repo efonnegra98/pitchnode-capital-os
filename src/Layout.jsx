@@ -131,6 +131,12 @@ function LayoutContent({ children, currentPageName }) {
           return;
         }
 
+        // Subscription override — bypass Stripe/trial checks entirely
+        if (profiles[0].subscription_override === true) {
+          setCheckingAccess(false);
+          return;
+        }
+
         // Check subscription
         const companies = await base44.entities.Company.filter({ id: profiles[0].company_id });
         const company = companies[0];
@@ -288,7 +294,7 @@ function LayoutContent({ children, currentPageName }) {
 
         {/* Trial Banner */}
         {currentPageName !== "Gateway" && currentPageName !== "AccessRequest" && currentPageName !== "Onboarding" && currentPageName !== "Upgrade" && currentPageName !== "TrialExpired" && currentPageName !== "Subscribe" && (
-          <TrialBanner company={company} user={user} />
+          <TrialBanner company={company} user={user} profile={profile} />
         )}
 
         <div className="flex-1 overflow-y-auto">

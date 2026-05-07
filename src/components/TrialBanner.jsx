@@ -4,15 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Clock, Sparkles } from "lucide-react";
 const STRIPE_PAYMENT_URL = "https://buy.stripe.com/3cI00jf5Demc8vteLS7Zu00";
 
-export default function TrialBanner({ company, user }) {
+export default function TrialBanner({ company, user, profile }) {
   if (!company || company.subscription_status === "active") {
     return null;
   }
 
-  // Admins and owners never see the trial banner
-  if (user?.role === "admin" || user?.role === "owner") {
-    return null;
-  }
+  // Admins, owners, and users with subscription override never see the trial banner
+  if (user?.role === "admin" || user?.role === "owner") return null;
+  if (profile?.subscription_override) return null;
 
   const now = new Date();
   const trialEnd = new Date(company.trial_end_date);

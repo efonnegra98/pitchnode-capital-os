@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Users, Send, DollarSign } from "lucide-react";
+import { ArrowLeft, Users, Send, DollarSign, ShieldCheck } from "lucide-react";
 import ActionRequired from "../dashboard/ActionRequired";
 import AdminSupportNotes from "./AdminSupportNotes";
 
@@ -19,16 +19,31 @@ function formatCurrency(val) {
 export default function AdminUserDetail({ userData, adminUser, onBack }) {
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState(null);
+  const [overrideToggling, setOverrideToggling] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       setLoading(true);
-      const res = await base44.functions.invoke("adminGetUserDetail", { company_id: userData.company_id });
+      const [res, profiles] = await Promise.all([
+        base44.functions.invoke("adminGetUserDetail", { company_id: userData.company_id }),
+        base44.entities.UserProfile.filter({ user_email: userData.user_email }),
+      ]);
       setDetail(res.data);
+      setProfile(profiles[0] || null);
       setLoading(false);
     };
     load();
-  }, [userData.company_id]);
+  }, [userData.company_id, userData.user_email]);
+
+  const handleToggleOverride = async () => {
+    if (!profile) return;
+    setOverrideToggling(true);
+    const newVal = !profile.subscription_override;
+    await base44.entities.UserProfile.update(profile.id, { subscription_override: newVal });
+    setProfile(p => ({ ...p, subscription_override: newVal }));
+    setOverrideToggling(false);
+  };
 
   if (loading) {
     return (
@@ -80,6 +95,35 @@ export default function AdminUserDetail({ userData, adminUser, onBack }) {
             <p className="text-xs text-slate-400 mt-0.5">Sent</p>
           </div>
         </div>
+      </div>
+
+      {/* Subscription Override */}
+      <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-violet-500" />
+            <div>
+              <p className="text-sm font-semibold text-slate-800">Subscription Override</p>
+              <p className="text-xs text-slate-400 mt-0.5">Bypass all Stripe/trial checks for this user</p>
+            </div>
+          </div>
+          <button
+            onClick={handleToggleOverride}
+            disabled={overrideToggling || !profile}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${
+              profile?.subscription_override ? "bg-violet-600" : "bg-slate-200"
+            }`}
+          >
+            <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+              profile?.subscription_override ? "translate-x-6" : "translate-x-1"
+            }`} />
+          </button>
+        </div>
+        {profile?.subscription_override && (
+          <p className="mt-2 text-xs text-violet-600 font-medium bg-violet-50 rounded-lg px-3 py-1.5">
+            ✓ This user has full platform access — no subscription required
+          </p>
+        )}
       </div>
 
       {/* Round Overview */}

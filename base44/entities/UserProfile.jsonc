@@ -33,6 +33,11 @@
       "default": false,
       "description": "Whether user has been approved for access"
     },
+    "subscription_override": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, user bypasses all Stripe subscription and trial requirements"
+    },
     "onboarding_completed": {
       "type": "boolean",
       "default": false,
