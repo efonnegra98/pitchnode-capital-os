@@ -252,6 +252,13 @@ function LayoutContent({ children, currentPageName }) {
           <ThemeToggle />
         </div>
 
+        {/* Footer links */}
+        <div className="px-6 pb-3 pt-1">
+          <Link to="/terms" className="text-[10px] text-muted-foreground hover:text-foreground transition-colors">
+            Terms of Service
+          </Link>
+        </div>
+
         {/* Admin link — only visible to admins, separated by divider */}
         {user?.role === "admin" && (
           <div className="px-4 pb-2 border-t border-border pt-3 mt-0">

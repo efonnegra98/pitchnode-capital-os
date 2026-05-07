@@ -11,6 +11,7 @@ import { appParams } from '@/lib/app-params';
 import PublicDataRoom from './pages/PublicDataRoom';
 import Gateway from './pages/Gateway';
 import AccessRequest from './pages/AccessRequest';
+import Terms from './pages/Terms';
 import { base44 } from '@/api/base44Client';
 import { ThemeProvider } from '@/lib/ThemeContext';
 
@@ -91,6 +92,7 @@ function App() {
             {/* Public routes — no auth required */}
             <Route path="/dataroom/:shareId" element={<PublicDataRoom />} />
             <Route path="/AccessRequest" element={<AccessRequest />} />
+            <Route path="/terms" element={<Terms />} />
             {/* All other routes go through auth */}
             <Route path="/*" element={<AuthenticatedApp />} />
           </Routes>
