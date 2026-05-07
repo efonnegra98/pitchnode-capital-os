@@ -12,6 +12,7 @@ import { useCompany } from "../useCompany";
 import SendToInvestorModal from "../dataroom/SendToInvestorModal";
 import InvestorViewFeed from "../dataroom/InvestorViewFeed";
 import DocumentInsights from "../dataroom/DocumentInsights";
+import DataRoomAnalytics from "../dataroom/DataRoomAnalytics";
 import MultiShareLinksModal from "../dataroom/MultiShareLinksModal";
 
 const DEFAULT_ITEMS = [
@@ -440,6 +441,9 @@ export default function RaiseReadiness() {
 
         {/* ── Feature 1: Live Investor View Feed ── */}
         <InvestorViewFeed shares={shares} />
+
+        {/* ── Data Room Analytics Dashboard ── */}
+        <DataRoomAnalytics shares={shares} />
       </div>
     </>
   );
