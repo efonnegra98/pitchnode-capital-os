@@ -7,8 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, Upload, AlertTriangle, Sun, Moon, Monitor } from "lucide-react";
+import { Save, Upload, Sun, Moon, Monitor } from "lucide-react";
 import BillingSection from "../components/settings/BillingSection";
+import SubscriptionSection from "../components/settings/SubscriptionSection";
 import { useToast } from "@/components/ui/use-toast";
 import { useTheme } from "@/lib/ThemeContext";
 
@@ -43,7 +44,7 @@ function Toggle({ checked, onChange, label, description }) {
 export default function Settings() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { company, companyId, isLoading: companyLoading, user } = useCompany();
+  const { company, companyId, isLoading: companyLoading, user, profile } = useCompany();
   const { theme, setTheme } = useTheme();
 
   const [form, setForm] = useState({
@@ -402,27 +403,16 @@ export default function Settings() {
                 Change Password
               </Button>
             </div>
-
-            {/* Danger Zone */}
-            <div className="pt-5 border-t border-border">
-              <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
-                <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-red-700">Danger Zone</p>
-                  <p className="text-xs text-red-500 mt-0.5 mb-3">Permanently delete your account and all associated data. This action cannot be undone.</p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
-                    onClick={() => window.confirm("Are you sure you want to delete your account? This cannot be undone.") && base44.auth.logout()}
-                  >
-                    Delete Account
-                  </Button>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
+
+        {/* ─── 7. Subscription & Danger Zone ─── */}
+        <SubscriptionSection
+          company={company}
+          companyId={companyId}
+          user={user}
+          profile={profile}
+        />
 
       </div>
 
