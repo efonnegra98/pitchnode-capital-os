@@ -271,7 +271,7 @@ export default function Investors() {
 
         {/* Search + Quick Filters */}
         <div className="flex flex-col gap-3 mb-5">
-          <div className="relative w-full sm:max-w-sm">
+          <div className="relative w-full sm:max-w-sm mx-4 sm:mx-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search firm, contact, notes..." className="pl-9 w-full" />
           </div>
@@ -333,15 +333,15 @@ export default function Investors() {
         ) : (
           <>
             {/* Mobile card list */}
-            <div className="sm:hidden flex flex-col gap-2">
+            <div className="sm:hidden">
               {sortedFiltered.length === 0 ? (
                 <div className="p-8 text-center text-muted-foreground text-sm no-select bg-card rounded-xl border border-border">No results found.</div>
               ) : (
-                sortedFiltered.map(inv => (
-                  <div key={inv.id} className="bg-card rounded-xl border border-border overflow-hidden">
-                    <InvestorMobileCard investor={inv} onClick={(inv) => setModalData(inv)} />
-                  </div>
-                ))
+                <div className="bg-card rounded-xl border border-border overflow-hidden">
+                  {sortedFiltered.map(inv => (
+                    <InvestorMobileCard key={inv.id} investor={inv} onClick={(inv) => setModalData(inv)} />
+                  ))}
+                </div>
               )}
             </div>
 
