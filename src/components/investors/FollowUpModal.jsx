@@ -26,11 +26,14 @@ export default function FollowUpModal({ investor, onSave, onClose, isSaving }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center sm:p-4" onClick={onClose}>
       <div
-        className="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-xl"
+        className="bg-card border border-border sm:rounded-2xl rounded-t-2xl w-full sm:max-w-md shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="sm:hidden flex justify-center pt-3 pb-1">
+          <div className="w-10 h-1 rounded-full bg-border" />
+        </div>
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
           <div>

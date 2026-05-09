@@ -12,6 +12,7 @@ import InvestorModal from "../components/investors/InvestorModal";
 import FollowUpModal from "../components/investors/FollowUpModal";
 import BulkUploadModal from "../components/investors/BulkUploadModal";
 import LogActivityModal from "../components/investors/LogActivityModal";
+import InvestorMobileCard from "../components/investors/InvestorMobileCard";
 
 export default function Investors() {
   const [search, setSearch] = useState("");
@@ -197,14 +198,14 @@ export default function Investors() {
   }
 
   return (
-    <div className="p-6 lg:p-10 max-w-7xl mx-auto bg-background min-h-screen">
+    <div className="p-4 lg:p-10 max-w-7xl mx-auto bg-background min-h-screen">
       {/* Header row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground tracking-tight">Investor CRM</h1>
           <p className="text-muted-foreground text-sm mt-1">{investors.length} firms tracked</p>
         </div>
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="hidden sm:flex items-center gap-3 flex-wrap">
           {/* List / Board toggle */}
           <div className="flex items-center bg-muted rounded-lg p-1 gap-0.5">
             <button
@@ -239,18 +240,18 @@ export default function Investors() {
       {/* Search + Quick Filters */}
       <div className="flex flex-col gap-3 mb-5">
         {/* Search bar */}
-        <div className="relative max-w-sm">
+        <div className="relative w-full sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search firm, contact, notes..."
-            className="pl-9"
+            className="pl-9 w-full"
           />
         </div>
 
-        {/* Quick filter chips */}
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Quick filter chips — horizontally scrollable on mobile */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap no-scrollbar">
           {[
             { key: "all",       label: "All" },
             { key: "active",    label: "Active" },
@@ -273,13 +274,13 @@ export default function Investors() {
             </button>
           ))}
 
-          <div className="w-px h-5 bg-border mx-1" />
+          <div className="w-px h-5 bg-border mx-1 hidden sm:block" />
 
           {/* Secondary dropdowns */}
           <select
             value={filterStage}
             onChange={(e) => setFilterStage(e.target.value)}
-            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400"
+            className="text-xs border border-border rounded-lg px-2.5 py-1.5 bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-violet-400 flex-shrink-0"
           >
             <option value="all">Stage: All</option>
             {["Identified", "Researching", "Outreach Sent", "Intro Call Scheduled", "Intro Call Complete", "Interest Confirmed", "Diligence", "Term Sheet", "Closed Won", "Closed Lost", "Pass"].map(s => (
@@ -336,26 +337,44 @@ export default function Investors() {
             Add First Firm
           </button>
         </div>
-      ) : viewMode === "board" ? (
-        <InvestorBoard
-          investors={sortedFiltered}
-          onEdit={(inv) => setModalData(inv)}
-          onStageChange={(id, funnel_stage) => stageMutation.mutate({ id, funnel_stage })}
-        />
       ) : (
-        <InvestorTable
-          investors={sortedFiltered}
-          sortField={sortField}
-          sortDir={sortDir}
-          onSort={handleSort}
-          onEdit={(inv) => setModalData(inv)}
-          onFollowUp={(inv) => setFollowUpInvestor(inv)}
-          onDelete={(id) => deleteMutation.mutate(id)}
-          onLogActivity={(inv) => setLogActivityInvestor(inv)}
-          activitiesByInvestor={Object.fromEntries(
-            investors.map(inv => [inv.id, allActivities.filter(a => a.investor_id === inv.id)])
-          )}
-        />
+        <>
+          {/* Mobile card list */}
+          <div className="sm:hidden bg-card rounded-xl border border-border overflow-hidden">
+            {sortedFiltered.length === 0 ? (
+              <div className="p-8 text-center text-muted-foreground text-sm">No results found.</div>
+            ) : (
+              sortedFiltered.map(inv => (
+                <InvestorMobileCard key={inv.id} investor={inv} onClick={(inv) => setModalData(inv)} />
+              ))
+            )}
+          </div>
+
+          {/* Desktop table/board */}
+          <div className="hidden sm:block">
+            {viewMode === "board" ? (
+              <InvestorBoard
+                investors={sortedFiltered}
+                onEdit={(inv) => setModalData(inv)}
+                onStageChange={(id, funnel_stage) => stageMutation.mutate({ id, funnel_stage })}
+              />
+            ) : (
+              <InvestorTable
+                investors={sortedFiltered}
+                sortField={sortField}
+                sortDir={sortDir}
+                onSort={handleSort}
+                onEdit={(inv) => setModalData(inv)}
+                onFollowUp={(inv) => setFollowUpInvestor(inv)}
+                onDelete={(id) => deleteMutation.mutate(id)}
+                onLogActivity={(inv) => setLogActivityInvestor(inv)}
+                activitiesByInvestor={Object.fromEntries(
+                  investors.map(inv => [inv.id, allActivities.filter(a => a.investor_id === inv.id)])
+                )}
+              />
+            )}
+          </div>
+        </>
       )}
 
       {modalData !== null && (
@@ -396,6 +415,15 @@ export default function Investors() {
           isSaving={followUpMutation.isPending}
         />
       )}
+
+      {/* Mobile floating add button */}
+      <button
+        onClick={() => setModalData({})}
+        className="sm:hidden fixed bottom-20 right-4 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-lg flex items-center justify-center text-2xl active:scale-95 transition-transform"
+        aria-label="Add firm"
+      >
+        +
+      </button>
     </div>
   );
 }

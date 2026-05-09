@@ -16,8 +16,10 @@ import {
   Shield,
   Sun,
   Moon,
-  Monitor
+  Monitor,
+  User
 } from "lucide-react";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 const navItems = [
   { name: "Dashboard", page: "Dashboard", icon: LayoutDashboard },
@@ -291,16 +293,21 @@ function LayoutContent({ children, currentPageName }) {
       {/* Main Content */}
       <main className="flex-1 min-h-screen flex flex-col">
         {/* Top bar mobile */}
-        <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card">
-          <button onClick={() => setSidebarOpen(true)} className="text-muted-foreground hover:text-foreground">
-            <Menu className="w-5 h-5" />
-          </button>
+        <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-card">
           <img 
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698fe466c243851910a585ea/ae8a53466_pn_black_full3.png" 
             alt="PitchNode" 
             className="h-[28px] w-auto"
           />
-          <ThemeToggle compact />
+          <div className="flex items-center gap-2">
+            <ThemeToggle compact />
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-accent text-muted-foreground hover:text-foreground active:bg-muted transition-colors"
+            >
+              <User className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Trial Banner */}
@@ -308,9 +315,14 @@ function LayoutContent({ children, currentPageName }) {
           <TrialBanner company={company} user={user} profile={profile} />
         )}
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto pb-16 lg:pb-0">
           {children}
         </div>
+
+        {/* Mobile bottom nav */}
+        {currentPageName !== "Gateway" && currentPageName !== "AccessRequest" && currentPageName !== "Onboarding" && (
+          <MobileBottomNav currentPageName={currentPageName} />
+        )}
       </main>
     </div>
   );

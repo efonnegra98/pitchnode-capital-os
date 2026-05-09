@@ -44,8 +44,9 @@ function StatusBadge({ status, trialEndDate }) {
 function CancelModal({ onConfirm, onClose, trialEndDate, isCancelling }) {
   const endDate = formatDate(trialEndDate) || "your billing period end";
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-      <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md p-7">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm sm:px-4" onClick={onClose}>
+      <div className="bg-card border border-border sm:rounded-2xl rounded-t-2xl shadow-2xl w-full sm:max-w-md p-6 sm:p-7" onClick={e => e.stopPropagation()}>
+        <div className="sm:hidden flex justify-center mb-3"><div className="w-10 h-1 rounded-full bg-border" /></div>
         <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-50 border border-red-200 mx-auto mb-4">
           <XCircle className="w-6 h-6 text-red-500" />
         </div>
@@ -80,8 +81,9 @@ function DeleteModal({ onConfirm, onClose, isDeleting }) {
   const confirmed = input === "DELETE";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-      <div className="bg-card border border-red-200 rounded-2xl shadow-2xl w-full max-w-md p-7">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm sm:px-4" onClick={onClose}>
+      <div className="bg-card border border-red-200 sm:rounded-2xl rounded-t-2xl shadow-2xl w-full sm:max-w-md p-6 sm:p-7" onClick={e => e.stopPropagation()}>
+        <div className="sm:hidden flex justify-center mb-3"><div className="w-10 h-1 rounded-full bg-border" /></div>
         <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-50 border border-red-200 mx-auto mb-4">
           <AlertTriangle className="w-6 h-6 text-red-500" />
         </div>

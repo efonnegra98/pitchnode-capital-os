@@ -165,12 +165,12 @@ export default function Settings() {
         <p className="text-muted-foreground text-sm mt-1">Manage your company profile, round configuration, and preferences</p>
       </div>
 
-      <div className="px-6 lg:px-10 py-8 max-w-3xl space-y-8">
+      <div className="px-4 lg:px-10 py-6 lg:py-8 max-w-3xl space-y-6 lg:space-y-8">
 
         {/* ─── 0. Appearance ─── */}
         <section className="bg-card border border-border rounded-2xl p-7 shadow-sm">
           <SectionHeader title="Appearance" description="Choose how Capital OS looks on your device." />
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-3 gap-2 lg:gap-3">
             {[
               { value: "light", icon: Sun, label: "Light Mode", desc: "Always light" },
               { value: "dark", icon: Moon, label: "Dark Mode", desc: "Always dark" },
@@ -417,7 +417,7 @@ export default function Settings() {
       </div>
 
       {/* ─── Sticky Save Bar ─── */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border px-6 py-4 flex justify-end">
+      <div className="fixed bottom-16 lg:bottom-0 left-0 right-0 z-40 bg-card border-t border-border px-4 lg:px-6 py-3 lg:py-4 flex justify-end">
         <Button
           onClick={() => saveMutation.mutate(form)}
           disabled={saveMutation.isPending}

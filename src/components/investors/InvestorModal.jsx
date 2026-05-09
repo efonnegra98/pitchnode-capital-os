@@ -111,12 +111,16 @@ export default function InvestorModal({ investor, onSave, onDelete, onClose, isS
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center sm:p-4" onClick={onClose}>
       <div
-        className="bg-card border border-border rounded-2xl w-full max-w-lg flex flex-col"
-        style={{ maxHeight: "90vh" }}
+        className="bg-card border border-border sm:rounded-2xl rounded-t-2xl w-full sm:max-w-lg flex flex-col"
+        style={{ maxHeight: "92vh" }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Mobile drag handle */}
+        <div className="sm:hidden flex justify-center pt-3 pb-1 flex-shrink-0">
+          <div className="w-10 h-1 rounded-full bg-border" />
+        </div>
         {/* ── Fixed Header ── */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0">
           <div>

@@ -135,11 +135,11 @@ export default function Dashboard() {
         />
       )}
 
-    <div className="p-6 lg:p-10 max-w-7xl mx-auto">
+    <div className="p-4 lg:p-10 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">Command Center</h1>
-        <p className="text-muted-foreground text-sm mt-1">Capital metrics & investor engagement overview</p>
+      <div className="mb-6 lg:mb-8">
+        <h1 className="text-xl lg:text-2xl font-bold text-foreground tracking-tight">Command Center</h1>
+        <p className="text-muted-foreground text-xs lg:text-sm mt-1">Capital metrics & investor engagement overview</p>
       </div>
 
       {/* Empty State - Show when no data exists */}

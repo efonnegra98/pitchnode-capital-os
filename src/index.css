@@ -85,5 +85,36 @@
 
   body {
     @apply bg-background text-foreground;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Hide scrollbar for horizontal scroll chips */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Safe area for bottom nav */
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Reduce motion on mobile for performance */
+@media (max-width: 767px) {
+  .motion-reduce * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Ensure all interactive elements have min 44px touch targets on mobile */
+@media (max-width: 767px) {
+  button:not([data-no-touch-target]),
+  a:not([data-no-touch-target]) {
+    min-height: 44px;
   }
 }
