@@ -37,38 +37,43 @@ export default function InvestorMobileCard({ investor, onClick }) {
   return (
     <div
       onClick={() => onClick(investor)}
-      className="flex items-center gap-3 px-4 py-4 bg-card border-b border-border active:bg-accent transition-colors min-h-[80px] cursor-pointer"
+      className="flex items-start gap-4 px-4 py-4 bg-card border-b border-border active:bg-accent transition-colors cursor-pointer"
     >
       {/* Avatar */}
-      <div className={`w-11 h-11 rounded-xl flex-shrink-0 flex items-center justify-center text-base font-bold ${colorClass}`}>
+      <div className={`w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center text-lg font-bold mt-0.5 ${colorClass}`}>
         {initials}
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <p className="font-semibold text-foreground text-sm truncate">
+        {/* Row 1: Firm name + chevron */}
+        <div className="flex items-center justify-between gap-2">
+          <p className="font-semibold text-foreground text-[15px] truncate">
             {investor.firm || <span className="italic text-muted-foreground">No firm name</span>}
           </p>
-          {investor.funnel_stage && (
-            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${funnelClass}`}>
+          <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+
+        {/* Row 2: Contact name */}
+        {investor.name && (
+          <p className="text-sm text-muted-foreground mt-0.5 truncate">{investor.name}</p>
+        )}
+
+        {/* Row 3: Funnel stage badge */}
+        {investor.funnel_stage && (
+          <div className="mt-2">
+            <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${funnelClass}`}>
               {investor.funnel_stage}
             </span>
-          )}
-        </div>
-        {investor.name && (
-          <p className="text-xs text-muted-foreground mt-0.5 truncate">{investor.name}</p>
+          </div>
         )}
-        <div className="mt-1">
+
+        {/* Row 4: Smart next action */}
+        <div className="mt-2">
           <SmartNextAction investor={investor} variant="inline" />
         </div>
-      </div>
-
-      {/* Chevron */}
-      <div className="text-muted-foreground flex-shrink-0">
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
       </div>
     </div>
   );
