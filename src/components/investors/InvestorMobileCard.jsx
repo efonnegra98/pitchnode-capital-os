@@ -58,7 +58,7 @@ export default function InvestorMobileCard({ investor, onClick }) {
 
         {/* Row 2: Contact name */}
         {investor.name && (
-          <p className="text-sm text-muted-foreground mt-0.5 truncate">{investor.name}</p>
+          <p className="truncate mt-1" style={{ fontSize: "13px", color: "#888888" }}>{investor.name}</p>
         )}
 
         {/* Row 3: Funnel stage badge */}
