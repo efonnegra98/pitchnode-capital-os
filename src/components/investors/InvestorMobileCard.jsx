@@ -48,7 +48,7 @@ export default function InvestorMobileCard({ investor, onClick }) {
       <div className="flex-1 min-w-0">
         {/* Row 1: Firm name + chevron */}
         <div className="flex items-center justify-between gap-2">
-          <p className="font-semibold text-foreground text-[15px] truncate">
+          <p className="font-bold text-foreground text-[16px] truncate">
             {investor.firm || <span className="italic text-muted-foreground">No firm name</span>}
           </p>
           <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
