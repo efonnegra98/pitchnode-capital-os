@@ -333,12 +333,14 @@ export default function Investors() {
         ) : (
           <>
             {/* Mobile card list */}
-            <div className="sm:hidden bg-card rounded-xl border border-border overflow-hidden">
+            <div className="sm:hidden flex flex-col gap-2">
               {sortedFiltered.length === 0 ? (
-                <div className="p-8 text-center text-muted-foreground text-sm no-select">No results found.</div>
+                <div className="p-8 text-center text-muted-foreground text-sm no-select bg-card rounded-xl border border-border">No results found.</div>
               ) : (
                 sortedFiltered.map(inv => (
-                  <InvestorMobileCard key={inv.id} investor={inv} onClick={(inv) => setModalData(inv)} />
+                  <div key={inv.id} className="bg-card rounded-xl border border-border overflow-hidden">
+                    <InvestorMobileCard investor={inv} onClick={(inv) => setModalData(inv)} />
+                  </div>
                 ))
               )}
             </div>
