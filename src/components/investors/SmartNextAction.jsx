@@ -19,12 +19,22 @@ export default function SmartNextAction({ investor, variant = "card" }) {
 
   if (variant === "inline") {
     return (
-      <div className={`flex items-start gap-1.5 text-[11px] leading-snug`}>
+      <div className="flex items-start gap-1.5">
         <Icon className={`w-3 h-3 flex-shrink-0 mt-0.5 ${c.iconColor}`} />
-        <div>
-          <span className={`font-semibold ${c.label}`}>{action}</span>
-          {reason && <span className="text-slate-400"> — {reason}</span>}
-        </div>
+        <p
+          className={`font-medium ${c.label}`}
+          style={{
+            fontSize: "13px",
+            color: "#888888",
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            lineHeight: "1.4",
+          }}
+        >
+          {action}{reason ? ` — ${reason}` : ""}
+        </p>
       </div>
     );
   }
