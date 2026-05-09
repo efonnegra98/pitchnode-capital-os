@@ -44,7 +44,7 @@ export default function LogActivityModal({ investor, onSave, onClose, isSaving }
   return (
     <div className="fixed inset-0 bg-black/50 z-[60] flex items-end sm:items-center justify-center sm:p-4" onClick={onClose}>
       <div
-        className="bg-card border border-border sm:rounded-2xl rounded-t-2xl w-full sm:max-w-md flex flex-col"
+        className="bg-card border border-border sm:rounded-2xl rounded-t-2xl w-full sm:max-w-md flex flex-col animate-slide-up sm:animate-none"
         style={{ maxHeight: "92vh" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -52,7 +52,7 @@ export default function LogActivityModal({ investor, onSave, onClose, isSaving }
           <div className="w-10 h-1 rounded-full bg-border" />
         </div>
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0 no-select">
           <div>
             <h2 className="text-base font-semibold text-foreground">Log Activity</h2>
             {investor?.firm && (

@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { usePullToRefresh } from "../lib/usePullToRefresh";
+import PullToRefreshIndicator from "../components/ui/PullToRefreshIndicator";
 import { useCompany } from "../components/useCompany";
 import OnboardingWelcomeFlow from "../components/onboarding/OnboardingWelcomeFlow";
 import OnboardingProgressBanner from "../components/onboarding/OnboardingProgressBanner";
@@ -29,6 +31,7 @@ export default function Dashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const scrollRef = useRef(null);
 
   // Determine if we should show the welcome flow
   useEffect(() => {
@@ -97,6 +100,14 @@ export default function Dashboard() {
 
   const raiseSignals = computeRaiseSignals({ company, investors, updates, readinessItems });
 
+  const handleRefresh = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: ["monthly-updates", companyId] });
+    await queryClient.invalidateQueries({ queryKey: ["investors", companyId] });
+    await queryClient.invalidateQueries({ queryKey: ["raise-readiness", companyId] });
+  }, [queryClient, companyId]);
+
+  const { pulling, pullDistance, refreshing } = usePullToRefresh(scrollRef, handleRefresh);
+
   if (isLoading) {
     return (
       <div className="p-6 lg:p-10">
@@ -135,9 +146,11 @@ export default function Dashboard() {
         />
       )}
 
+    <div ref={scrollRef} className="ptr-container" style={{ overflowY: "auto", minHeight: "100vh" }}>
+      <PullToRefreshIndicator pulling={pulling} pullDistance={pullDistance} refreshing={refreshing} />
     <div className="p-4 lg:p-10 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="mb-6 lg:mb-8">
+      <div className="mb-6 lg:mb-8 no-select">
         <h1 className="text-xl lg:text-2xl font-bold text-foreground tracking-tight">Command Center</h1>
         <p className="text-muted-foreground text-xs lg:text-sm mt-1">Capital metrics & investor engagement overview</p>
       </div>
@@ -267,6 +280,7 @@ export default function Dashboard() {
 
         </>
       )}
+    </div>
     </div>
     </>
   );

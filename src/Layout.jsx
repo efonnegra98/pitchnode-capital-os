@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "./utils";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -20,6 +20,9 @@ import {
   User
 } from "lucide-react";
 import MobileBottomNav from "@/components/MobileBottomNav";
+
+// Preserve scroll positions per-route for tab stack preservation
+const scrollCache = new Map();
 
 const navItems = [
   { name: "Dashboard", page: "Dashboard", icon: LayoutDashboard },
@@ -74,6 +77,16 @@ function LayoutContent({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [checkingAccess, setCheckingAccess] = useState(true);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const scrollRef = useRef(null);
+
+  // Restore scroll position on tab switch
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const saved = scrollCache.get(pathname) ?? 0;
+    requestAnimationFrame(() => { el.scrollTop = saved; });
+  }, [pathname]);
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
@@ -220,7 +233,7 @@ function LayoutContent({ children, currentPageName }) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 mt-8">
+        <nav className="flex-1 px-4 mt-8 no-select">
           <div className="space-y-1.5">
             {navItems.map((item) => {
               const isActive = currentPageName === item.page;
@@ -292,8 +305,11 @@ function LayoutContent({ children, currentPageName }) {
 
       {/* Main Content */}
       <main className="flex-1 min-h-screen flex flex-col">
-        {/* Top bar mobile */}
-        <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-card">
+        {/* Top bar mobile — sits below Dynamic Island / notch */}
+        <div
+          className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-card/95 backdrop-blur-md no-select"
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)" }}
+        >
           <img 
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/698fe466c243851910a585ea/ae8a53466_pn_black_full3.png" 
             alt="PitchNode" 
@@ -315,7 +331,12 @@ function LayoutContent({ children, currentPageName }) {
           <TrialBanner company={company} user={user} profile={profile} />
         )}
 
-        <div className="flex-1 overflow-y-auto pb-16 lg:pb-0">
+        <div
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto ios-scroll animate-tab-fade"
+          style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 4rem)" }}
+          onScroll={() => scrollCache.set(pathname, scrollRef.current?.scrollTop ?? 0)}
+        >
           {children}
         </div>
 
