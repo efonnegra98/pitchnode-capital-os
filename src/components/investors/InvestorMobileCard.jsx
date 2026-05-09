@@ -29,10 +29,58 @@ const funnelColors = {
   "Pass": "bg-slate-100 text-slate-500",
 };
 
+const statusBadge = {
+  "Warm":      { label: "Warm",   cls: "bg-amber-100 text-amber-700" },
+  "Engaged":   { label: "Active", cls: "bg-emerald-100 text-emerald-700" },
+  "Committed": { label: "Active", cls: "bg-emerald-100 text-emerald-700" },
+  "Passed":    { label: "Cold",   cls: "bg-slate-100 text-slate-500" },
+};
+
+function getStatusBadge(investor) {
+  // Derive a simple COLD / WARM / ACTIVE label
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const daysSince = investor.last_contact_date
+    ? Math.floor((today - new Date(investor.last_contact_date)) / 86400000)
+    : 999;
+
+  if (["Closed Won", "Committed"].includes(investor.funnel_stage)) {
+    return { label: "Active", cls: "bg-emerald-100 text-emerald-700" };
+  }
+  if (["Closed Lost", "Pass", "Passed"].includes(investor.funnel_stage)) {
+    return { label: "Cold", cls: "bg-slate-100 text-slate-500" };
+  }
+  if (investor.sentiment === "Champion" || investor.sentiment === "Positive" || investor.status === "Engaged") {
+    return { label: "Warm", cls: "bg-amber-100 text-amber-700" };
+  }
+  if (daysSince >= 21 || investor.sentiment === "Skeptical") {
+    return { label: "Cold", cls: "bg-slate-100 text-slate-500" };
+  }
+  if (daysSince < 14) {
+    return { label: "Active", cls: "bg-emerald-100 text-emerald-700" };
+  }
+  return { label: "Warm", cls: "bg-amber-100 text-amber-700" };
+}
+
+function formatLastContact(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  const today = new Date();
+  const days = Math.floor((today - d) / 86400000);
+  if (days === 0) return "Today";
+  if (days === 1) return "Yesterday";
+  if (days < 7) return `${days}d ago`;
+  if (days < 30) return `${Math.floor(days / 7)}w ago`;
+  if (days < 365) return `${Math.floor(days / 30)}mo ago`;
+  return `${Math.floor(days / 365)}y ago`;
+}
+
 export default function InvestorMobileCard({ investor, onClick }) {
   const initials = investor.firm?.trim()?.[0]?.toUpperCase() || investor.name?.trim()?.[0]?.toUpperCase() || "?";
   const colorClass = getAvatarColor(investor.firm || investor.name);
   const funnelClass = funnelColors[investor.funnel_stage] || "bg-slate-100 text-slate-600";
+  const badge = getStatusBadge(investor);
+  const lastContact = formatLastContact(investor.last_contact_date);
 
   return (
     <div
@@ -44,17 +92,12 @@ export default function InvestorMobileCard({ investor, onClick }) {
         {initials}
       </div>
 
-      {/* Content */}
+      {/* Main content */}
       <div className="flex-1 min-w-0">
-        {/* Row 1: Firm name + chevron */}
-        <div className="flex items-center justify-between gap-2">
-          <p className="font-bold text-foreground text-[16px] truncate">
-            {investor.firm || <span className="italic text-muted-foreground">No firm name</span>}
-          </p>
-          <svg className="w-4 h-4 text-muted-foreground flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </div>
+        {/* Row 1: Firm name */}
+        <p className="font-bold text-foreground text-[16px] truncate pr-2">
+          {investor.firm || <span className="italic text-muted-foreground">No firm name</span>}
+        </p>
 
         {/* Row 2: Contact name */}
         {investor.name && (
@@ -74,6 +117,16 @@ export default function InvestorMobileCard({ investor, onClick }) {
         <div className="mt-2">
           <SmartNextAction investor={investor} variant="inline" />
         </div>
+      </div>
+
+      {/* Right side: status badge + last contact */}
+      <div className="flex flex-col items-end gap-1.5 flex-shrink-0 ml-2">
+        <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${badge.cls}`}>
+          {badge.label}
+        </span>
+        {lastContact && (
+          <span style={{ fontSize: "11px", color: "#aaaaaa" }}>{lastContact}</span>
+        )}
       </div>
     </div>
   );
