@@ -37,7 +37,7 @@ export default function InvestorMobileCard({ investor, onClick }) {
   return (
     <div
       onClick={() => onClick(investor)}
-      className="flex items-center gap-3 p-4 bg-card border-b border-border active:bg-accent transition-colors min-h-[72px] cursor-pointer"
+      className="flex items-center gap-3 px-4 py-4 bg-card border-b border-border active:bg-accent transition-colors min-h-[80px] cursor-pointer"
     >
       {/* Avatar */}
       <div className={`w-11 h-11 rounded-xl flex-shrink-0 flex items-center justify-center text-base font-bold ${colorClass}`}>
