@@ -191,7 +191,7 @@ function LayoutContent({ children, currentPageName }) {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex">
+    <div className="h-screen bg-background text-foreground flex overflow-hidden">
       <style>{`
         .metric-glow { box-shadow: 0 4px 16px rgba(109, 93, 246, 0.06); }
         .glass { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04); }
@@ -304,7 +304,7 @@ function LayoutContent({ children, currentPageName }) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 min-h-screen flex flex-col">
+      <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
         {/* Top bar mobile — sits below Dynamic Island / notch */}
         <div
           className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-card/95 backdrop-blur-md no-select"
