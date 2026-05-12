@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X, Copy, Check, Link2, Plus, Eye, ToggleLeft, ToggleRight, Trash2, Calendar } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
+import Portal from "@/components/ui/Portal";
 
 function timeAgo(dateStr) {
   if (!dateStr) return "—";
@@ -65,6 +66,7 @@ export default function MultiShareLinksModal({ companyId, shares, onClose }) {
   };
 
   return (
+    <Portal>
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg shadow-xl max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
         {/* Header */}
@@ -182,5 +184,6 @@ export default function MultiShareLinksModal({ companyId, shares, onClose }) {
         </div>
       </div>
     </div>
+    </Portal>
   );
 }

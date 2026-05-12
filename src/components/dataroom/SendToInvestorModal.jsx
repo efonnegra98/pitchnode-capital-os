@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X, Send, Check, Search } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import Portal from "@/components/ui/Portal";
 
 export default function SendToInvestorModal({ investors, shareUrl, onSend, onClose, isSending }) {
   const [selected, setSelected] = useState([]);
@@ -30,6 +31,7 @@ export default function SendToInvestorModal({ investors, shareUrl, onSend, onClo
   };
 
   return (
+    <Portal>
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div
         className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg shadow-xl max-h-[90vh] flex flex-col"
@@ -127,5 +129,6 @@ export default function SendToInvestorModal({ investors, shareUrl, onSend, onClo
         </div>
       </div>
     </div>
+    </Portal>
   );
 }
