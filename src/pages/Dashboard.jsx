@@ -146,7 +146,7 @@ export default function Dashboard() {
         />
       )}
 
-    <div ref={scrollRef} className="ptr-container" style={{ overflowY: "auto", minHeight: "100vh" }}>
+    <div ref={scrollRef}>
       <PullToRefreshIndicator pulling={pulling} pullDistance={pullDistance} refreshing={refreshing} />
     <div className="p-4 lg:p-10 max-w-7xl mx-auto">
       {/* Header */}
