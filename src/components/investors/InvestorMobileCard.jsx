@@ -36,8 +36,14 @@ const statusBadge = {
   "Passed":    { label: "Cold",   cls: "bg-slate-100 text-slate-500" },
 };
 
+const BADGE_STYLES = {
+  Active:  { background: "#d1fae5", color: "#065f46" },
+  Warm:    { background: "#fef3c7", color: "#92400e" },
+  Cold:    { background: "#f3f4f6", color: "#6b7280" },
+  Overdue: { background: "#fee2e2", color: "#991b1b" },
+};
+
 function getStatusBadge(investor) {
-  // Derive a simple COLD / WARM / ACTIVE label
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const daysSince = investor.last_contact_date
@@ -45,21 +51,21 @@ function getStatusBadge(investor) {
     : 999;
 
   if (["Closed Won", "Committed"].includes(investor.funnel_stage)) {
-    return { label: "Active", cls: "bg-emerald-100 text-emerald-700" };
+    return { label: "Active", style: BADGE_STYLES.Active };
   }
   if (["Closed Lost", "Pass", "Passed"].includes(investor.funnel_stage)) {
-    return { label: "Cold", cls: "bg-slate-100 text-slate-500" };
+    return { label: "Cold", style: BADGE_STYLES.Cold };
   }
   if (investor.sentiment === "Champion" || investor.sentiment === "Positive" || investor.status === "Engaged") {
-    return { label: "Warm", cls: "bg-amber-100 text-amber-700" };
+    return { label: "Warm", style: BADGE_STYLES.Warm };
   }
   if (daysSince >= 21 || investor.sentiment === "Skeptical") {
-    return { label: "Cold", cls: "bg-slate-100 text-slate-500" };
+    return { label: "Cold", style: BADGE_STYLES.Cold };
   }
   if (daysSince < 14) {
-    return { label: "Active", cls: "bg-emerald-100 text-emerald-700" };
+    return { label: "Active", style: BADGE_STYLES.Active };
   }
-  return { label: "Warm", cls: "bg-amber-100 text-amber-700" };
+  return { label: "Warm", style: BADGE_STYLES.Warm };
 }
 
 function formatLastContact(dateStr) {
@@ -122,7 +128,7 @@ export default function InvestorMobileCard({ investor, onClick }) {
 
       {/* Right side: status badge + last contact */}
       <div className="flex flex-col items-end gap-1.5 flex-shrink-0 ml-2">
-        <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${badge.cls}`}>
+        <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full" style={badge.style}>
           {badge.label}
         </span>
         {lastContact && (

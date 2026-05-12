@@ -41,11 +41,16 @@ const AuthenticatedApp = () => {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to Gateway automatically
-      base44.auth.redirectToLogin(window.location.href);
       return (
-        <div className="fixed inset-0 flex items-center justify-center bg-[#0f0f0f]">
-          <p className="text-gray-400 text-sm">Redirecting you back to sign in...</p>
+        <div className="fixed inset-0 flex flex-col items-center justify-center bg-[#0f0f0f] gap-5">
+          <p className="text-white font-semibold text-base">Session Expired</p>
+          <p className="text-gray-400 text-sm text-center max-w-xs">Your login session has expired. Please sign in again.</p>
+          <button
+            onClick={() => base44.auth.redirectToLogin(window.location.origin)}
+            className="px-6 py-3 rounded-full bg-white text-[#0f0f0f] font-semibold text-sm hover:bg-gray-100 transition-colors"
+          >
+            Sign In Again
+          </button>
         </div>
       );
     }
