@@ -46,7 +46,7 @@ const AuthenticatedApp = () => {
           <p className="text-white font-semibold text-base">Session Expired</p>
           <p className="text-gray-400 text-sm text-center max-w-xs">Your login session has expired. Please sign in again.</p>
           <button
-            onClick={() => base44.auth.redirectToLogin(window.location.origin)}
+            onClick={() => window.location.replace("/Gateway")}
             className="px-6 py-3 rounded-full bg-white text-[#0f0f0f] font-semibold text-sm hover:bg-gray-100 transition-colors"
           >
             Sign In Again

@@ -127,7 +127,7 @@ function LayoutContent({ children, currentPageName }) {
 
         // Not logged in — redirect to login
         if (!user) {
-          base44.auth.redirectToLogin();
+          navigate("/Gateway");
           return;
         }
 

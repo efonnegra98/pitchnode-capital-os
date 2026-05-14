@@ -268,7 +268,7 @@ export default function Gateway() {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6"
+      className="fixed inset-0 flex flex-col items-center justify-center px-4 sm:px-6 overflow-y-auto"
       style={{ background: "#0f0f0f" }}
     >
       <div className="w-full max-w-sm flex flex-col items-center text-center">
