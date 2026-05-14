@@ -59,7 +59,7 @@ function SignInForm({ onSwitchToSignUp }) {
     setErrors({});
     setLoading(true);
     try {
-      await base44.auth.signInWithEmailAndPassword(email, password);
+      await base44.auth.loginViaEmailPassword(email, password);
       // After sign-in, check onboarding
       const profiles = await base44.entities.UserProfile.filter({ user_email: email });
       if (profiles.length === 0 || !profiles[0].onboarding_completed) {
@@ -88,7 +88,7 @@ function SignInForm({ onSwitchToSignUp }) {
     }
     setResetLoading(true);
     try {
-      await base44.auth.sendPasswordResetEmail(email);
+      await base44.auth.resetPasswordRequest(email);
       setResetSent(true);
     } catch {
       setErrors({ email: "Could not send reset email. Check the address and try again." });
@@ -174,7 +174,8 @@ function SignUpForm({ onSwitchToSignIn }) {
     setErrors({});
     setLoading(true);
     try {
-      await base44.auth.signUpWithEmailAndPassword(email, password, { full_name: fullName });
+      await base44.auth.register({ email, password, full_name: fullName });
+      await base44.auth.loginViaEmailPassword(email, password);
       navigate(createPageUrl("Onboarding"));
     } catch (err) {
       const msg = err?.message || "";
