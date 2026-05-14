@@ -290,35 +290,12 @@ export default function Gateway() {
           </>
         )}
 
-        {/* Google OAuth buttons — always shown on signin, hidden on signup */}
+        {/* Email notice */}
         {mode === "signin" && (
-          <div className="w-full flex flex-col gap-3 mb-6">
-            <button
-              onClick={handleGoogleSignIn}
-              className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 font-semibold text-sm py-3.5 rounded-full transition-colors"
-              style={{ color: "#1d1d1f" }}
-            >
-              <GoogleIcon />
-              Sign In with Google
-            </button>
-            <button
-              onClick={handleGoogleSignIn}
-              className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 font-semibold text-sm py-3.5 rounded-full transition-colors"
-              style={{ color: "#1d1d1f" }}
-            >
-              <GoogleIcon />
-              Create Account with Google
-            </button>
-          </div>
-        )}
-
-        {/* Divider */}
-        {mode === "signin" && (
-          <div className="w-full flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px" style={{ background: "#2a2a2a" }} />
-            <span className="text-xs whitespace-nowrap" style={{ color: "#6b7280" }}>or continue with email</span>
-            <div className="flex-1 h-px" style={{ background: "#2a2a2a" }} />
-          </div>
+          <p className="text-sm mb-6" style={{ color: "#9ca3af" }}>
+            Sign in with your email and password below.{" "}
+            <span style={{ color: "#6b7280" }}>Google sign-in coming soon.</span>
+          </p>
         )}
 
         {/* Email/password section */}
