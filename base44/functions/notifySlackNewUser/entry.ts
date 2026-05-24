@@ -12,15 +12,16 @@ Deno.serve(async (req) => {
       return Response.json({ skipped: true, reason: 'not a create event' });
     }
 
-    const user = data;
+    const company = data;
 
-    // Skip if no email
+    // Get the authenticated user to extract email
+    const user = await base44.auth.me();
     if (!user?.email) {
-      return Response.json({ skipped: true, reason: 'no email on user record' });
+      return Response.json({ skipped: true, reason: 'no authenticated user' });
     }
 
     // Skip admin accounts
-    if (user?.role === 'admin' || user?.role === 'owner') {
+    if (user.role === 'admin' || user.role === 'owner') {
       return Response.json({ skipped: true, reason: 'admin account' });
     }
 
