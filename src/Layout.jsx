@@ -141,7 +141,18 @@ function LayoutContent({ children, currentPageName }) {
         // Check profile / onboarding
         const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
 
-        if (profiles.length === 0 || !profiles[0].onboarding_completed || !profiles[0].company_id) {
+        // Auto-create a minimal UserProfile if none exists (ensures all users appear in Admin Console)
+        if (profiles.length === 0) {
+          await base44.entities.UserProfile.create({
+            user_email: user.email,
+            approved: false,
+            onboarding_completed: false,
+          });
+          navigate(createPageUrl("Onboarding"));
+          return;
+        }
+
+        if (!profiles[0].onboarding_completed || !profiles[0].company_id) {
           navigate(createPageUrl("Onboarding"));
           return;
         }

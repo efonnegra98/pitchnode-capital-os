@@ -53,13 +53,14 @@ export default function Admin() {
     const matchSearch =
       !q ||
       u.user_email?.toLowerCase().includes(q) ||
+      u.full_name?.toLowerCase().includes(q) ||
       u.founder_name?.toLowerCase().includes(q) ||
       u.company_name?.toLowerCase().includes(q);
 
     const matchFilter =
       filter === "all" ||
-      (filter === "trial_active" && u.trial_active && u.subscription_status !== "active") ||
-      (filter === "trial_expired" && !u.trial_active && u.subscription_status !== "active") ||
+      (filter === "trial_active" && u.has_profile && u.trial_active && u.subscription_status !== "active") ||
+      (filter === "trial_expired" && u.has_profile && !u.trial_active && u.subscription_status !== "active") ||
       (filter === "paid" && u.subscription_status === "active");
 
     return matchSearch && matchFilter;
