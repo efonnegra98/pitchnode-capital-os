@@ -12,26 +12,16 @@ Deno.serve(async (req) => {
       return Response.json({ skipped: true, reason: 'not a create event' });
     }
 
-    const profile = data;
+    const user = data;
 
-    // Skip if no user email
-    if (!profile?.user_email) {
-      return Response.json({ skipped: true, reason: 'no user email' });
+    // Skip if no email
+    if (!user?.email) {
+      return Response.json({ skipped: true, reason: 'no email on user record' });
     }
 
-    // Fetch the user record to get full name and check role
-    let userName = profile.user_email;
-    try {
-      const users = await base44.asServiceRole.entities.User.filter({ email: profile.user_email });
-      const user = users?.[0];
-      if (user?.role === 'admin') {
-        return Response.json({ skipped: true, reason: 'admin account' });
-      }
-      if (user?.full_name) {
-        userName = user.full_name;
-      }
-    } catch (_) {
-      // Continue with email as name fallback
+    // Skip admin accounts
+    if (user?.role === 'admin' || user?.role === 'owner') {
+      return Response.json({ skipped: true, reason: 'admin account' });
     }
 
     const webhookUrl = Deno.env.get('SLACK_WEBHOOK_URL');
@@ -39,12 +29,11 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'SLACK_WEBHOOK_URL not set' }, { status: 500 });
     }
 
-    // Format dates in Chicago timezone
-    const now = new Date();
-    const signupDate = new Date(profile.created_date || now);
+    const userName = user.full_name || user.email;
+    const signupDate = new Date(user.created_date || new Date());
     const trialEnd = new Date(signupDate.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-    const chicagoOptions = {
+    const chicagoDateTimeOptions = {
       timeZone: 'America/Chicago',
       year: 'numeric',
       month: 'short',
@@ -54,8 +43,15 @@ Deno.serve(async (req) => {
       hour12: true,
     };
 
-    const signupStr = signupDate.toLocaleString('en-US', chicagoOptions);
-    const trialEndStr = trialEnd.toLocaleString('en-US', { ...chicagoOptions, hour: undefined, minute: undefined, hour12: undefined });
+    const chicagoDateOptions = {
+      timeZone: 'America/Chicago',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    };
+
+    const signupStr = signupDate.toLocaleString('en-US', chicagoDateTimeOptions) + ' CT';
+    const trialEndStr = trialEnd.toLocaleString('en-US', chicagoDateOptions);
 
     const slackBody = {
       blocks: [
@@ -76,11 +72,11 @@ Deno.serve(async (req) => {
             },
             {
               type: 'mrkdwn',
-              text: `*Email:*\n${profile.user_email}`,
+              text: `*Email:*\n${user.email}`,
             },
             {
               type: 'mrkdwn',
-              text: `*Signed up:*\n${signupStr} CT`,
+              text: `*Signed up:*\n${signupStr}`,
             },
             {
               type: 'mrkdwn',
@@ -105,7 +101,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Slack webhook failed', details: text }, { status: 500 });
     }
 
-    return Response.json({ success: true, notified: profile.user_email });
+    return Response.json({ success: true, notified: user.email });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
