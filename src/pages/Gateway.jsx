@@ -41,10 +41,13 @@ function SignInForm({ onSwitchToSignUp }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [otpCode, setOtpCode] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [step, setStep] = useState("form"); // "form" | "verify"
 
   const validate = () => {
     const errs = {};
@@ -68,16 +71,54 @@ function SignInForm({ onSwitchToSignUp }) {
         navigate(createPageUrl("Dashboard"));
       }
     } catch (err) {
-      const msg = err?.message || "";
-      if (msg.toLowerCase().includes("not found") || msg.toLowerCase().includes("no user") || msg.toLowerCase().includes("user not found")) {
+      const msg = (err?.message || "").toLowerCase();
+      if (msg.includes("not verified") || msg.includes("verify") || msg.includes("verification") || msg.includes("otp") || msg.includes("not confirmed")) {
+        setStep("verify");
+      } else if (msg.includes("not found") || msg.includes("no user") || msg.includes("user not found")) {
         setErrors({ email: "No account found with this email" });
-      } else if (msg.toLowerCase().includes("password") || msg.toLowerCase().includes("invalid") || msg.toLowerCase().includes("credentials") || msg.toLowerCase().includes("wrong")) {
+      } else if (msg.includes("password") || msg.includes("invalid") || msg.includes("credentials") || msg.includes("wrong")) {
         setErrors({ password: "Incorrect password" });
       } else {
         setErrors({ password: "Incorrect password" });
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerify = async () => {
+    if (!otpCode.trim()) {
+      setErrors({ otp: "Enter the verification code from your email" });
+      return;
+    }
+    setErrors({});
+    setLoading(true);
+    try {
+      await base44.auth.verifyOtp({ email, otpCode });
+      await base44.auth.loginViaEmailPassword(email, password);
+      const profiles = await base44.entities.UserProfile.filter({ user_email: email });
+      if (profiles.length === 0 || !profiles[0].onboarding_completed) {
+        navigate(createPageUrl("Onboarding"));
+      } else {
+        navigate(createPageUrl("Dashboard"));
+      }
+    } catch (err) {
+      const msg = err?.message || "";
+      setErrors({ otp: msg || "Invalid or expired code. Try again or resend." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    setResending(true);
+    try {
+      await base44.auth.resendOtp(email);
+      setErrors({});
+    } catch {
+      setErrors({ otp: "Could not resend code. Try again in a moment." });
+    } finally {
+      setResending(false);
     }
   };
 
@@ -96,6 +137,55 @@ function SignInForm({ onSwitchToSignUp }) {
       setResetLoading(false);
     }
   };
+
+  if (step === "verify") {
+    return (
+      <div className="w-full flex flex-col gap-3">
+        <div className="flex items-center gap-3 mb-1">
+          <button onClick={() => setStep("form")} className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
+            ← Back
+          </button>
+          <p className="text-white font-semibold text-sm">Verify your email</p>
+        </div>
+
+        <p className="text-sm text-left" style={{ color: "#9ca3af" }}>
+          Your email isn't verified yet. We sent a 6-digit code to <span className="text-white font-medium">{email}</span> — enter it below to finish signing in.
+        </p>
+
+        <input
+          type="text"
+          inputMode="numeric"
+          maxLength={6}
+          value={otpCode}
+          onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+          placeholder="Enter 6-digit code"
+          className="w-full px-4 py-3 rounded-xl text-sm text-white placeholder-gray-500 outline-none tracking-[0.5em] text-center text-lg"
+          style={{ background: "#1a1a1a", border: `1px solid ${errors.otp ? "#ef4444" : "#2a2a2a"}` }}
+        />
+        {errors.otp && <p className="text-xs text-red-400 text-left">{errors.otp}</p>}
+
+        <button
+          onClick={handleVerify}
+          disabled={loading}
+          className="w-full py-3.5 rounded-full text-sm font-semibold transition-colors disabled:opacity-60"
+          style={{ background: "#ffffff", color: "#0f0f0f" }}
+        >
+          {loading ? "Verifying…" : "Verify & Sign In"}
+        </button>
+
+        <div className="text-center">
+          <button
+            onClick={handleResend}
+            disabled={resending}
+            className="text-xs transition-colors hover:text-gray-300 disabled:opacity-50"
+            style={{ color: "#6b7280" }}
+          >
+            {resending ? "Sending…" : "Didn't get the code? Resend"}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col gap-3">
