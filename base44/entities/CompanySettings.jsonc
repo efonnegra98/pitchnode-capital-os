@@ -1,0 +1,65 @@
+{
+  "name": "CompanySettings",
+  "type": "object",
+  "properties": {
+    "company_name": {
+      "type": "string",
+      "description": "Company name"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "URL to company logo"
+    },
+    "accent_color": {
+      "type": "string",
+      "default": "#7C3AED",
+      "description": "Brand accent color within violet spectrum"
+    },
+    "email_signature": {
+      "type": "string",
+      "description": "Custom email signature text"
+    },
+    "founder_name": {
+      "type": "string",
+      "description": "Founder name"
+    },
+    "founder_title": {
+      "type": "string",
+      "description": "Founder title"
+    },
+    "raise_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "Enable raise tracking mode"
+    },
+    "target_raise_amount": {
+      "type": "number",
+      "description": "Target raise amount in dollars"
+    },
+    "capital_committed": {
+      "type": "number",
+      "description": "Capital committed in dollars"
+    },
+    "soft_commitments": {
+      "type": "number",
+      "description": "Soft commitments in dollars"
+    },
+    "round_type": {
+      "type": "string",
+      "enum": [
+        "Pre-Seed",
+        "Seed",
+        "Series A",
+        "Series B",
+        "Series C+"
+      ],
+      "description": "Type of funding round"
+    },
+    "target_close_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Target closing date for the round"
+    }
+  },
+  "required": []
+}

@@ -1,0 +1,49 @@
+{
+  "name": "RaiseReadinessItem",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string",
+      "description": "ID of the company this item belongs to"
+    },
+    "item_name": {
+      "type": "string",
+      "description": "Name of the readiness item"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Not Started",
+        "In Progress",
+        "Complete"
+      ],
+      "default": "Not Started",
+      "description": "Completion status"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notes about this item"
+    },
+    "order": {
+      "type": "number",
+      "description": "Display order"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL of uploaded file"
+    },
+    "file_name": {
+      "type": "string",
+      "description": "Original name of uploaded file"
+    },
+    "file_uploaded_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date when file was uploaded"
+    }
+  },
+  "required": [
+    "company_id",
+    "item_name"
+  ]
+}

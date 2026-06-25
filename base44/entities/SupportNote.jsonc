@@ -1,0 +1,26 @@
+{
+  "name": "SupportNote",
+  "type": "object",
+  "properties": {
+    "target_user_email": {
+      "type": "string",
+      "description": "Email of the user this note is about"
+    },
+    "target_company_id": {
+      "type": "string",
+      "description": "Company ID this note is about"
+    },
+    "note": {
+      "type": "string",
+      "description": "Admin support note content"
+    },
+    "admin_email": {
+      "type": "string",
+      "description": "Email of the admin who wrote the note"
+    }
+  },
+  "required": [
+    "target_user_email",
+    "note"
+  ]
+}

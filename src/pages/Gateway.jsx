@@ -156,8 +156,11 @@ function SignUpForm({ onSwitchToSignIn }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [otpCode, setOtpCode] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [step, setStep] = useState("form"); // "form" | "verify"
 
   const validate = () => {
     const errs = {};
@@ -175,8 +178,7 @@ function SignUpForm({ onSwitchToSignIn }) {
     setLoading(true);
     try {
       await base44.auth.register({ email, password, full_name: fullName });
-      await base44.auth.loginViaEmailPassword(email, password);
-      navigate(createPageUrl("Onboarding"));
+      setStep("verify");
     } catch (err) {
       const msg = err?.message || "";
       if (msg.toLowerCase().includes("already") || msg.toLowerCase().includes("exists")) {
@@ -188,6 +190,86 @@ function SignUpForm({ onSwitchToSignIn }) {
       setLoading(false);
     }
   };
+
+  const handleVerify = async () => {
+    if (!otpCode.trim()) {
+      setErrors({ otp: "Enter the verification code from your email" });
+      return;
+    }
+    setErrors({});
+    setLoading(true);
+    try {
+      await base44.auth.verifyOtp({ email, otpCode });
+      await base44.auth.loginViaEmailPassword(email, password);
+      navigate(createPageUrl("Onboarding"));
+    } catch (err) {
+      const msg = err?.message || "";
+      setErrors({ otp: msg || "Invalid or expired code. Try again or resend." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    setResending(true);
+    try {
+      await base44.auth.resendOtp(email);
+      setErrors({});
+    } catch {
+      setErrors({ otp: "Could not resend code. Try again in a moment." });
+    } finally {
+      setResending(false);
+    }
+  };
+
+  if (step === "verify") {
+    return (
+      <div className="w-full flex flex-col gap-3">
+        <div className="flex items-center gap-3 mb-1">
+          <button onClick={() => setStep("form")} className="text-gray-500 hover:text-gray-300 transition-colors text-sm">
+            ← Back
+          </button>
+          <p className="text-white font-semibold text-sm">Verify your email</p>
+        </div>
+
+        <p className="text-sm text-left" style={{ color: "#9ca3af" }}>
+          We sent a 6-digit code to <span className="text-white font-medium">{email}</span>. Enter it below to activate your account.
+        </p>
+
+        <input
+          type="text"
+          inputMode="numeric"
+          maxLength={6}
+          value={otpCode}
+          onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+          placeholder="Enter 6-digit code"
+          className="w-full px-4 py-3 rounded-xl text-sm text-white placeholder-gray-500 outline-none tracking-[0.5em] text-center text-lg"
+          style={{ background: "#1a1a1a", border: `1px solid ${errors.otp ? "#ef4444" : "#2a2a2a"}` }}
+        />
+        {errors.otp && <p className="text-xs text-red-400 text-left">{errors.otp}</p>}
+
+        <button
+          onClick={handleVerify}
+          disabled={loading}
+          className="w-full py-3.5 rounded-full text-sm font-semibold transition-colors disabled:opacity-60"
+          style={{ background: "#ffffff", color: "#0f0f0f" }}
+        >
+          {loading ? "Verifying…" : "Verify & Continue"}
+        </button>
+
+        <div className="text-center">
+          <button
+            onClick={handleResend}
+            disabled={resending}
+            className="text-xs transition-colors hover:text-gray-300 disabled:opacity-50"
+            style={{ color: "#6b7280" }}
+          >
+            {resending ? "Sending…" : "Didn't get the code? Resend"}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col gap-3">
